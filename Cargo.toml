@@ -1,6 +1,5 @@
-[package]
-name = "weave-ce"
-version = "0.1.0"
-authors = ["theochupp <tclchiam@gmail.com>"]
-
-[dependencies]
+[workspace]
+members = [
+    "weave-cli",
+    "weave-lib"
+]

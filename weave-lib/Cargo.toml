@@ -1,0 +1,6 @@
+[package]
+name = "weave-lib"
+version = "0.1.0"
+authors = ["theochupp <tclchiam@gmail.com>"]
+
+[dependencies]
