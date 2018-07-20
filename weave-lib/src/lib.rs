@@ -1,1 +1,2 @@
-pub mod membership;
+pub mod outfits;
+pub mod closet;
