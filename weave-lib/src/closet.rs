@@ -2,8 +2,9 @@ use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Closet<'a> {
-    pub contents: BTreeMap<&'a Family, Vec<&'a Item>>,
+    contents: BTreeMap<&'a Family, Vec<&'a Item>>,
     item_index: BTreeMap<&'a Item, &'a Family>,
+    exclusions: BTreeMap<&'a Item, Vec<&'a Item>>,
 }
 
 impl<'a> Closet<'a> {
@@ -11,6 +12,7 @@ impl<'a> Closet<'a> {
         Closet {
             contents: BTreeMap::new(),
             item_index: BTreeMap::new(),
+            exclusions: BTreeMap::new(),
         }
     }
 
@@ -24,7 +26,35 @@ impl<'a> Closet<'a> {
         item_index.entry(item)
             .or_insert(family);
 
-        Closet { contents, item_index }
+        let exclusions = self.exclusions.clone();
+
+        Closet { contents, item_index, exclusions }
+    }
+
+    pub fn add_exclusion_rule(&self, selection: &'a Item, exclusion: &'a Item) -> Closet {
+        let contents = self.contents.clone();
+        let item_index = self.item_index.clone();
+
+        let mut exclusions = self.exclusions.clone();
+        exclusions.entry(selection)
+            .or_insert(vec![])
+            .push(exclusion);
+        exclusions.entry(exclusion)
+            .or_insert(vec![])
+            .push(selection);
+
+        Closet { contents, item_index, exclusions }
+    }
+
+    pub fn get_excluded_items(&self, items: &Vec<&Item>) -> Vec<&'a Item> {
+        let exclusions = &self.exclusions;
+
+        items.iter()
+            .map(|item| exclusions.get(item))
+            .filter(|items| items.is_some())
+            .flat_map(|items| items.unwrap())
+            .cloned()
+            .collect()
     }
 
     pub fn get_family(&self, item: &'a Item) -> Option<&'a Family> {

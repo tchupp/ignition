@@ -22,13 +22,8 @@ impl<'a> Outfit<'a> {
     }
 }
 
-pub fn find_first_valid_outfit<'a>(closet: Closet<'a>, selections: Vec<&'a Item>) -> Result<Outfit<'a>, Error<'a>> {
-    if let Some(items) = find_unknown_items(&closet, &selections) {
-        return Err(UnknownItems(items));
-    }
-    if let Some(items) = find_duplicate_items(&closet, &selections) {
-        return Err(MultipleItemsPerFamily(items));
-    }
+pub fn complete_outfit<'a>(closet: Closet<'a>, selections: Vec<&'a Item>) -> Result<Outfit<'a>, Error<'a>> {
+    validate(&closet, &selections)?;
 
     let selected_families: Vec<&Family> = selections.iter()
         .map(|item| closet.get_family(item))
@@ -36,16 +31,35 @@ pub fn find_first_valid_outfit<'a>(closet: Closet<'a>, selections: Vec<&'a Item>
         .map(|family| family.unwrap())
         .collect();
 
-    let items = closet.contents().iter()
+    let items: Vec<&Item> = closet.contents().iter()
         .filter(|&(family, _)| !selected_families.contains(family))
-        .map(|(_, items)| items.first())
-        .filter(|item| item.is_some())
-        .map(|item| item.unwrap())
-        .chain(&selections)
-        .cloned()
-        .collect::<Vec<&Item>>();
+        .map(|(_, items)| items)
+        .fold(selections.clone(), |mut outfit_items: Vec<&Item>, family_items: &Vec<&Item>| {
+            let excluded_items = closet.get_excluded_items(&outfit_items);
+
+            let item = family_items.iter()
+                .find(|&item| !excluded_items.contains(item));
+
+            let item = match item {
+                Some(i) => i,
+                None => panic!("Bad places, man!"),
+            };
+            outfit_items.push(item);
+            outfit_items
+        });
 
     return Ok(Outfit::new(items));
+}
+
+fn validate<'a>(closet: &Closet<'a>, selections: &Vec<&'a Item>) -> Result<(), Error<'a>> {
+    if let Some(items) = find_unknown_items(&closet, &selections) {
+        return Err(UnknownItems(items));
+    }
+    if let Some(items) = find_duplicate_items(&closet, &selections) {
+        return Err(MultipleItemsPerFamily(items));
+    }
+
+    return Ok(());
 }
 
 fn find_unknown_items<'a>(closet: &Closet, selections: &Vec<&'a Item>) -> Option<Vec<&'a Item>> {

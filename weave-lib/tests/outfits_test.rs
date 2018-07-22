@@ -1,7 +1,7 @@
 extern crate weave_lib;
 
 #[cfg(test)]
-mod tests {
+mod no_rules_tests {
     use std::collections::BTreeMap;
     use weave_lib::closet::*;
     use weave_lib::outfits::*;
@@ -28,7 +28,7 @@ mod tests {
         let expected = Ok(Outfit::new(vec![&jeans, &blue]));
         assert_eq!(
             expected,
-            find_first_valid_outfit(closet, vec![])
+            complete_outfit(closet, vec![])
         );
     }
 
@@ -49,10 +49,10 @@ mod tests {
         let closet = closet.add_item(&pants, &jeans);
         let closet = closet.add_item(&pants, &slacks);
 
-        let expected = Ok(Outfit::new(vec![&jeans, &red]));
+        let expected = Ok(Outfit::new(vec![&red, &jeans]));
         assert_eq!(
             expected,
-            find_first_valid_outfit(closet, vec![&red])
+            complete_outfit(closet, vec![&red])
         );
     }
 
@@ -76,7 +76,7 @@ mod tests {
         let expected = Ok(Outfit::new(vec![&slacks, &blue]));
         assert_eq!(
             expected,
-            find_first_valid_outfit(closet, vec![&slacks, &blue])
+            complete_outfit(closet, vec![&slacks, &blue])
         );
     }
 
@@ -101,7 +101,7 @@ mod tests {
         let expected = Err(UnknownItems(vec![&black]));
         assert_eq!(
             expected,
-            find_first_valid_outfit(closet, vec![&jeans, &black])
+            complete_outfit(closet, vec![&jeans, &black])
         );
     }
 
@@ -131,7 +131,44 @@ mod tests {
 
         assert_eq!(
             expected,
-            find_first_valid_outfit(closet, vec![&jeans, &blue, &slacks])
+            complete_outfit(closet, vec![&jeans, &blue, &slacks])
+        );
+    }
+}
+
+#[cfg(test)]
+mod with_rules_tests {
+    use weave_lib::closet::*;
+    use weave_lib::outfits::*;
+
+    #[test]
+    fn exclusion_rule_with_one_selection() {
+        let blue = Item::new("blue");
+        let red = Item::new("red");
+
+        let jeans = Item::new("jeans");
+        let slacks = Item::new("slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet = Closet::new();
+        let closet = closet.add_item(&shirts, &blue);
+        let closet = closet.add_item(&shirts, &red);
+        let closet = closet.add_item(&pants, &jeans);
+        let closet = closet.add_item(&pants, &slacks);
+        let closet = closet.add_exclusion_rule(&blue, &jeans);
+
+        let expected = Ok(Outfit::new(vec![&blue, &slacks]));
+        assert_eq!(
+            expected,
+            complete_outfit(closet.clone(), vec![&blue])
+        );
+
+        let expected = Ok(Outfit::new(vec![&jeans, &red]));
+        assert_eq!(
+            expected,
+            complete_outfit(closet.clone(), vec![&jeans])
         );
     }
 }
