@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::collections::HashSet;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Closet<'a> {
@@ -46,7 +47,7 @@ impl<'a> Closet<'a> {
         Closet { contents, item_index, exclusions }
     }
 
-    pub fn get_excluded_items(&self, items: &Vec<&Item>) -> Vec<&'a Item> {
+    pub fn get_excluded_items(&self, items: &Vec<&Item>) -> HashSet<&'a Item> {
         let exclusions = &self.exclusions;
 
         items.iter()
@@ -66,7 +67,7 @@ impl<'a> Closet<'a> {
     }
 }
 
-#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq)]
+#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct Family(String);
 
 impl Family {
@@ -75,7 +76,7 @@ impl Family {
     }
 }
 
-#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq)]
+#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct Item(String);
 
 impl Item {

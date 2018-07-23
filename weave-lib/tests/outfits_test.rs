@@ -140,6 +140,7 @@ mod no_rules_tests {
 mod with_rules_tests {
     use weave_lib::closet::*;
     use weave_lib::outfits::*;
+    use weave_lib::outfits::Error::ConflictingItems;
 
     #[test]
     fn exclusion_rule_with_one_selection() {
@@ -169,6 +170,31 @@ mod with_rules_tests {
         assert_eq!(
             expected,
             complete_outfit(closet.clone(), vec![&jeans])
+        );
+    }
+
+    #[test]
+    fn exclusion_rule_with_conflicting_selection() {
+        let blue = Item::new("blue");
+        let red = Item::new("red");
+
+        let jeans = Item::new("jeans");
+        let slacks = Item::new("slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet = Closet::new();
+        let closet = closet.add_item(&shirts, &blue);
+        let closet = closet.add_item(&shirts, &red);
+        let closet = closet.add_item(&pants, &jeans);
+        let closet = closet.add_item(&pants, &slacks);
+        let closet = closet.add_exclusion_rule(&blue, &jeans);
+
+        let expected = Err(ConflictingItems(vec![&jeans, &blue]));
+        assert_eq!(
+            expected,
+            complete_outfit(closet, vec![&blue, &jeans])
         );
     }
 }

@@ -1,13 +1,16 @@
 use closet::Closet;
 use closet::Family;
 use closet::Item;
+use outfits::Error::ConflictingItems;
 use outfits::Error::MultipleItemsPerFamily;
 use outfits::Error::UnknownItems;
 use std::collections::BTreeMap;
+use std::collections::HashSet;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Error<'a> {
     UnknownItems(Vec<&'a Item>),
+    ConflictingItems(Vec<&'a Item>),
     MultipleItemsPerFamily(BTreeMap<&'a Family, Vec<&'a Item>>),
 }
 
@@ -58,6 +61,9 @@ fn validate<'a>(closet: &Closet<'a>, selections: &Vec<&'a Item>) -> Result<(), E
     if let Some(items) = find_duplicate_items(&closet, &selections) {
         return Err(MultipleItemsPerFamily(items));
     }
+    if let Some(items) = find_conflicting_items(&closet, &selections) {
+        return Err(ConflictingItems(items));
+    }
 
     return Ok(());
 }
@@ -88,9 +94,31 @@ fn find_duplicate_items<'a>(closet: &Closet<'a>, selections: &Vec<&'a Item>) -> 
         .map(|(family, items)| (family.clone(), items.clone()))
         .collect();
 
-    if duplicates.is_empty() {
-        None
-    } else {
+    if !duplicates.is_empty() {
         Some(duplicates)
+    } else {
+        None
     }
+}
+
+fn find_conflicting_items<'a>(closet: &Closet<'a>, selections: &Vec<&'a Item>) -> Option<Vec<&'a Item>> {
+    let selections_set: HashSet<&Item> = selections.iter().cloned().collect();
+
+    return selections.iter()
+        .map(|&selection| (closet.get_excluded_items(&vec![selection]), selection))
+        .map(|(excluded_items, selection)| {
+            let illegal_selections = excluded_items
+                .intersection(&selections_set)
+                .cloned()
+                .collect::<Vec<&Item>>();
+            (illegal_selections, selection)
+        })
+        .filter(|&(ref illegal_selections, _)| !illegal_selections.is_empty())
+        .map(|(illegal_selections, selection): (Vec<&Item>, &Item)|
+            illegal_selections.iter()
+                .cloned()
+                .chain(vec![selection])
+                .collect::<Vec<&Item>>()
+        )
+        .find(|illegal_selections| !illegal_selections.is_empty());
 }
