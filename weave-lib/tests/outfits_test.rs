@@ -5,8 +5,9 @@ mod no_rules_tests {
     use std::collections::BTreeMap;
     use weave_lib::closet::*;
     use weave_lib::outfits::*;
-    use weave_lib::outfits::Error::MultipleItemsPerFamily;
-    use weave_lib::outfits::Error::UnknownItems;
+    use weave_lib::outfits::Error::Validation;
+    use weave_lib::outfits::ValidationError::MultipleItemsPerFamily;
+    use weave_lib::outfits::ValidationError::UnknownItems;
 
     #[test]
     fn no_rules_no_selections() {
@@ -98,7 +99,7 @@ mod no_rules_tests {
         let closet = closet.add_item(&pants, &jeans);
         let closet = closet.add_item(&pants, &slacks);
 
-        let expected = Err(UnknownItems(vec![&black]));
+        let expected = Err(Validation(UnknownItems(vec![&black])));
         assert_eq!(
             expected,
             complete_outfit(closet, vec![&jeans, &black])
@@ -126,7 +127,7 @@ mod no_rules_tests {
             let mut duplicates = BTreeMap::new();
             duplicates.insert(&pants, vec![&jeans, &slacks]);
 
-            Err(MultipleItemsPerFamily(duplicates))
+            Err(Validation(MultipleItemsPerFamily(duplicates)))
         };
 
         assert_eq!(
@@ -137,10 +138,11 @@ mod no_rules_tests {
 }
 
 #[cfg(test)]
-mod with_rules_tests {
+mod exclusion_rules_tests {
     use weave_lib::closet::*;
     use weave_lib::outfits::*;
-    use weave_lib::outfits::Error::ConflictingItems;
+    use weave_lib::outfits::Error::Validation;
+    use weave_lib::outfits::ValidationError::ConflictingItems;
 
     #[test]
     fn exclusion_rule_with_one_selection() {
@@ -191,10 +193,37 @@ mod with_rules_tests {
         let closet = closet.add_item(&pants, &slacks);
         let closet = closet.add_exclusion_rule(&blue, &jeans);
 
-        let expected = Err(ConflictingItems(vec![&jeans, &blue]));
+        let expected = Err(Validation(ConflictingItems(vec![&jeans, &blue])));
         assert_eq!(
             expected,
             complete_outfit(closet, vec![&blue, &jeans])
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn exclusion_rules_with_impossible_selection() {
+        let blue = Item::new("blue");
+        let red = Item::new("red");
+
+        let jeans = Item::new("jeans");
+        let slacks = Item::new("slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet = Closet::new();
+        let closet = closet.add_item(&shirts, &blue);
+        let closet = closet.add_item(&shirts, &red);
+        let closet = closet.add_item(&pants, &jeans);
+        let closet = closet.add_item(&pants, &slacks);
+        let closet = closet.add_exclusion_rule(&blue, &jeans);
+        let closet = closet.add_exclusion_rule(&blue, &slacks);
+
+        let expected = Ok(Outfit::new(vec![&blue]));
+        assert_eq!(
+            expected,
+            complete_outfit(closet.clone(), vec![&blue])
         );
     }
 }

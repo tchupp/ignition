@@ -1,14 +1,20 @@
 use closet::Closet;
 use closet::Family;
 use closet::Item;
-use outfits::Error::ConflictingItems;
-use outfits::Error::MultipleItemsPerFamily;
-use outfits::Error::UnknownItems;
+use outfits::Error::Validation;
+use outfits::ValidationError::ConflictingItems;
+use outfits::ValidationError::MultipleItemsPerFamily;
+use outfits::ValidationError::UnknownItems;
 use std::collections::BTreeMap;
 use std::collections::HashSet;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Error<'a> {
+    Validation(ValidationError<'a>),
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub enum ValidationError<'a> {
     UnknownItems(Vec<&'a Item>),
     ConflictingItems(Vec<&'a Item>),
     MultipleItemsPerFamily(BTreeMap<&'a Family, Vec<&'a Item>>),
@@ -36,8 +42,7 @@ pub fn complete_outfit<'a>(closet: Closet<'a>, selections: Vec<&'a Item>) -> Res
 
     let items: Vec<&Item> = closet.contents().iter()
         .filter(|&(family, _)| !selected_families.contains(family))
-        .map(|(_, items)| items)
-        .fold(selections.clone(), |mut outfit_items: Vec<&Item>, family_items: &Vec<&Item>| {
+        .fold(selections.clone(), |mut outfit_items: Vec<&Item>, (_family, family_items): (&&Family, &Vec<&Item>)| {
             let excluded_items = closet.get_excluded_items(&outfit_items);
 
             let item = family_items.iter()
@@ -45,7 +50,7 @@ pub fn complete_outfit<'a>(closet: Closet<'a>, selections: Vec<&'a Item>) -> Res
 
             let item = match item {
                 Some(i) => i,
-                None => panic!("Bad places, man!"),
+                None => panic!("We only end up here during a conflict"),
             };
             outfit_items.push(item);
             outfit_items
@@ -56,13 +61,13 @@ pub fn complete_outfit<'a>(closet: Closet<'a>, selections: Vec<&'a Item>) -> Res
 
 fn validate<'a>(closet: &Closet<'a>, selections: &Vec<&'a Item>) -> Result<(), Error<'a>> {
     if let Some(items) = find_unknown_items(&closet, &selections) {
-        return Err(UnknownItems(items));
+        return Err(Validation(UnknownItems(items)));
     }
     if let Some(items) = find_duplicate_items(&closet, &selections) {
-        return Err(MultipleItemsPerFamily(items));
+        return Err(Validation(MultipleItemsPerFamily(items)));
     }
     if let Some(items) = find_conflicting_items(&closet, &selections) {
-        return Err(ConflictingItems(items));
+        return Err(Validation(ConflictingItems(items)));
     }
 
     return Ok(());
@@ -74,10 +79,10 @@ fn find_unknown_items<'a>(closet: &Closet, selections: &Vec<&'a Item>) -> Option
         .cloned()
         .collect::<Vec<&Item>>();
 
-    if unknown_items.is_empty() {
-        None
-    } else {
+    if !unknown_items.is_empty() {
         Some(unknown_items)
+    } else {
+        None
     }
 }
 
