@@ -32,29 +32,44 @@ impl<'a> Outfit<'a> {
 }
 
 pub fn complete_outfit<'a>(closet: Closet<'a>, selections: Vec<&'a Item>) -> Result<Outfit<'a>, Error<'a>> {
-    validate(&closet, &selections)?;
-
-    let selected_families: Vec<&Family> = selections.iter()
-        .map(|item| closet.get_family(item))
-        .filter(|family| family.is_some())
-        .map(|family| family.unwrap())
+    let selections = selections.iter()
+        .chain(closet.get_included_items(&selections).iter())
+        .cloned()
         .collect();
 
+    validate(&closet, &selections)?;
+
+    let selections: BTreeMap<&Family, &Item> = selections.iter()
+        .map(|item| (closet.get_family(item), item))
+        .map(|(family, item)| {
+            let family = family.expect("validation should catch items with no family");
+            (family, item.clone())
+        })
+        .collect();
+
+    let selected_families: HashSet<&Family> = selections.keys().cloned().collect::<HashSet<_>>();
     let items: Vec<&Item> = closet.contents().iter()
         .filter(|&(family, _)| !selected_families.contains(family))
-        .fold(selections.clone(), |mut outfit_items: Vec<&Item>, (_family, family_items): (&&Family, &Vec<&Item>)| {
-            let excluded_items = closet.get_excluded_items(&outfit_items);
+        .fold(selections.clone(), |mut outfit: BTreeMap<&Family, &Item>, (family, family_items): (&&Family, &Vec<&Item>)| {
+            let outfit_items = &outfit.values().cloned().collect::<Vec<&Item>>();
+            let excluded_items = closet.get_excluded_items(outfit_items);
+            let included_items = closet.get_included_items(outfit_items);
 
             let item = family_items.iter()
-                .find(|&item| !excluded_items.contains(item));
+                .filter(|&item| !excluded_items.contains(item))
+                .find(|&item| included_items.contains(item))
+                .or(family_items.iter().find(|&item| !excluded_items.contains(item)));
 
             let item = match item {
                 Some(i) => i,
                 None => panic!("We only end up here during a conflict"),
             };
-            outfit_items.push(item);
-            outfit_items
-        });
+            outfit.entry(family).or_insert(item);
+            outfit
+        })
+        .iter()
+        .map(|(_family, item)| item.clone())
+        .collect();
 
     return Ok(Outfit::new(items));
 }

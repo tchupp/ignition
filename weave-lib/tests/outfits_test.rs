@@ -50,7 +50,7 @@ mod no_rules_tests {
         let closet = closet.add_item(&pants, &jeans);
         let closet = closet.add_item(&pants, &slacks);
 
-        let expected = Ok(Outfit::new(vec![&red, &jeans]));
+        let expected = Ok(Outfit::new(vec![&jeans, &red]));
         assert_eq!(
             expected,
             complete_outfit(closet, vec![&red])
@@ -162,7 +162,7 @@ mod exclusion_rules_tests {
         let closet = closet.add_item(&pants, &slacks);
         let closet = closet.add_exclusion_rule(&blue, &jeans);
 
-        let expected = Ok(Outfit::new(vec![&blue, &slacks]));
+        let expected = Ok(Outfit::new(vec![&slacks, &blue]));
         assert_eq!(
             expected,
             complete_outfit(closet.clone(), vec![&blue])
@@ -224,6 +224,70 @@ mod exclusion_rules_tests {
         assert_eq!(
             expected,
             complete_outfit(closet.clone(), vec![&blue])
+        );
+    }
+}
+
+#[cfg(test)]
+mod inclusion_rules_tests {
+    use weave_lib::closet::*;
+    use weave_lib::outfits::*;
+
+    #[test]
+    fn inclusion_rule_with_one_selection() {
+        let blue = Item::new("blue");
+        let red = Item::new("red");
+
+        let jeans = Item::new("jeans");
+        let slacks = Item::new("slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet = Closet::new();
+        let closet = closet.add_item(&shirts, &blue);
+        let closet = closet.add_item(&shirts, &red);
+        let closet = closet.add_item(&pants, &jeans);
+        let closet = closet.add_item(&pants, &slacks);
+
+        let expected = Ok(Outfit::new(vec![&jeans, &blue]));
+        assert_eq!(
+            expected,
+            complete_outfit(closet.clone(), vec![])
+        );
+
+
+        let closet = closet.add_inclusion_rule(&jeans, &red);
+
+        let expected = Ok(Outfit::new(vec![&jeans, &red]));
+        assert_eq!(
+            expected,
+            complete_outfit(closet.clone(), vec![])
+        );
+    }
+
+    #[test]
+    fn inclusion_rule_is_one_way() {
+        let blue = Item::new("blue");
+        let red = Item::new("red");
+
+        let jeans = Item::new("jeans");
+        let slacks = Item::new("slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet = Closet::new();
+        let closet = closet.add_item(&shirts, &blue);
+        let closet = closet.add_item(&shirts, &red);
+        let closet = closet.add_item(&pants, &jeans);
+        let closet = closet.add_item(&pants, &slacks);
+        let closet = closet.add_inclusion_rule(&red, &slacks);
+
+        let expected = Ok(Outfit::new(vec![&slacks, &blue]));
+        assert_eq!(
+            expected,
+            complete_outfit(closet.clone(), vec![&slacks])
         );
     }
 }

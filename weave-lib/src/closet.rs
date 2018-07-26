@@ -6,6 +6,7 @@ pub struct Closet<'a> {
     contents: BTreeMap<&'a Family, Vec<&'a Item>>,
     item_index: BTreeMap<&'a Item, &'a Family>,
     exclusions: BTreeMap<&'a Item, Vec<&'a Item>>,
+    inclusions: BTreeMap<&'a Item, Vec<&'a Item>>,
 }
 
 impl<'a> Closet<'a> {
@@ -14,6 +15,7 @@ impl<'a> Closet<'a> {
             contents: BTreeMap::new(),
             item_index: BTreeMap::new(),
             exclusions: BTreeMap::new(),
+            inclusions: BTreeMap::new(),
         }
     }
 
@@ -28,13 +30,15 @@ impl<'a> Closet<'a> {
             .or_insert(family);
 
         let exclusions = self.exclusions.clone();
+        let inclusions = self.inclusions.clone();
 
-        Closet { contents, item_index, exclusions }
+        Closet { contents, item_index, exclusions, inclusions }
     }
 
     pub fn add_exclusion_rule(&self, selection: &'a Item, exclusion: &'a Item) -> Closet {
         let contents = self.contents.clone();
         let item_index = self.item_index.clone();
+        let inclusions = self.inclusions.clone();
 
         let mut exclusions = self.exclusions.clone();
         exclusions.entry(selection)
@@ -44,7 +48,20 @@ impl<'a> Closet<'a> {
             .or_insert(vec![])
             .push(selection);
 
-        Closet { contents, item_index, exclusions }
+        Closet { contents, item_index, exclusions, inclusions }
+    }
+
+    pub fn add_inclusion_rule(&self, selection: &'a Item, inclusion: &'a Item) -> Closet {
+        let contents = self.contents.clone();
+        let item_index = self.item_index.clone();
+        let exclusions = self.exclusions.clone();
+
+        let mut inclusions = self.inclusions.clone();
+        inclusions.entry(selection)
+            .or_insert(vec![])
+            .push(inclusion);
+
+        Closet { contents, item_index, exclusions, inclusions }
     }
 
     pub fn get_excluded_items(&self, items: &Vec<&Item>) -> HashSet<&'a Item> {
@@ -52,6 +69,17 @@ impl<'a> Closet<'a> {
 
         items.iter()
             .map(|item| exclusions.get(item))
+            .filter(|items| items.is_some())
+            .flat_map(|items| items.unwrap())
+            .cloned()
+            .collect()
+    }
+
+    pub fn get_included_items(&self, items: &Vec<&Item>) -> HashSet<&'a Item> {
+        let inclusions = &self.inclusions;
+
+        items.iter()
+            .map(|item| inclusions.get(item))
             .filter(|items| items.is_some())
             .flat_map(|items| items.unwrap())
             .cloned()
