@@ -34,7 +34,6 @@ fn reduce<'a>(node: &'a Node<'a>) -> Node<'a> {
 mod tests {
     use bdd::leafs::reduce;
     use closet::Item;
-    use std::collections::HashMap;
     use super::Node;
     use super::Node::*;
 
