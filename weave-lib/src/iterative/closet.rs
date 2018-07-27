@@ -1,3 +1,5 @@
+use core::Family;
+use core::Item;
 use std::collections::BTreeMap;
 use std::collections::HashSet;
 
@@ -92,23 +94,5 @@ impl<'a> Closet<'a> {
 
     pub fn contents(&self) -> BTreeMap<&'a Family, Vec<&'a Item>> {
         self.contents.clone()
-    }
-}
-
-#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
-pub struct Family(String);
-
-impl Family {
-    pub fn new(id: &str) -> Family {
-        Family(id.into())
-    }
-}
-
-#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
-pub struct Item(String);
-
-impl Item {
-    pub fn new(id: &str) -> Item {
-        Item(id.into())
     }
 }

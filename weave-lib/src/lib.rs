@@ -1,3 +1,3 @@
-pub mod outfits;
-pub mod closet;
+pub mod core;
+pub mod iterative;
 pub mod bdd;

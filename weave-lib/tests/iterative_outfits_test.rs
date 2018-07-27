@@ -3,11 +3,14 @@ extern crate weave_lib;
 #[cfg(test)]
 mod no_rules_tests {
     use std::collections::BTreeMap;
-    use weave_lib::closet::*;
-    use weave_lib::outfits::*;
-    use weave_lib::outfits::Error::Validation;
-    use weave_lib::outfits::ValidationError::MultipleItemsPerFamily;
-    use weave_lib::outfits::ValidationError::UnknownItems;
+    use weave_lib::core::Error::Validation;
+    use weave_lib::core::Family;
+    use weave_lib::core::Item;
+    use weave_lib::core::Outfit;
+    use weave_lib::core::ValidationError::MultipleItemsPerFamily;
+    use weave_lib::core::ValidationError::UnknownItems;
+    use weave_lib::iterative::closet::Closet;
+    use weave_lib::iterative::outfits::complete_outfit;
 
     #[test]
     fn no_rules_no_selections() {
@@ -139,10 +142,13 @@ mod no_rules_tests {
 
 #[cfg(test)]
 mod exclusion_rules_tests {
-    use weave_lib::closet::*;
-    use weave_lib::outfits::*;
-    use weave_lib::outfits::Error::Validation;
-    use weave_lib::outfits::ValidationError::ConflictingItems;
+    use weave_lib::core::Error::Validation;
+    use weave_lib::core::Family;
+    use weave_lib::core::Item;
+    use weave_lib::core::Outfit;
+    use weave_lib::core::ValidationError::ConflictingItems;
+    use weave_lib::iterative::closet::Closet;
+    use weave_lib::iterative::outfits::complete_outfit;
 
     #[test]
     fn exclusion_rule_with_one_selection() {
@@ -230,8 +236,11 @@ mod exclusion_rules_tests {
 
 #[cfg(test)]
 mod inclusion_rules_tests {
-    use weave_lib::closet::*;
-    use weave_lib::outfits::*;
+    use weave_lib::core::Family;
+    use weave_lib::core::Item;
+    use weave_lib::core::Outfit;
+    use weave_lib::iterative::closet::Closet;
+    use weave_lib::iterative::outfits::complete_outfit;
 
     #[test]
     fn inclusion_rule_with_one_selection() {

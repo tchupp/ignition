@@ -1,35 +1,14 @@
-use closet::Closet;
-use closet::Family;
-use closet::Item;
-use outfits::Error::Validation;
-use outfits::ValidationError::ConflictingItems;
-use outfits::ValidationError::MultipleItemsPerFamily;
-use outfits::ValidationError::UnknownItems;
+use core::Error;
+use core::Error::Validation;
+use core::Family;
+use core::Item;
+use core::Outfit;
+use core::ValidationError::ConflictingItems;
+use core::ValidationError::MultipleItemsPerFamily;
+use core::ValidationError::UnknownItems;
+use iterative::closet::Closet;
 use std::collections::BTreeMap;
 use std::collections::HashSet;
-
-#[derive(Debug, Eq, PartialEq)]
-pub enum Error<'a> {
-    Validation(ValidationError<'a>),
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub enum ValidationError<'a> {
-    UnknownItems(Vec<&'a Item>),
-    ConflictingItems(Vec<&'a Item>),
-    MultipleItemsPerFamily(BTreeMap<&'a Family, Vec<&'a Item>>),
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct Outfit<'a> {
-    items: Vec<&'a Item>
-}
-
-impl<'a> Outfit<'a> {
-    pub fn new(items: Vec<&'a Item>) -> Outfit {
-        Outfit { items }
-    }
-}
 
 pub fn complete_outfit<'a>(closet: Closet<'a>, selections: Vec<&'a Item>) -> Result<Outfit<'a>, Error<'a>> {
     let selections = selections.iter()
