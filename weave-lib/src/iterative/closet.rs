@@ -12,57 +12,12 @@ pub struct Closet<'a> {
 }
 
 impl<'a> Closet<'a> {
-    pub fn new() -> Closet<'a> {
-        Closet {
-            contents: BTreeMap::new(),
-            item_index: BTreeMap::new(),
-            exclusions: BTreeMap::new(),
-            inclusions: BTreeMap::new(),
-        }
-    }
-
-    pub fn add_item(&self, family: &'a Family, item: &'a Item) -> Closet {
-        let mut contents = self.contents.clone();
-        contents.entry(family)
-            .or_insert(vec![])
-            .push(item);
-
-        let mut item_index = self.item_index.clone();
-        item_index.entry(item)
-            .or_insert(family);
-
-        let exclusions = self.exclusions.clone();
-        let inclusions = self.inclusions.clone();
-
-        Closet { contents, item_index, exclusions, inclusions }
-    }
-
-    pub fn add_exclusion_rule(&self, selection: &'a Item, exclusion: &'a Item) -> Closet {
-        let contents = self.contents.clone();
-        let item_index = self.item_index.clone();
-        let inclusions = self.inclusions.clone();
-
-        let mut exclusions = self.exclusions.clone();
-        exclusions.entry(selection)
-            .or_insert(vec![])
-            .push(exclusion);
-        exclusions.entry(exclusion)
-            .or_insert(vec![])
-            .push(selection);
-
-        Closet { contents, item_index, exclusions, inclusions }
-    }
-
-    pub fn add_inclusion_rule(&self, selection: &'a Item, inclusion: &'a Item) -> Closet {
-        let contents = self.contents.clone();
-        let item_index = self.item_index.clone();
-        let exclusions = self.exclusions.clone();
-
-        let mut inclusions = self.inclusions.clone();
-        inclusions.entry(selection)
-            .or_insert(vec![])
-            .push(inclusion);
-
+    pub fn new(
+        contents: BTreeMap<&'a Family, Vec<&'a Item>>,
+        item_index: BTreeMap<&'a Item, &'a Family>,
+        exclusions: BTreeMap<&'a Item, Vec<&'a Item>>,
+        inclusions: BTreeMap<&'a Item, Vec<&'a Item>>,
+    ) -> Closet<'a> {
         Closet { contents, item_index, exclusions, inclusions }
     }
 

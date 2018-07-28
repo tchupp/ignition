@@ -9,7 +9,7 @@ mod no_rules_tests {
     use weave_lib::core::Outfit;
     use weave_lib::core::ValidationError::MultipleItemsPerFamily;
     use weave_lib::core::ValidationError::UnknownItems;
-    use weave_lib::iterative::closet::Closet;
+    use weave_lib::iterative::closet_builder::ClosetBuilder;
     use weave_lib::iterative::outfits::complete_outfit;
 
     #[test]
@@ -23,11 +23,12 @@ mod no_rules_tests {
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
 
-        let closet = Closet::new();
-        let closet = closet.add_item(&shirts, &blue);
-        let closet = closet.add_item(&shirts, &red);
-        let closet = closet.add_item(&pants, &jeans);
-        let closet = closet.add_item(&pants, &slacks);
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks);
+        let closet = closet_builder.must_build();
 
         let expected = Ok(Outfit::new(vec![&jeans, &blue]));
         assert_eq!(
@@ -47,11 +48,12 @@ mod no_rules_tests {
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
 
-        let closet = Closet::new();
-        let closet = closet.add_item(&shirts, &blue);
-        let closet = closet.add_item(&shirts, &red);
-        let closet = closet.add_item(&pants, &jeans);
-        let closet = closet.add_item(&pants, &slacks);
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks);
+        let closet = closet_builder.must_build();
 
         let expected = Ok(Outfit::new(vec![&jeans, &red]));
         assert_eq!(
@@ -71,11 +73,12 @@ mod no_rules_tests {
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
 
-        let closet = Closet::new();
-        let closet = closet.add_item(&shirts, &blue);
-        let closet = closet.add_item(&shirts, &red);
-        let closet = closet.add_item(&pants, &jeans);
-        let closet = closet.add_item(&pants, &slacks);
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks);
+        let closet = closet_builder.must_build();
 
         let expected = Ok(Outfit::new(vec![&slacks, &blue]));
         assert_eq!(
@@ -96,11 +99,12 @@ mod no_rules_tests {
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
 
-        let closet = Closet::new();
-        let closet = closet.add_item(&shirts, &blue);
-        let closet = closet.add_item(&shirts, &red);
-        let closet = closet.add_item(&pants, &jeans);
-        let closet = closet.add_item(&pants, &slacks);
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks);
+        let closet = closet_builder.must_build();
 
         let expected = Err(Validation(UnknownItems(vec![&black])));
         assert_eq!(
@@ -120,11 +124,12 @@ mod no_rules_tests {
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
 
-        let closet = Closet::new();
-        let closet = closet.add_item(&shirts, &blue);
-        let closet = closet.add_item(&shirts, &red);
-        let closet = closet.add_item(&pants, &jeans);
-        let closet = closet.add_item(&pants, &slacks);
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks);
+        let closet = closet_builder.must_build();
 
         let expected = {
             let mut duplicates = BTreeMap::new();
@@ -147,7 +152,7 @@ mod exclusion_rules_tests {
     use weave_lib::core::Item;
     use weave_lib::core::Outfit;
     use weave_lib::core::ValidationError::ConflictingItems;
-    use weave_lib::iterative::closet::Closet;
+    use weave_lib::iterative::closet_builder::ClosetBuilder;
     use weave_lib::iterative::outfits::complete_outfit;
 
     #[test]
@@ -161,12 +166,13 @@ mod exclusion_rules_tests {
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
 
-        let closet = Closet::new();
-        let closet = closet.add_item(&shirts, &blue);
-        let closet = closet.add_item(&shirts, &red);
-        let closet = closet.add_item(&pants, &jeans);
-        let closet = closet.add_item(&pants, &slacks);
-        let closet = closet.add_exclusion_rule(&blue, &jeans);
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks)
+            .add_exclusion_rule(&blue, &jeans);
+        let closet = closet_builder.must_build();
 
         let expected = Ok(Outfit::new(vec![&slacks, &blue]));
         assert_eq!(
@@ -192,12 +198,13 @@ mod exclusion_rules_tests {
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
 
-        let closet = Closet::new();
-        let closet = closet.add_item(&shirts, &blue);
-        let closet = closet.add_item(&shirts, &red);
-        let closet = closet.add_item(&pants, &jeans);
-        let closet = closet.add_item(&pants, &slacks);
-        let closet = closet.add_exclusion_rule(&blue, &jeans);
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks)
+            .add_exclusion_rule(&blue, &jeans);
+        let closet = closet_builder.must_build();
 
         let expected = Err(Validation(ConflictingItems(vec![&jeans, &blue])));
         assert_eq!(
@@ -218,13 +225,14 @@ mod exclusion_rules_tests {
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
 
-        let closet = Closet::new();
-        let closet = closet.add_item(&shirts, &blue);
-        let closet = closet.add_item(&shirts, &red);
-        let closet = closet.add_item(&pants, &jeans);
-        let closet = closet.add_item(&pants, &slacks);
-        let closet = closet.add_exclusion_rule(&blue, &jeans);
-        let closet = closet.add_exclusion_rule(&blue, &slacks);
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks)
+            .add_exclusion_rule(&blue, &jeans)
+            .add_exclusion_rule(&blue, &slacks);
+        let closet = closet_builder.must_build();
 
         let expected = Ok(Outfit::new(vec![&blue]));
         assert_eq!(
@@ -239,7 +247,7 @@ mod inclusion_rules_tests {
     use weave_lib::core::Family;
     use weave_lib::core::Item;
     use weave_lib::core::Outfit;
-    use weave_lib::iterative::closet::Closet;
+    use weave_lib::iterative::closet_builder::ClosetBuilder;
     use weave_lib::iterative::outfits::complete_outfit;
 
     #[test]
@@ -253,11 +261,12 @@ mod inclusion_rules_tests {
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
 
-        let closet = Closet::new();
-        let closet = closet.add_item(&shirts, &blue);
-        let closet = closet.add_item(&shirts, &red);
-        let closet = closet.add_item(&pants, &jeans);
-        let closet = closet.add_item(&pants, &slacks);
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks);
+        let closet = closet_builder.must_build();
 
         let expected = Ok(Outfit::new(vec![&jeans, &blue]));
         assert_eq!(
@@ -266,7 +275,13 @@ mod inclusion_rules_tests {
         );
 
 
-        let closet = closet.add_inclusion_rule(&jeans, &red);
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks)
+            .add_inclusion_rule(&jeans, &red);
+        let closet = closet_builder.must_build();
 
         let expected = Ok(Outfit::new(vec![&jeans, &red]));
         assert_eq!(
@@ -286,12 +301,13 @@ mod inclusion_rules_tests {
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
 
-        let closet = Closet::new();
-        let closet = closet.add_item(&shirts, &blue);
-        let closet = closet.add_item(&shirts, &red);
-        let closet = closet.add_item(&pants, &jeans);
-        let closet = closet.add_item(&pants, &slacks);
-        let closet = closet.add_inclusion_rule(&red, &slacks);
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks)
+            .add_inclusion_rule(&red, &slacks);
+        let closet = closet_builder.must_build();
 
         let expected = Ok(Outfit::new(vec![&slacks, &blue]));
         assert_eq!(

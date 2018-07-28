@@ -8,12 +8,12 @@ pub enum Node<'a> {
 }
 
 impl<'a> Node<'a> {
-    fn branch(id: &'a Item, left: Node<'a>, right: Node<'a>) -> Node<'a> {
+    pub fn branch(id: &'a Item, left: Node<'a>, right: Node<'a>) -> Node<'a> {
         Node::Branch(id, Box::new(left), Box::new(right))
     }
 }
 
-fn reduce<'a>(node: &'a Node<'a>) -> Node<'a> {
+pub fn reduce<'a>(node: &'a Node<'a>) -> Node<'a> {
     return match node {
         Node::TrueLeaf => node.clone(),
         Node::FalseLeaf => node.clone(),
@@ -30,7 +30,7 @@ fn reduce<'a>(node: &'a Node<'a>) -> Node<'a> {
     };
 }
 
-fn apply<'a>(node: &'a Node<'a>, item: &'a Item, selected: bool) -> Node<'a> {
+pub fn apply<'a>(node: &'a Node<'a>, item: &'a Item, selected: bool) -> Node<'a> {
     return match node {
         Node::TrueLeaf => node.clone(),
         Node::FalseLeaf => node.clone(),
