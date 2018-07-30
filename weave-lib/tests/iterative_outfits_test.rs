@@ -30,7 +30,7 @@ mod no_rules_tests {
             .add_item(&pants, &slacks);
         let closet = closet_builder.must_build();
 
-        let expected = Ok(Outfit::new(vec![&jeans, &blue]));
+        let expected = Ok(Outfit::new(vec![jeans, blue]));
         assert_eq!(
             expected,
             complete_outfit(closet, vec![])
@@ -55,10 +55,10 @@ mod no_rules_tests {
             .add_item(&pants, &slacks);
         let closet = closet_builder.must_build();
 
-        let expected = Ok(Outfit::new(vec![&jeans, &red]));
+        let expected = Ok(Outfit::new(vec![jeans, red.clone()]));
         assert_eq!(
             expected,
-            complete_outfit(closet, vec![&red])
+            complete_outfit(closet, vec![red])
         );
     }
 
@@ -80,10 +80,10 @@ mod no_rules_tests {
             .add_item(&pants, &slacks);
         let closet = closet_builder.must_build();
 
-        let expected = Ok(Outfit::new(vec![&slacks, &blue]));
+        let expected = Ok(Outfit::new(vec![slacks.clone(), blue.clone()]));
         assert_eq!(
             expected,
-            complete_outfit(closet, vec![&slacks, &blue])
+            complete_outfit(closet, vec![slacks, blue])
         );
     }
 
@@ -106,10 +106,10 @@ mod no_rules_tests {
             .add_item(&pants, &slacks);
         let closet = closet_builder.must_build();
 
-        let expected = Err(Validation(UnknownItems(vec![&black])));
+        let expected = Err(Validation(UnknownItems(vec![black.clone()])));
         assert_eq!(
             expected,
-            complete_outfit(closet, vec![&jeans, &black])
+            complete_outfit(closet, vec![jeans, black])
         );
     }
 
@@ -133,14 +133,14 @@ mod no_rules_tests {
 
         let expected = {
             let mut duplicates = BTreeMap::new();
-            duplicates.insert(&pants, vec![&jeans, &slacks]);
+            duplicates.insert(pants, vec![jeans.clone(), slacks.clone()]);
 
             Err(Validation(MultipleItemsPerFamily(duplicates)))
         };
 
         assert_eq!(
             expected,
-            complete_outfit(closet, vec![&jeans, &blue, &slacks])
+            complete_outfit(closet, vec![jeans, blue, slacks])
         );
     }
 }
@@ -174,16 +174,16 @@ mod exclusion_rules_tests {
             .add_exclusion_rule(&blue, &jeans);
         let closet = closet_builder.must_build();
 
-        let expected = Ok(Outfit::new(vec![&slacks, &blue]));
+        let expected = Ok(Outfit::new(vec![slacks, blue.clone()]));
         assert_eq!(
             expected,
-            complete_outfit(closet.clone(), vec![&blue])
+            complete_outfit(closet.clone(), vec![blue])
         );
 
-        let expected = Ok(Outfit::new(vec![&jeans, &red]));
+        let expected = Ok(Outfit::new(vec![jeans.clone(), red]));
         assert_eq!(
             expected,
-            complete_outfit(closet.clone(), vec![&jeans])
+            complete_outfit(closet.clone(), vec![jeans])
         );
     }
 
@@ -206,10 +206,10 @@ mod exclusion_rules_tests {
             .add_exclusion_rule(&blue, &jeans);
         let closet = closet_builder.must_build();
 
-        let expected = Err(Validation(ConflictingItems(vec![&jeans, &blue])));
+        let expected = Err(Validation(ConflictingItems(vec![jeans.clone(), blue.clone()])));
         assert_eq!(
             expected,
-            complete_outfit(closet, vec![&blue, &jeans])
+            complete_outfit(closet, vec![blue, jeans])
         );
     }
 
@@ -234,10 +234,10 @@ mod exclusion_rules_tests {
             .add_exclusion_rule(&blue, &slacks);
         let closet = closet_builder.must_build();
 
-        let expected = Ok(Outfit::new(vec![&blue]));
+        let expected = Ok(Outfit::new(vec![blue.clone()]));
         assert_eq!(
             expected,
-            complete_outfit(closet.clone(), vec![&blue])
+            complete_outfit(closet.clone(), vec![blue])
         );
     }
 }
@@ -268,7 +268,7 @@ mod inclusion_rules_tests {
             .add_item(&pants, &slacks);
         let closet = closet_builder.must_build();
 
-        let expected = Ok(Outfit::new(vec![&jeans, &blue]));
+        let expected = Ok(Outfit::new(vec![jeans.clone(), blue.clone()]));
         assert_eq!(
             expected,
             complete_outfit(closet.clone(), vec![])
@@ -283,7 +283,7 @@ mod inclusion_rules_tests {
             .add_inclusion_rule(&jeans, &red);
         let closet = closet_builder.must_build();
 
-        let expected = Ok(Outfit::new(vec![&jeans, &red]));
+        let expected = Ok(Outfit::new(vec![jeans, red]));
         assert_eq!(
             expected,
             complete_outfit(closet.clone(), vec![])
@@ -309,10 +309,10 @@ mod inclusion_rules_tests {
             .add_inclusion_rule(&red, &slacks);
         let closet = closet_builder.must_build();
 
-        let expected = Ok(Outfit::new(vec![&slacks, &blue]));
+        let expected = Ok(Outfit::new(vec![slacks.clone(), blue]));
         assert_eq!(
             expected,
-            complete_outfit(closet.clone(), vec![&slacks])
+            complete_outfit(closet.clone(), vec![slacks])
         );
     }
 }

@@ -4,24 +4,24 @@ use std::collections::BTreeMap;
 use std::collections::HashSet;
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct Closet<'a> {
-    contents: BTreeMap<&'a Family, Vec<&'a Item>>,
-    item_index: BTreeMap<&'a Item, &'a Family>,
-    exclusions: BTreeMap<&'a Item, Vec<&'a Item>>,
-    inclusions: BTreeMap<&'a Item, Vec<&'a Item>>,
+pub struct Closet {
+    contents: BTreeMap<Family, Vec<Item>>,
+    item_index: BTreeMap<Item, Family>,
+    exclusions: BTreeMap<Item, Vec<Item>>,
+    inclusions: BTreeMap<Item, Vec<Item>>,
 }
 
-impl<'a> Closet<'a> {
+impl Closet {
     pub fn new(
-        contents: BTreeMap<&'a Family, Vec<&'a Item>>,
-        item_index: BTreeMap<&'a Item, &'a Family>,
-        exclusions: BTreeMap<&'a Item, Vec<&'a Item>>,
-        inclusions: BTreeMap<&'a Item, Vec<&'a Item>>,
-    ) -> Closet<'a> {
+        contents: BTreeMap<Family, Vec<Item>>,
+        item_index: BTreeMap<Item, Family>,
+        exclusions: BTreeMap<Item, Vec<Item>>,
+        inclusions: BTreeMap<Item, Vec<Item>>,
+    ) -> Closet {
         Closet { contents, item_index, exclusions, inclusions }
     }
 
-    pub fn get_excluded_items(&self, items: &Vec<&Item>) -> HashSet<&'a Item> {
+    pub fn get_excluded_items(&self, items: &Vec<Item>) -> HashSet<Item> {
         let exclusions = &self.exclusions;
 
         items.iter()
@@ -32,7 +32,7 @@ impl<'a> Closet<'a> {
             .collect()
     }
 
-    pub fn get_included_items(&self, items: &Vec<&Item>) -> HashSet<&'a Item> {
+    pub fn get_included_items(&self, items: &Vec<Item>) -> HashSet<Item> {
         let inclusions = &self.inclusions;
 
         items.iter()
@@ -43,11 +43,11 @@ impl<'a> Closet<'a> {
             .collect()
     }
 
-    pub fn get_family(&self, item: &'a Item) -> Option<&'a Family> {
-        self.item_index.get(item).map(|&family| family)
+    pub fn get_family(&self, item: &Item) -> Option<&Family> {
+        self.item_index.get(item).map(|family| family)
     }
 
-    pub fn contents(&self) -> BTreeMap<&'a Family, Vec<&'a Item>> {
-        self.contents.clone()
+    pub fn contents(&self) -> &BTreeMap<Family, Vec<Item>> {
+        &self.contents
     }
 }

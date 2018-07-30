@@ -8,22 +8,22 @@ use std::collections::BTreeMap;
 use std::collections::HashSet;
 
 #[derive(Debug, Eq, PartialEq)]
-pub enum Error<'a> {
-    ConflictingFamilies(Vec<(&'a Item, Vec<&'a Family>)>),
-    InclusionError(Vec<(&'a Family, Vec<&'a Item>)>),
-    ExclusionError(Vec<(&'a Family, Vec<&'a Item>)>),
+pub enum Error {
+    ConflictingFamilies(Vec<(Item, Vec<Family>)>),
+    InclusionError(Vec<(Family, Vec<Item>)>),
+    ExclusionError(Vec<(Family, Vec<Item>)>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct ClosetBuilder<'a> {
-    contents: BTreeMap<&'a Family, Vec<&'a Item>>,
-    item_index: BTreeMap<&'a Item, &'a Family>,
-    exclusions: BTreeMap<&'a Item, Vec<&'a Item>>,
-    inclusions: BTreeMap<&'a Item, Vec<&'a Item>>,
+pub struct ClosetBuilder {
+    contents: BTreeMap<Family, Vec<Item>>,
+    item_index: BTreeMap<Item, Family>,
+    exclusions: BTreeMap<Item, Vec<Item>>,
+    inclusions: BTreeMap<Item, Vec<Item>>,
 }
 
-impl<'a> ClosetBuilder<'a> {
-    pub fn new() -> ClosetBuilder<'a> {
+impl ClosetBuilder {
+    pub fn new() -> ClosetBuilder {
         ClosetBuilder {
             contents: BTreeMap::new(),
             item_index: BTreeMap::new(),
@@ -32,41 +32,41 @@ impl<'a> ClosetBuilder<'a> {
         }
     }
 
-    pub fn add_item(mut self, family: &'a Family, item: &'a Item) -> ClosetBuilder<'a> {
-        &self.contents.entry(family)
+    pub fn add_item(mut self, family: &Family, item: &Item) -> ClosetBuilder {
+        &self.contents.entry(family.clone())
             .or_insert(vec![])
-            .push(item);
+            .push(item.clone());
 
-        &self.item_index.entry(item)
-            .or_insert(family);
+        &self.item_index.entry(item.clone())
+            .or_insert(family.clone());
 
         self
     }
 
-    pub fn add_exclusion_rule(mut self, selection: &'a Item, exclusion: &'a Item) -> ClosetBuilder<'a> {
-        &self.exclusions.entry(selection)
+    pub fn add_exclusion_rule(mut self, selection: &Item, exclusion: &Item) -> ClosetBuilder {
+        &self.exclusions.entry(selection.clone())
             .or_insert(vec![])
-            .push(exclusion);
-        &self.exclusions.entry(exclusion)
+            .push(exclusion.clone());
+        &self.exclusions.entry(exclusion.clone())
             .or_insert(vec![])
-            .push(selection);
+            .push(selection.clone());
 
         self
     }
 
-    pub fn add_inclusion_rule(mut self, selection: &'a Item, inclusion: &'a Item) -> ClosetBuilder<'a> {
-        &self.inclusions.entry(selection)
+    pub fn add_inclusion_rule(mut self, selection: &Item, inclusion: &Item) -> ClosetBuilder {
+        &self.inclusions.entry(selection.clone())
             .or_insert(vec![])
-            .push(inclusion);
+            .push(inclusion.clone());
 
         self
     }
 
-    pub fn must_build(self) -> Closet<'a> {
+    pub fn must_build(self) -> Closet {
         self.build().expect("expected build to return Ok")
     }
 
-    pub fn build(&self) -> Result<Closet<'a>, Error<'a>> {
+    pub fn build(&self) -> Result<Closet, Error> {
         ClosetBuilder::validate(self)?;
 
         let contents = self.contents.clone();
@@ -76,7 +76,7 @@ impl<'a> ClosetBuilder<'a> {
         Ok(Closet::new(contents, item_index, exclusions, inclusions))
     }
 
-    fn validate(&self) -> Result<(), Error<'a>> {
+    fn validate(&self) -> Result<(), Error> {
         let conflicts = ClosetBuilder::find_conflicting_families(self);
         if !conflicts.is_empty() {
             return Err(ConflictingFamilies(conflicts));
@@ -95,7 +95,7 @@ impl<'a> ClosetBuilder<'a> {
         return Ok(());
     }
 
-    fn find_conflicting_families(&self) -> Vec<(&'a Item, Vec<&'a Family>)> {
+    fn find_conflicting_families(&self) -> Vec<(Item, Vec<Family>)> {
         self.contents.iter()
             .flat_map(|(family, items)| {
                 items.iter()
@@ -114,18 +114,18 @@ impl<'a> ClosetBuilder<'a> {
             })
             .filter(|conflict| conflict.is_some())
             .map(|conflict| conflict.unwrap())
-            .collect::<Vec<(&Item, Vec<&Family>)>>()
+            .collect::<Vec<(Item, Vec<Family>)>>()
     }
 
-    fn find_illegal_include_rules(&self) -> Vec<(&'a Family, Vec<&'a Item>)> {
+    fn find_illegal_include_rules(&self) -> Vec<(Family, Vec<Item>)> {
         ClosetBuilder::find_illegal_rules(&self.inclusions, &self.item_index)
     }
 
-    fn find_illegal_exclude_rules(&self) -> Vec<(&'a Family, Vec<&'a Item>)> {
+    fn find_illegal_exclude_rules(&self) -> Vec<(Family, Vec<Item>)> {
         ClosetBuilder::find_illegal_rules(&self.exclusions, &self.item_index)
     }
 
-    fn find_illegal_rules(rules: &BTreeMap<&'a Item, Vec<&'a Item>>, item_index: &BTreeMap<&'a Item, &'a Family>) -> Vec<(&'a Family, Vec<&'a Item>)> {
+    fn find_illegal_rules(rules: &BTreeMap<Item, Vec<Item>>, item_index: &BTreeMap<Item, Family>) -> Vec<(Family, Vec<Item>)> {
         let mut conflicts = rules.iter()
             .flat_map(|(selection, items)| {
                 let selection_family = item_index
@@ -153,7 +153,7 @@ impl<'a> ClosetBuilder<'a> {
             .map(|conflict| conflict.unwrap())
             .collect::<Vec<_>>();
 
-        conflicts.dedup_by(|a ,b| a.1 == b.1);
+        conflicts.dedup_by(|a, b| a.1 == b.1);
         conflicts
     }
 }

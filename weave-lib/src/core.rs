@@ -19,24 +19,24 @@ impl Item {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct Outfit<'a> {
-    items: Vec<&'a Item>
+pub struct Outfit {
+    items: Vec<Item>
 }
 
-impl<'a> Outfit<'a> {
-    pub fn new(items: Vec<&'a Item>) -> Outfit {
+impl Outfit {
+    pub fn new(items: Vec<Item>) -> Outfit {
         Outfit { items }
     }
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub enum Error<'a> {
-    Validation(ValidationError<'a>),
+pub enum Error {
+    Validation(ValidationError),
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub enum ValidationError<'a> {
-    UnknownItems(Vec<&'a Item>),
-    ConflictingItems(Vec<&'a Item>),
-    MultipleItemsPerFamily(BTreeMap<&'a Family, Vec<&'a Item>>),
+pub enum ValidationError {
+    UnknownItems(Vec<Item>),
+    ConflictingItems(Vec<Item>),
+    MultipleItemsPerFamily(BTreeMap<Family, Vec<Item>>),
 }
