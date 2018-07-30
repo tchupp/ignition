@@ -1,8 +1,8 @@
-use core::Error;
-use core::Error::Validation;
 use core::Family;
 use core::Item;
 use core::Outfit;
+use core::OutfitError;
+use core::OutfitError::Validation;
 use core::ValidationError::ConflictingItems;
 use core::ValidationError::MultipleItemsPerFamily;
 use core::ValidationError::UnknownItems;
@@ -10,7 +10,7 @@ use iterative::closet::Closet;
 use std::collections::BTreeMap;
 use std::collections::HashSet;
 
-pub fn complete_outfit(closet: Closet, selections: Vec<Item>) -> Result<Outfit, Error> {
+pub fn complete_outfit(closet: Closet, selections: Vec<Item>) -> Result<Outfit, OutfitError> {
     let selections = selections.iter()
         .chain(&closet.get_included_items(&selections))
         .cloned()
@@ -53,7 +53,7 @@ pub fn complete_outfit(closet: Closet, selections: Vec<Item>) -> Result<Outfit, 
     return Ok(Outfit::new(items));
 }
 
-fn validate(closet: &Closet, selections: &Vec<Item>) -> Result<(), Error> {
+fn validate(closet: &Closet, selections: &Vec<Item>) -> Result<(), OutfitError> {
     if let Some(items) = find_unknown_items(&closet, &selections) {
         return Err(Validation(UnknownItems(items)));
     }

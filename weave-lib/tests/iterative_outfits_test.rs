@@ -3,10 +3,10 @@ extern crate weave_lib;
 #[cfg(test)]
 mod no_rules_tests {
     use std::collections::BTreeMap;
-    use weave_lib::core::Error::Validation;
     use weave_lib::core::Family;
     use weave_lib::core::Item;
     use weave_lib::core::Outfit;
+    use weave_lib::core::OutfitError::Validation;
     use weave_lib::core::ValidationError::MultipleItemsPerFamily;
     use weave_lib::core::ValidationError::UnknownItems;
     use weave_lib::iterative::closet_builder::ClosetBuilder;
@@ -147,10 +147,10 @@ mod no_rules_tests {
 
 #[cfg(test)]
 mod exclusion_rules_tests {
-    use weave_lib::core::Error::Validation;
     use weave_lib::core::Family;
     use weave_lib::core::Item;
     use weave_lib::core::Outfit;
+    use weave_lib::core::OutfitError::Validation;
     use weave_lib::core::ValidationError::ConflictingItems;
     use weave_lib::iterative::closet_builder::ClosetBuilder;
     use weave_lib::iterative::outfits::complete_outfit;

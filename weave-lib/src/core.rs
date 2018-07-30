@@ -30,7 +30,7 @@ impl Outfit {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub enum Error {
+pub enum OutfitError {
     Validation(ValidationError),
 }
 
