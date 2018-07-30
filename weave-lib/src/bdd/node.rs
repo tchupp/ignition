@@ -1,19 +1,19 @@
 use core::Item;
 
 #[derive(Debug, Eq, PartialEq, Clone, Hash)]
-pub enum Node<'a> {
+pub enum Node {
     TrueLeaf,
     FalseLeaf,
-    Branch(&'a Item, Box<Node<'a>>, Box<Node<'a>>),
+    Branch(Item, Box<Node>, Box<Node>),
 }
 
-impl<'a> Node<'a> {
-    pub fn branch(id: &'a Item, left: Node<'a>, right: Node<'a>) -> Node<'a> {
-        Node::Branch(id, Box::new(left), Box::new(right))
+impl<'a> Node {
+    pub fn branch(id: &Item, left: Node, right: Node) -> Node {
+        Node::Branch(id.clone(), Box::new(left), Box::new(right))
     }
 }
 
-pub fn reduce<'a>(node: &'a Node<'a>) -> Node<'a> {
+pub fn reduce(node: &Node) -> Node {
     return match node {
         Node::TrueLeaf => node.clone(),
         Node::FalseLeaf => node.clone(),
@@ -30,12 +30,12 @@ pub fn reduce<'a>(node: &'a Node<'a>) -> Node<'a> {
     };
 }
 
-pub fn apply<'a>(node: &'a Node<'a>, item: &'a Item, selected: bool) -> Node<'a> {
+pub fn apply(node: &Node, item: &Item, selected: bool) -> Node {
     return match node {
         Node::TrueLeaf => node.clone(),
         Node::FalseLeaf => node.clone(),
         Node::Branch(id, ref left, ref right) => {
-            if id == &item {
+            if id == item {
                 if !selected {
                     let l = &**left;
                     return l.clone();
@@ -62,19 +62,16 @@ mod reduce_tests {
 
     #[test]
     fn or_can_be_reduced_if_left_and_right_are_equal() {
-        let false_node = FalseLeaf;
-        let true_node = TrueLeaf;
-
         let jeans = Item::new("jeans");
         let blue_shirt = Item::new("blue_shirt");
 
-        let left_branch = Node::branch(&jeans, false_node.clone(), true_node.clone());
-        let right_branch = Node::branch(&jeans, false_node.clone(), true_node.clone());
+        let left_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
         let parent_branch = Node::branch(&blue_shirt, left_branch, right_branch);
 
         let actual = reduce(&parent_branch);
 
-        let expected = Node::branch(&jeans, false_node, true_node);
+        let expected = Node::branch(&jeans, FalseLeaf, TrueLeaf);
         assert_eq!(
             expected,
             actual
@@ -83,14 +80,11 @@ mod reduce_tests {
 
     #[test]
     fn sibling_relationship_cannot_be_reduced_in_nodes() {
-        let false_node = FalseLeaf;
-        let true_node = TrueLeaf;
-
         let jeans = Item::new("jeans");
         let slacks = Item::new("slacks");
 
-        let left_branch = Node::branch(&jeans, true_node.clone(), false_node.clone());
-        let right_branch = Node::branch(&jeans, false_node.clone(), true_node.clone());
+        let left_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
         let parent_branch = Node::branch(&slacks, left_branch.clone(), right_branch.clone());
 
         let actual = reduce(&parent_branch);
@@ -104,19 +98,16 @@ mod reduce_tests {
 
     #[test]
     fn exclusion_rule_can_be_reduced() {
-        let false_node = FalseLeaf;
-        let true_node = TrueLeaf;
-
         let jeans = Item::new("jeans");
         let blue_shirt = Item::new("blue_shirt");
 
-        let left_branch = Node::branch(&jeans, true_node.clone(), true_node.clone());
-        let right_branch = Node::branch(&jeans, true_node.clone(), false_node.clone());
+        let left_branch = Node::branch(&jeans, TrueLeaf, TrueLeaf);
+        let right_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
         let parent_branch = Node::branch(&blue_shirt, left_branch.clone(), right_branch.clone());
 
         let actual = reduce(&parent_branch);
 
-        let expected = Node::branch(&blue_shirt, true_node.clone(), right_branch);
+        let expected = Node::branch(&blue_shirt, TrueLeaf, right_branch);
         assert_eq!(
             expected,
             actual
@@ -125,19 +116,16 @@ mod reduce_tests {
 
     #[test]
     fn inclusion_rule_can_be_reduced() {
-        let false_node = FalseLeaf;
-        let true_node = TrueLeaf;
-
         let jeans = Item::new("jeans");
         let blue_shirt = Item::new("blue_shirt");
 
-        let left_branch = Node::branch(&jeans, true_node.clone(), true_node.clone());
-        let right_branch = Node::branch(&jeans, false_node.clone(), true_node.clone());
+        let left_branch = Node::branch(&jeans, TrueLeaf, TrueLeaf);
+        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
         let parent_branch = Node::branch(&blue_shirt, left_branch.clone(), right_branch.clone());
 
         let actual = reduce(&parent_branch);
 
-        let expected = Node::branch(&blue_shirt, true_node.clone(), right_branch);
+        let expected = Node::branch(&blue_shirt, TrueLeaf, right_branch);
         assert_eq!(
             expected,
             actual
@@ -155,19 +143,16 @@ mod apply_tests {
 
     #[test]
     fn selecting_child_returns_correct_node() {
-        let false_node = FalseLeaf;
-        let true_node = TrueLeaf;
-
         let jeans = Item::new("jeans");
         let slacks = Item::new("slacks");
 
-        let left_branch = Node::branch(&jeans, true_node.clone(), false_node.clone());
-        let right_branch = Node::branch(&jeans, false_node.clone(), true_node.clone());
+        let left_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
         let parent_branch = Node::branch(&slacks, left_branch.clone(), right_branch.clone());
 
         let actual = apply(&parent_branch, &jeans, true);
 
-        let expected = Node::branch(&slacks, false_node.clone(), true_node.clone());
+        let expected = Node::branch(&slacks, FalseLeaf, TrueLeaf);
         assert_eq!(
             expected,
             actual
@@ -176,7 +161,7 @@ mod apply_tests {
 
         let actual = apply(&parent_branch, &jeans, false);
 
-        let expected = Node::branch(&slacks, true_node.clone(), false_node.clone());
+        let expected = Node::branch(&slacks, TrueLeaf, FalseLeaf);
         assert_eq!(
             expected,
             actual
@@ -185,19 +170,16 @@ mod apply_tests {
 
     #[test]
     fn selecting_parent_returns_correct_node() {
-        let false_node = FalseLeaf;
-        let true_node = TrueLeaf;
-
         let jeans = Item::new("jeans");
         let slacks = Item::new("slacks");
 
-        let left_branch = Node::branch(&jeans, true_node.clone(), false_node.clone());
-        let right_branch = Node::branch(&jeans, false_node.clone(), true_node.clone());
+        let left_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
         let parent_branch = Node::branch(&slacks, left_branch.clone(), right_branch.clone());
 
         let actual = apply(&parent_branch, &slacks, true);
 
-        let expected = Node::branch(&jeans, false_node.clone(), true_node.clone());
+        let expected = Node::branch(&jeans, FalseLeaf, TrueLeaf);
         assert_eq!(
             expected,
             actual
@@ -206,7 +188,7 @@ mod apply_tests {
 
         let actual = apply(&parent_branch, &slacks, false);
 
-        let expected = Node::branch(&jeans, true_node.clone(), false_node.clone());
+        let expected = Node::branch(&jeans, TrueLeaf, FalseLeaf);
         assert_eq!(
             expected,
             actual
