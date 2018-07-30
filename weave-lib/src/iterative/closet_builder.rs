@@ -63,7 +63,7 @@ impl ClosetBuilder {
     }
 
     pub fn must_build(self) -> Closet {
-        self.build().expect("expected build to return Ok")
+        self.build().expect("expected build to return Closet")
     }
 
     pub fn build(&self) -> Result<Closet, Error> {
