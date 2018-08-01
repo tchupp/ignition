@@ -46,8 +46,8 @@ impl<'a> Node {
 
     pub fn apply(node: &Node, item: &Item, selected: bool) -> Node {
         return match node {
-            Node::TrueLeaf => node.clone(),
-            Node::FalseLeaf => node.clone(),
+            Node::TrueLeaf => Node::TrueLeaf,
+            Node::FalseLeaf => Node::FalseLeaf,
             Node::Branch(id, ref left, ref right) => {
                 if id == item {
                     if !selected {
@@ -62,7 +62,7 @@ impl<'a> Node {
                 let applied_left = Node::apply(left, item, selected);
                 let applied_right = Node::apply(right, item, selected);
 
-                return Node::branch(id, applied_left, applied_right);
+                return Node::reduce(&Node::branch(id, applied_left, applied_right));
             }
         };
     }
@@ -86,8 +86,8 @@ impl BitAnd for Node {
             return self;
         }
 
-        if let Node::Branch(id, left, _right) = self {
-            return Node::branch(&id, *left, rhs);
+        if let Node::Branch(id, left, right) = self {
+            return Node::branch(&id, *left & rhs.clone(), *right & rhs);
         }
 
         panic!("shouldn't get here");
@@ -240,6 +240,7 @@ mod bitand_tests {
     use bdd::node::Node;
     use bdd::node::Node::FalseLeaf;
     use bdd::node::Node::TrueLeaf;
+    use core::Family;
     use core::Item;
 
     #[test]
@@ -266,16 +267,36 @@ mod bitand_tests {
 
     #[test]
     fn and_two_branches() {
-        let jeans = Item::new("jeans");
         let blue = Item::new("blue");
+        let red = Item::new("red");
 
-        let pants_family = Node::branch(&jeans, FalseLeaf, TrueLeaf);
-        let shirts_family = Node::branch(&blue, FalseLeaf, TrueLeaf);
+        let jeans = Item::new("jeans");
+        let slacks = Item::new("slacks");
 
-        let combo_node_1 = Node::branch(&jeans, FalseLeaf, shirts_family.clone());
-        let combo_node_2 = Node::branch(&blue, FalseLeaf, pants_family.clone());
+        let blue_false_branch = Node::branch(&red, FalseLeaf, TrueLeaf);
+        let blue_true_branch = Node::branch(&red, TrueLeaf, FalseLeaf);
+        let blue_branch = Node::branch(&blue, blue_false_branch.clone(), blue_true_branch.clone());
 
-        assert_eq!(combo_node_1, pants_family.clone() & shirts_family.clone());
-        assert_eq!(combo_node_2, shirts_family & pants_family);
+        let slacks_false_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let slacks_true_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+        let slacks_branch = Node::branch(&slacks, slacks_false_branch.clone(), slacks_true_branch.clone());
+
+        let combo_node_1 = {
+            let slacks_false_branch = Node::branch(&jeans, FalseLeaf, blue_branch.clone());
+            let slacks_true_branch = Node::branch(&jeans, blue_branch.clone(), FalseLeaf);
+            let slacks_branch = Node::branch(&slacks, slacks_false_branch.clone(), slacks_true_branch.clone());
+
+            slacks_branch
+        };
+        assert_eq!(combo_node_1, slacks_branch.clone() & blue_branch.clone());
+
+        let combo_node_2 = {
+            let blue_false_branch = Node::branch(&red, FalseLeaf, slacks_branch.clone());
+            let blue_true_branch = Node::branch(&red, slacks_branch.clone(), FalseLeaf);
+            let blue_branch = Node::branch(&blue, blue_false_branch.clone(), blue_true_branch.clone());
+
+            blue_branch
+        };
+        assert_eq!(combo_node_2, blue_branch & slacks_branch);
     }
 }

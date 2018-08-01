@@ -163,7 +163,7 @@ impl ClosetBuilder {
 }
 
 #[cfg(test)]
-mod tests {
+mod no_rules_tests {
     use bdd::node::Node;
     use bdd::node::Node::FalseLeaf;
     use bdd::node::Node::TrueLeaf;
@@ -278,6 +278,85 @@ mod tests {
         };
         assert_eq!(
             TrueLeaf,
+            blue_selected
+        );
+
+
+        let both_selected = {
+            let root = closet.root();
+            let root = Node::apply(root, &blue, true);
+            Node::apply(&root, &red, true)
+        };
+        assert_eq!(
+            FalseLeaf,
+            both_selected
+        );
+    }
+
+    #[test]
+    fn two_families_with_two_items() {
+        let blue = Item::new("blue");
+        let red = Item::new("red");
+
+        let jeans = Item::new("jeans");
+        let slacks = Item::new("slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &blue)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks);
+
+        let closet = closet_builder.must_build();
+
+        let blue_false_branch = Node::branch(&red, FalseLeaf, TrueLeaf);
+        let blue_true_branch = Node::branch(&red, TrueLeaf, FalseLeaf);
+        let blue_branch = Node::branch(&blue, blue_false_branch.clone(), blue_true_branch.clone());
+
+        let slacks_false_branch = Node::branch(&jeans, FalseLeaf, blue_branch.clone());
+        let slacks_true_branch = Node::branch(&jeans, blue_branch.clone(), FalseLeaf);
+        let slacks_branch = Node::branch(&slacks, slacks_false_branch.clone(), slacks_true_branch.clone());
+
+        let expected_sibling_node = slacks_branch;
+        assert_eq!(
+            &expected_sibling_node,
+            closet.root()
+        );
+
+
+        let red_selected = {
+            let root = closet.root();
+            let root = Node::apply(root, &red, true);
+            Node::apply(&root, &blue, false)
+        };
+        let expected = {
+            let slacks_false_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+            let slacks_true_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+
+            Node::branch(&slacks, slacks_false_branch, slacks_true_branch)
+        };
+        assert_eq!(
+            expected,
+            red_selected
+        );
+
+
+        let blue_selected = {
+            let root = closet.root();
+            let root = Node::apply(root, &blue, true);
+            Node::apply(&root, &red, false)
+        };
+        let expected = {
+            let slacks_false_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+            let slacks_true_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+
+            Node::branch(&slacks, slacks_false_branch, slacks_true_branch)
+        };
+        assert_eq!(
+            expected,
             blue_selected
         );
 
