@@ -1,8 +1,3 @@
-#[macro_use]
-extern crate criterion;
-extern crate weave_lib;
-
-use criterion::Bencher;
 use criterion::Criterion;
 use weave_lib::core::Family;
 use weave_lib::core::Item;
@@ -119,11 +114,23 @@ fn families_4_items_16_no_selections() -> Closet {
     closet_builder.must_build()
 }
 
-fn iterative_bench(c: &mut Criterion) {
-    c.bench_function("iterative complete_outfit(2 families, 4 items)", move |b| b.iter_with_setup(|| families_2_items_4_no_selections(), |closet| complete_outfit(closet.clone(), vec![])));
-    c.bench_function("iterative complete_outfit(2 families, 16 items)", move |b| b.iter_with_setup(|| families_2_items_16_no_selections(), |closet| complete_outfit(closet.clone(), vec![])));
-    c.bench_function("iterative complete_outfit(4 families, 16 items)", move |b| b.iter_with_setup(|| families_4_items_16_no_selections(), |closet| complete_outfit(closet.clone(), vec![])));
+pub fn iterative_closet_bench(c: &mut Criterion) {
+    c.bench_function("iterative complete_outfit(2 families, 4 items)",
+                     move |b| b.iter_with_setup(
+                         || families_2_items_4_no_selections(),
+                         |closet| complete_outfit(closet.clone(), vec![]),
+                     ),
+    );
+    c.bench_function("iterative complete_outfit(2 families, 16 items)",
+                     move |b| b.iter_with_setup(
+                         || families_2_items_16_no_selections(),
+                         |closet| complete_outfit(closet.clone(), vec![]),
+                     ),
+    );
+    c.bench_function("iterative complete_outfit(4 families, 16 items)",
+                     move |b| b.iter_with_setup(
+                         || families_4_items_16_no_selections(),
+                         |closet| complete_outfit(closet.clone(), vec![]),
+                     ),
+    );
 }
-
-criterion_group!(benches, iterative_bench);
-criterion_main!(benches);

@@ -10,5 +10,6 @@ authors = ["theochupp <tclchiam@gmail.com>"]
 criterion = "0.2.4"
 
 [[bench]]
-name = "iterator_bench"
+name = "weave_bench"
 harness = false
+path = "benches/criterion/lib.rs"
