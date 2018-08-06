@@ -1,16 +1,41 @@
 use core::Item;
 use std::collections::HashMap;
+use std::fmt;
 use std::ops::BitAnd;
 use std::prelude::v1::Vec;
 
-#[derive(Debug, Eq, PartialEq, Clone, Hash)]
+#[derive(Eq, PartialEq, Clone, Hash)]
 pub enum Node {
     TrueLeaf,
     FalseLeaf,
     Branch(Item, Box<Node>, Box<Node>),
 }
 
-impl<'a> Node {
+impl fmt::Debug for Node {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.fmt_inner(2))
+    }
+}
+
+impl Node {
+    fn fmt_inner(&self, indent: usize) -> String {
+        return match self {
+            Node::TrueLeaf => format!("-- True"),
+            Node::FalseLeaf => format!("-- False"),
+            Node::Branch(id, ref left, ref right) =>
+                format!(
+                    "{:?}\n{}{}\n{}{}",
+                    id,
+                    "  ".repeat(indent),
+                    left.fmt_inner(indent + 1),
+                    "  ".repeat(indent),
+                    right.fmt_inner(indent + 1)
+                )
+        };
+    }
+}
+
+impl Node {
     pub const TRUE_LEAF: Node = Node::TrueLeaf;
     pub const FALSE_LEAF: Node = Node::FalseLeaf;
 
