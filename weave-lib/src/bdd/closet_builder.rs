@@ -73,8 +73,8 @@ impl ClosetBuilder {
         self.validate()?;
 
         let root = self.contents.iter()
-            .map(|(_, items)| items.iter().fold(FalseLeaf, |left_branch, item| Node::xor(item, left_branch)))
-            .fold(TrueLeaf, |left_branch, family_node| left_branch & family_node);
+            .map(|(_, items)| items.iter().fold(FalseLeaf, |low_branch, item| Node::xor(item, low_branch)))
+            .fold(TrueLeaf, |low_branch, family_node| low_branch & family_node);
 
         let item_index = self.item_index.clone();
         let exclusions = self.exclusions.clone();
@@ -187,8 +187,8 @@ mod no_rules_tests {
         let closet = closet_builder.must_build();
 
         let expected_cousin_node = {
-            let right_branch = Node::branch(&blue, FalseLeaf, TrueLeaf);
-            let parent_branch = Node::branch(&jeans, FalseLeaf, right_branch);
+            let high_branch = Node::branch(&blue, FalseLeaf, TrueLeaf);
+            let parent_branch = Node::branch(&jeans, FalseLeaf, high_branch);
 
             parent_branch
         };
@@ -243,9 +243,9 @@ mod no_rules_tests {
         let closet = closet_builder.must_build();
 
         let expected_sibling_node = {
-            let left_branch = Node::branch(&red, FalseLeaf, TrueLeaf);
-            let right_branch = Node::branch(&red, TrueLeaf, FalseLeaf);
-            let parent_branch = Node::branch(&blue, left_branch.clone(), right_branch.clone());
+            let low_branch = Node::branch(&red, FalseLeaf, TrueLeaf);
+            let high_branch = Node::branch(&red, TrueLeaf, FalseLeaf);
+            let parent_branch = Node::branch(&blue, low_branch.clone(), high_branch.clone());
 
             parent_branch
         };

@@ -22,14 +22,14 @@ impl Node {
         return match self {
             Node::TrueLeaf => format!("-- True"),
             Node::FalseLeaf => format!("-- False"),
-            Node::Branch(id, ref left, ref right) =>
+            Node::Branch(id, ref low, ref high) =>
                 format!(
                     "{:?}\n{}{}\n{}{}",
                     id,
                     "  ".repeat(indent),
-                    left.fmt_inner(indent + 1),
+                    low.fmt_inner(indent + 1),
                     "  ".repeat(indent),
-                    right.fmt_inner(indent + 1)
+                    high.fmt_inner(indent + 1)
                 )
         };
     }
@@ -39,8 +39,8 @@ impl Node {
     pub const TRUE_LEAF: Node = Node::TrueLeaf;
     pub const FALSE_LEAF: Node = Node::FalseLeaf;
 
-    pub fn branch(id: &Item, left: Node, right: Node) -> Node {
-        Node::Branch(id.clone(), Box::new(left), Box::new(right))
+    pub fn branch(id: &Item, low: Node, high: Node) -> Node {
+        Node::Branch(id.clone(), Box::new(low), Box::new(high))
     }
 
     pub fn xor(id: &Item, sibling: Node) -> Node {
@@ -51,8 +51,8 @@ impl Node {
         return match node {
             Node::TrueLeaf => Node::FALSE_LEAF,
             Node::FalseLeaf => Node::TRUE_LEAF,
-            Node::Branch(id, ref left, ref right) => {
-                return Node::branch(id, (**right).clone(), (**left).clone());
+            Node::Branch(id, ref low, ref high) => {
+                return Node::branch(id, (**high).clone(), (**low).clone());
             }
         };
     }
@@ -61,15 +61,15 @@ impl Node {
         return match node {
             Node::TrueLeaf => node.clone(),
             Node::FalseLeaf => node.clone(),
-            Node::Branch(id, ref left, ref right) => {
-                let reduced_left = Node::reduce(left);
-                let reduced_right = Node::reduce(right);
+            Node::Branch(id, ref low, ref high) => {
+                let reduced_low = Node::reduce(low);
+                let reduced_high = Node::reduce(high);
 
-                if reduced_left == reduced_right {
-                    return reduced_left;
+                if reduced_low == reduced_high {
+                    return reduced_low;
                 }
 
-                return Node::branch(id, reduced_left, reduced_right);
+                return Node::branch(id, reduced_low, reduced_high);
             }
         };
     }
@@ -82,14 +82,14 @@ impl Node {
             let current = inner_stack.pop();
 
             if let Some(current_node) = current {
-                if let Node::Branch(_id, ref left, ref right) = current_node {
+                if let Node::Branch(_id, ref low, ref high) = current_node {
                     stack.push(current_node);
 
-                    if let Node::Branch(_id, ref _left, ref _right) = &**left {
-                        inner_stack.push(left);
+                    if let Node::Branch(_id, ref _low, ref _high) = &**low {
+                        inner_stack.push(low);
                     }
-                    if let Node::Branch(_id, ref _left, ref _right) = &**right {
-                        inner_stack.push(right);
+                    if let Node::Branch(_id, ref _low, ref _high) = &**high {
+                        inner_stack.push(high);
                     }
                 }
             }
@@ -110,21 +110,21 @@ impl Node {
         return match node {
             Node::TrueLeaf => Node::TRUE_LEAF,
             Node::FalseLeaf => Node::FALSE_LEAF,
-            Node::Branch(id, ref left, ref right) => {
+            Node::Branch(id, ref low, ref high) => {
                 if id == item {
                     if !selected {
-                        let l = &**left;
+                        let l = &**low;
                         return l.clone();
                     } else {
-                        let r = &**right;
+                        let r = &**high;
                         return r.clone();
                     }
                 }
 
-                let applied_left = Node::apply(left, item, selected);
-                let applied_right = Node::apply(right, item, selected);
+                let applied_low = Node::apply(low, item, selected);
+                let applied_high = Node::apply(high, item, selected);
 
-                return Node::branch(id, applied_left, applied_right);
+                return Node::branch(id, applied_low, applied_high);
             }
         };
     }
@@ -148,8 +148,8 @@ impl BitAnd for Node {
             return self;
         }
 
-        if let Node::Branch(id, left, right) = self {
-            return Node::branch(&id, *left & rhs.clone(), *right & rhs);
+        if let Node::Branch(id, low, high) = self {
+            return Node::branch(&id, *low & rhs.clone(), *high & rhs);
         }
 
         panic!("shouldn't get here");
@@ -163,13 +163,13 @@ mod reduce_tests {
     use core::Item;
 
     #[test]
-    fn or_can_be_reduced_if_left_and_right_are_equal() {
+    fn or_can_be_reduced_if_low_and_high_are_equal() {
         let jeans = Item::new("jeans");
         let blue_shirt = Item::new("blue_shirt");
 
-        let left_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
-        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
-        let parent_branch = Node::branch(&blue_shirt, left_branch, right_branch);
+        let low_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let high_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let parent_branch = Node::branch(&blue_shirt, low_branch, high_branch);
 
         let actual = Node::reduce(&parent_branch);
 
@@ -181,13 +181,13 @@ mod reduce_tests {
     }
 
     #[test]
-    fn or_can_be_reduced_if_left_and_right_are_equal_iter() {
+    fn or_can_be_reduced_if_low_and_high_are_equal_iter() {
         let jeans = Item::new("jeans");
         let blue_shirt = Item::new("blue_shirt");
 
-        let left_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
-        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
-        let parent_branch = Node::branch(&blue_shirt, left_branch, right_branch);
+        let low_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let high_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let parent_branch = Node::branch(&blue_shirt, low_branch, high_branch);
 
         let actual = Node::reduce_iter(&parent_branch);
 
@@ -203,13 +203,13 @@ mod reduce_tests {
         let jeans = Item::new("jeans");
         let slacks = Item::new("slacks");
 
-        let left_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
-        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
-        let parent_branch = Node::branch(&slacks, left_branch.clone(), right_branch.clone());
+        let low_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+        let high_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let parent_branch = Node::branch(&slacks, low_branch.clone(), high_branch.clone());
 
         let actual = Node::reduce(&parent_branch);
 
-        let expected = Node::branch(&slacks, left_branch, right_branch);
+        let expected = Node::branch(&slacks, low_branch, high_branch);
         assert_eq!(
             expected,
             actual
@@ -221,13 +221,13 @@ mod reduce_tests {
         let jeans = Item::new("jeans");
         let slacks = Item::new("slacks");
 
-        let left_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
-        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
-        let parent_branch = Node::branch(&slacks, left_branch.clone(), right_branch.clone());
+        let low_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+        let high_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let parent_branch = Node::branch(&slacks, low_branch.clone(), high_branch.clone());
 
         let actual = Node::reduce_iter(&parent_branch);
 
-        let expected = Node::branch(&slacks, left_branch, right_branch);
+        let expected = Node::branch(&slacks, low_branch, high_branch);
         assert_eq!(
             expected,
             actual
@@ -239,13 +239,13 @@ mod reduce_tests {
         let jeans = Item::new("jeans");
         let blue_shirt = Item::new("blue_shirt");
 
-        let left_branch = Node::branch(&jeans, TrueLeaf, TrueLeaf);
-        let right_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
-        let parent_branch = Node::branch(&blue_shirt, left_branch.clone(), right_branch.clone());
+        let low_branch = Node::branch(&jeans, TrueLeaf, TrueLeaf);
+        let high_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+        let parent_branch = Node::branch(&blue_shirt, low_branch.clone(), high_branch.clone());
 
         let actual = Node::reduce(&parent_branch);
 
-        let expected = Node::branch(&blue_shirt, TrueLeaf, right_branch);
+        let expected = Node::branch(&blue_shirt, TrueLeaf, high_branch);
         assert_eq!(
             expected,
             actual
@@ -257,13 +257,13 @@ mod reduce_tests {
         let jeans = Item::new("jeans");
         let blue_shirt = Item::new("blue_shirt");
 
-        let left_branch = Node::branch(&jeans, TrueLeaf, TrueLeaf);
-        let right_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
-        let parent_branch = Node::branch(&blue_shirt, left_branch.clone(), right_branch.clone());
+        let low_branch = Node::branch(&jeans, TrueLeaf, TrueLeaf);
+        let high_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+        let parent_branch = Node::branch(&blue_shirt, low_branch.clone(), high_branch.clone());
 
         let actual = Node::reduce_iter(&parent_branch);
 
-        let expected = Node::branch(&blue_shirt, TrueLeaf, right_branch);
+        let expected = Node::branch(&blue_shirt, TrueLeaf, high_branch);
         assert_eq!(
             expected,
             actual
@@ -275,13 +275,13 @@ mod reduce_tests {
         let jeans = Item::new("jeans");
         let blue_shirt = Item::new("blue_shirt");
 
-        let left_branch = Node::branch(&jeans, TrueLeaf, TrueLeaf);
-        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
-        let parent_branch = Node::branch(&blue_shirt, left_branch.clone(), right_branch.clone());
+        let low_branch = Node::branch(&jeans, TrueLeaf, TrueLeaf);
+        let high_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let parent_branch = Node::branch(&blue_shirt, low_branch.clone(), high_branch.clone());
 
         let actual = Node::reduce(&parent_branch);
 
-        let expected = Node::branch(&blue_shirt, TrueLeaf, right_branch);
+        let expected = Node::branch(&blue_shirt, TrueLeaf, high_branch);
         assert_eq!(
             expected,
             actual
@@ -293,13 +293,13 @@ mod reduce_tests {
         let jeans = Item::new("jeans");
         let blue_shirt = Item::new("blue_shirt");
 
-        let left_branch = Node::branch(&jeans, TrueLeaf, TrueLeaf);
-        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
-        let parent_branch = Node::branch(&blue_shirt, left_branch.clone(), right_branch.clone());
+        let low_branch = Node::branch(&jeans, TrueLeaf, TrueLeaf);
+        let high_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let parent_branch = Node::branch(&blue_shirt, low_branch.clone(), high_branch.clone());
 
         let actual = Node::reduce_iter(&parent_branch);
 
-        let expected = Node::branch(&blue_shirt, TrueLeaf, right_branch);
+        let expected = Node::branch(&blue_shirt, TrueLeaf, high_branch);
         assert_eq!(
             expected,
             actual
@@ -319,9 +319,9 @@ mod apply_tests {
         let jeans = Item::new("jeans");
         let slacks = Item::new("slacks");
 
-        let left_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
-        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
-        let parent_branch = Node::branch(&slacks, left_branch.clone(), right_branch.clone());
+        let low_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+        let high_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let parent_branch = Node::branch(&slacks, low_branch.clone(), high_branch.clone());
 
         let actual = Node::apply(&parent_branch, &jeans, true);
 
@@ -346,9 +346,9 @@ mod apply_tests {
         let jeans = Item::new("jeans");
         let slacks = Item::new("slacks");
 
-        let left_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
-        let right_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
-        let parent_branch = Node::branch(&slacks, left_branch.clone(), right_branch.clone());
+        let low_branch = Node::branch(&jeans, TrueLeaf, FalseLeaf);
+        let high_branch = Node::branch(&jeans, FalseLeaf, TrueLeaf);
+        let parent_branch = Node::branch(&slacks, low_branch.clone(), high_branch.clone());
 
         let actual = Node::apply(&parent_branch, &slacks, true);
 
