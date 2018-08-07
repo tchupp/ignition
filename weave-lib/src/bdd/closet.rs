@@ -27,17 +27,24 @@ impl Closet {
         &self.root
     }
 
-    pub fn apply(&self, item: &Item, selected: bool) -> Closet {
-        let mut new_root = Node::apply(&self.root, item, selected);
+    pub fn select_item(&self, item: &Item) -> Closet {
+        let mut new_root = Node::apply(&self.root, item, true);
 
-        if selected {
-            if let Some(exclusions) = self.exclusions.get(item) {
-                for exclusion in exclusions {
-                    new_root = Node::apply(&new_root, exclusion, false);
-                }
-            }
+        if let Some(exclusions) = self.exclusions.get(item) {
+            new_root = exclusions.iter().fold(new_root, |root, exclusion| Node::apply(&root, exclusion, false))
         }
         new_root = Node::reduce(&new_root);
+
+        Closet {
+            item_index: self.item_index.clone(),
+            root: new_root,
+            exclusions: self.exclusions.clone(),
+        }
+    }
+
+    pub fn exclude_item(&self, item: &Item) -> Closet {
+        let new_root = Node::apply(&self.root, item, false);
+        let new_root = Node::reduce(&new_root);
 
         Closet {
             item_index: self.item_index.clone(),

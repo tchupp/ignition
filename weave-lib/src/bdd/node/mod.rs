@@ -25,9 +25,9 @@ impl Node {
                 format!(
                     "| {:?}:\n{}{}\n{}{}",
                     id,
-                    "  ".repeat(indent),
+                    "| ".repeat(indent),
                     low.fmt_inner(indent + 1),
-                    "  ".repeat(indent),
+                    "| ".repeat(indent),
                     high.fmt_inner(indent + 1)
                 )
         };
@@ -106,11 +106,9 @@ impl Node {
             Node::Branch(id, ref low, ref high) => {
                 if id == item {
                     if !selected {
-                        let l = &**low;
-                        return l.clone();
+                        return Node::apply(&**low, item, selected);
                     } else {
-                        let r = &**high;
-                        return r.clone();
+                        return Node::apply(&**high, item, selected);
                     }
                 }
 

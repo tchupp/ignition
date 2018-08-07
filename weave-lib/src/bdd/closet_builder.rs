@@ -196,8 +196,8 @@ mod no_rules_tests {
 
 
         let both_selected = {
-            let closet = closet.apply(&jeans, true);
-            closet.apply(&blue, true)
+            let closet = closet.select_item(&jeans);
+            closet.select_item(&blue)
         };
         assert_eq!(
             &Node::TRUE_LEAF,
@@ -206,8 +206,8 @@ mod no_rules_tests {
 
 
         let blue_selected = {
-            let closet = closet.apply(&blue, true);
-            closet.apply(&jeans, false)
+            let closet = closet.select_item(&blue);
+            closet.exclude_item(&jeans)
         };
         assert_eq!(
             &Node::FALSE_LEAF,
@@ -216,8 +216,8 @@ mod no_rules_tests {
 
 
         let jeans_selected = {
-            let closet = closet.apply(&jeans, true);
-            closet.apply(&blue, false)
+            let closet = closet.select_item(&jeans);
+            closet.exclude_item(&blue)
         };
         assert_eq!(
             &Node::FALSE_LEAF,
@@ -252,8 +252,8 @@ mod no_rules_tests {
 
 
         let red_selected = {
-            let closet = closet.apply(&red, true);
-            closet.apply(&blue, false)
+            let closet = closet.select_item(&red);
+            closet.exclude_item(&blue)
         };
         assert_eq!(
             &Node::TRUE_LEAF,
@@ -262,8 +262,8 @@ mod no_rules_tests {
 
 
         let blue_selected = {
-            let closet = closet.apply(&blue, true);
-            closet.apply(&red, false)
+            let closet = closet.select_item(&blue);
+            closet.exclude_item(&red)
         };
         assert_eq!(
             &Node::TRUE_LEAF,
@@ -272,8 +272,8 @@ mod no_rules_tests {
 
 
         let both_selected = {
-            let closet = closet.apply(&blue, true);
-            closet.apply(&red, true)
+            let closet = closet.select_item(&blue);
+            closet.select_item(&red)
         };
         assert_eq!(
             &Node::FALSE_LEAF,
@@ -316,8 +316,8 @@ mod no_rules_tests {
 
 
         let red_selected = {
-            let closet = closet.apply(&blue, false);
-            closet.apply(&red, true)
+            let closet = closet.exclude_item(&blue);
+            closet.select_item(&red)
         };
         let expected = {
             let slacks_false_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
@@ -332,8 +332,8 @@ mod no_rules_tests {
 
 
         let blue_selected = {
-            let closet = closet.apply(&blue, true);
-            closet.apply(&red, false)
+            let closet = closet.select_item(&blue);
+            closet.exclude_item(&red)
         };
         let expected = {
             let slacks_false_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
@@ -348,8 +348,8 @@ mod no_rules_tests {
 
 
         let both_selected = {
-            let closet = closet.apply(&blue, true);
-            closet.apply(&red, true)
+            let closet = closet.select_item(&blue);
+            closet.select_item(&red)
         };
         assert_eq!(
             &Node::FALSE_LEAF,
@@ -391,7 +391,7 @@ mod exclude_rules_tests {
 
         let blue_branch_red_excluded = Node::branch(&blue, Node::FALSE_LEAF, Node::TRUE_LEAF);
 
-        let slacks_false_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch_red_excluded.clone());
+        let slacks_false_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch_red_excluded);
         let slacks_true_branch = Node::branch(&jeans, blue_branch.clone(), Node::FALSE_LEAF);
         let slacks_branch = Node::branch(&slacks, slacks_false_branch.clone(), slacks_true_branch.clone());
 
@@ -403,8 +403,8 @@ mod exclude_rules_tests {
 
 
         let red_selected = {
-            let closet = closet.apply(&blue, false);
-            closet.apply(&red, true)
+            let closet = closet.exclude_item(&blue);
+            closet.select_item(&red)
         };
         let expected = Node::branch(&slacks, Node::FALSE_LEAF, Node::TRUE_LEAF);
         assert_eq!(
@@ -414,8 +414,8 @@ mod exclude_rules_tests {
 
 
         let blue_selected = {
-            let closet = closet.apply(&blue, true);
-            closet.apply(&red, false)
+            let closet = closet.select_item(&blue);
+            closet.exclude_item(&red)
         };
         let expected = {
             let slacks_false_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
@@ -430,8 +430,8 @@ mod exclude_rules_tests {
 
 
         let jeans_selected = {
-            let closet = closet.apply(&blue, false);
-            closet.apply(&jeans, true)
+            let closet = closet.exclude_item(&blue);
+            closet.select_item(&jeans)
         };
         assert_eq!(
             &Node::FALSE_LEAF,
@@ -440,8 +440,8 @@ mod exclude_rules_tests {
 
 
         let both_selected = {
-            let closet = closet.apply(&blue, true);
-            closet.apply(&red, true)
+            let closet = closet.select_item(&blue);
+            closet.select_item(&red)
         };
         assert_eq!(
             &Node::FALSE_LEAF,
