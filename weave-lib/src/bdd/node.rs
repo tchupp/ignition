@@ -2,6 +2,7 @@ use core::Item;
 use std::collections::HashMap;
 use std::fmt;
 use std::ops::BitAnd;
+use std::ops::Not;
 use std::prelude::v1::Vec;
 
 #[derive(Eq, PartialEq, Clone, Hash)]
@@ -12,17 +13,17 @@ pub enum Node {
 
 impl fmt::Debug for Node {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.fmt_inner(2))
+        write!(f, "\n{}", self.fmt_inner(1))
     }
 }
 
 impl Node {
     fn fmt_inner(&self, indent: usize) -> String {
         return match self {
-            Node::Leaf(val) => format!("-- {}", val),
+            Node::Leaf(val) => format!("| {}", val),
             Node::Branch(id, ref low, ref high) =>
                 format!(
-                    "{:?}\n{}{}\n{}{}",
+                    "| {:?}:\n{}{}\n{}{}",
                     id,
                     "  ".repeat(indent),
                     low.fmt_inner(indent + 1),
@@ -42,17 +43,11 @@ impl Node {
     }
 
     pub fn xor(id: &Item, sibling: Node) -> Node {
-        Node::branch(id, sibling.clone(), Node::prime(&sibling))
+        Node::branch(id, sibling.clone(), !sibling)
     }
 
-    pub fn prime(node: &Node) -> Node {
-        return match node {
-            Node::Leaf(true) => Node::FALSE_LEAF,
-            Node::Leaf(false) => Node::TRUE_LEAF,
-            Node::Branch(id, ref low, ref high) => {
-                return Node::branch(id, (**high).clone(), (**low).clone());
-            }
-        };
+    pub fn nand(id: &Item, sibling: Node) -> Node {
+        Node::branch(id, Node::TRUE_LEAF, !sibling)
     }
 
     pub fn reduce(node: &Node) -> Node {
@@ -132,18 +127,24 @@ impl BitAnd for Node {
     type Output = Self;
 
     fn bitand(self, rhs: Self) -> Self {
-        if let Node::TRUE_LEAF = rhs {
+        if Node::TRUE_LEAF == rhs {
             return self;
         }
-        if let Node::TRUE_LEAF = self {
+        if Node::TRUE_LEAF == self {
             return rhs;
         }
 
-        if let Node::FALSE_LEAF = rhs {
+        if Node::FALSE_LEAF == rhs {
             return rhs;
         }
-        if let Node::FALSE_LEAF = self {
+        if Node::FALSE_LEAF == self {
             return self;
+        }
+        if self == rhs {
+            return self;
+        }
+        if self == !rhs.clone() {
+            return Node::FALSE_LEAF;
         }
 
         if let Node::Branch(id, low, high) = self {
@@ -151,6 +152,20 @@ impl BitAnd for Node {
         }
 
         panic!("shouldn't get here");
+    }
+}
+
+impl Not for Node {
+    type Output = Self;
+
+    fn not(self) -> Self {
+        return match &self {
+            Node::Leaf(true) => Node::FALSE_LEAF,
+            Node::Leaf(false) => Node::TRUE_LEAF,
+            Node::Branch(id, ref low, ref high) => {
+                return Node::branch(&id, (**high).clone(), (**low).clone());
+            }
+        };
     }
 }
 
@@ -392,6 +407,25 @@ mod bitand_tests {
     }
 
     #[test]
+    fn and_with_identical_branches_is_a_tautology() {
+        let jeans = Item::new("jeans");
+
+        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+
+        assert_eq!(pants_family.clone(), pants_family.clone() & pants_family.clone());
+    }
+
+    #[test]
+    fn and_with_opposite_branches_is_always_false() {
+        let jeans = Item::new("jeans");
+
+        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let prime_pants_family = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+
+        assert_eq!(Node::FALSE_LEAF, pants_family.clone() & prime_pants_family.clone());
+    }
+
+    #[test]
     fn and_two_branches() {
         let blue = Item::new("blue");
         let red = Item::new("red");
@@ -424,5 +458,106 @@ mod bitand_tests {
             blue_branch
         };
         assert_eq!(combo_node_2, blue_branch & slacks_branch);
+    }
+}
+
+#[cfg(test)]
+mod bitnand_tests {
+    use bdd::node::Node;
+    use core::Item;
+
+    #[test]
+    fn nand_leaf_nodes() {
+        assert_eq!(Node::FALSE_LEAF, !(Node::TRUE_LEAF & Node::TRUE_LEAF));
+        assert_eq!(Node::TRUE_LEAF, !(Node::FALSE_LEAF & Node::TRUE_LEAF));
+
+        assert_eq!(Node::TRUE_LEAF, !(Node::TRUE_LEAF & Node::FALSE_LEAF));
+        assert_eq!(Node::TRUE_LEAF, !(Node::FALSE_LEAF & Node::FALSE_LEAF));
+    }
+
+    #[test]
+    fn nand_leaf_node_with_branch() {
+        let jeans = Item::new("jeans");
+
+        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let nand_pants_family = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+
+        assert_eq!(nand_pants_family.clone(), !(Node::TRUE_LEAF & pants_family.clone()));
+        assert_eq!(nand_pants_family.clone(), !(pants_family.clone() & Node::TRUE_LEAF));
+        assert_eq!(nand_pants_family.clone(), Node::nand(&jeans, Node::TRUE_LEAF));
+
+        assert_eq!(Node::TRUE_LEAF, !(Node::FALSE_LEAF & pants_family.clone()));
+        assert_eq!(Node::TRUE_LEAF, !(pants_family.clone() & Node::FALSE_LEAF));
+    }
+
+    #[test]
+    fn nand_two_branches() {
+        let blue = Item::new("blue");
+        let red = Item::new("red");
+
+        let jeans = Item::new("jeans");
+        let slacks = Item::new("slacks");
+
+        let blue_false_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let blue_true_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let blue_branch = Node::branch(&blue, blue_false_branch.clone(), blue_true_branch.clone());
+
+        let slacks_false_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let slacks_true_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let slacks_branch = Node::branch(&slacks, slacks_false_branch.clone(), slacks_true_branch.clone());
+
+        let combo_node_1 = {
+            let slacks_high_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch.clone());
+            let slacks_low_branch = Node::branch(&jeans, blue_branch.clone(), Node::FALSE_LEAF);
+            let slacks_branch = Node::branch(&slacks, slacks_low_branch.clone(), slacks_high_branch.clone());
+
+            slacks_branch
+        };
+        assert_eq!(combo_node_1, !(slacks_branch.clone() & blue_branch.clone()));
+
+        let combo_node_2 = {
+            let blue_high_branch = Node::branch(&red, Node::FALSE_LEAF, slacks_branch.clone());
+            let blue_low_branch = Node::branch(&red, slacks_branch.clone(), Node::FALSE_LEAF);
+            let blue_branch = Node::branch(&blue, blue_low_branch.clone(), blue_high_branch.clone());
+
+            blue_branch
+        };
+        assert_eq!(combo_node_2, !(blue_branch & slacks_branch));
+    }
+
+    #[test]
+    fn nand_two_items_from_different_families() {
+        let blue = Item::new("blue");
+        let red = Item::new("red");
+
+        let jeans = Item::new("jeans");
+
+        let combo_node_1 = {
+            let blue_low_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
+            let shirts_family_branch = Node::branch(&blue, blue_low_branch.clone(), Node::FALSE_LEAF);
+
+            let pants_family_branch = Node::branch(&jeans, Node::FALSE_LEAF, shirts_family_branch);
+
+            pants_family_branch
+        };
+        let actual = {
+            let blue_high_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
+            let blue_low_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
+            let shirts_family_branch = Node::branch(&blue, blue_low_branch.clone(), blue_high_branch.clone());
+
+            let pants_family_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+
+            let root = pants_family_branch & shirts_family_branch;
+
+            let jeans_exclude_blue = {
+                let jeans_exclude_blue = Node::apply(&root, &jeans, true);
+                let jeans_exclude_blue = Node::apply(&jeans_exclude_blue, &blue, false);
+                jeans_exclude_blue
+            };
+
+            root & jeans_exclude_blue
+        };
+
+        assert_eq!(combo_node_1, actual);
     }
 }
