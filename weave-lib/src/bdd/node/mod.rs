@@ -1,3 +1,6 @@
+mod operations;
+mod apply;
+
 use core::Item;
 use std::collections::HashMap;
 use std::fmt;
@@ -5,7 +8,7 @@ use std::ops::BitAnd;
 use std::ops::Not;
 use std::prelude::v1::Vec;
 
-#[derive(Eq, PartialEq, Clone, Hash)]
+#[derive(Eq, PartialEq, Clone, Hash, Ord, PartialOrd)]
 pub enum Node {
     Branch(Item, Box<Node>, Box<Node>),
     Leaf(bool),
