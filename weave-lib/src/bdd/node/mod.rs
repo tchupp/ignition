@@ -99,21 +99,21 @@ impl Node {
         return reduce_cache.get(node).unwrap_or(node).clone();
     }
 
-    pub fn apply(node: &Node, item: &Item, selected: bool) -> Node {
+    pub fn restrict(node: &Node, item: &Item, selected: bool) -> Node {
         return match node {
             Node::Leaf(true) => Node::TRUE_LEAF,
             Node::Leaf(false) => Node::FALSE_LEAF,
             Node::Branch(id, ref low, ref high) => {
                 if id == item {
                     if !selected {
-                        return Node::apply(&**low, item, selected);
+                        return Node::restrict(&**low, item, selected);
                     } else {
-                        return Node::apply(&**high, item, selected);
+                        return Node::restrict(&**high, item, selected);
                     }
                 }
 
-                let applied_low = Node::apply(low, item, selected);
-                let applied_high = Node::apply(high, item, selected);
+                let applied_low = Node::restrict(low, item, selected);
+                let applied_high = Node::restrict(high, item, selected);
 
                 return Node::branch(id, applied_low, applied_high);
             }
@@ -190,23 +190,6 @@ mod reduce_tests {
         );
     }
 
-    #[test]
-    fn or_can_be_reduced_if_low_and_high_are_equal_iter() {
-        let jeans = Item::new("jeans");
-        let blue_shirt = Item::new("blue_shirt");
-
-        let low_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let parent_branch = Node::branch(&blue_shirt, low_branch, high_branch);
-
-        let actual = Node::reduce_iter(&parent_branch);
-
-        let expected = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        assert_eq!(
-            expected,
-            actual
-        );
-    }
 
     #[test]
     fn sibling_relationship_cannot_be_reduced_in_nodes() {
@@ -218,24 +201,6 @@ mod reduce_tests {
         let parent_branch = Node::branch(&slacks, low_branch.clone(), high_branch.clone());
 
         let actual = Node::reduce(&parent_branch);
-
-        let expected = Node::branch(&slacks, low_branch, high_branch);
-        assert_eq!(
-            expected,
-            actual
-        );
-    }
-
-    #[test]
-    fn sibling_relationship_cannot_be_reduced_in_nodes_iter() {
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
-
-        let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let parent_branch = Node::branch(&slacks, low_branch.clone(), high_branch.clone());
-
-        let actual = Node::reduce_iter(&parent_branch);
 
         let expected = Node::branch(&slacks, low_branch, high_branch);
         assert_eq!(
@@ -263,24 +228,6 @@ mod reduce_tests {
     }
 
     #[test]
-    fn exclusion_rule_can_be_reduced_iter() {
-        let jeans = Item::new("jeans");
-        let blue_shirt = Item::new("blue_shirt");
-
-        let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::TRUE_LEAF);
-        let high_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let parent_branch = Node::branch(&blue_shirt, low_branch.clone(), high_branch.clone());
-
-        let actual = Node::reduce_iter(&parent_branch);
-
-        let expected = Node::branch(&blue_shirt, Node::TRUE_LEAF, high_branch);
-        assert_eq!(
-            expected,
-            actual
-        );
-    }
-
-    #[test]
     fn inclusion_rule_can_be_reduced() {
         let jeans = Item::new("jeans");
         let blue_shirt = Item::new("blue_shirt");
@@ -297,28 +244,10 @@ mod reduce_tests {
             actual
         );
     }
-
-    #[test]
-    fn inclusion_rule_can_be_reduced_iter() {
-        let jeans = Item::new("jeans");
-        let blue_shirt = Item::new("blue_shirt");
-
-        let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::TRUE_LEAF);
-        let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let parent_branch = Node::branch(&blue_shirt, low_branch.clone(), high_branch.clone());
-
-        let actual = Node::reduce_iter(&parent_branch);
-
-        let expected = Node::branch(&blue_shirt, Node::TRUE_LEAF, high_branch);
-        assert_eq!(
-            expected,
-            actual
-        );
-    }
 }
 
 #[cfg(test)]
-mod apply_tests {
+mod restrict_tests {
     use bdd::node::Node;
     use core::Item;
 
@@ -331,7 +260,7 @@ mod apply_tests {
         let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let parent_branch = Node::branch(&slacks, low_branch.clone(), high_branch.clone());
 
-        let actual = Node::apply(&parent_branch, &jeans, true);
+        let actual = Node::restrict(&parent_branch, &jeans, true);
 
         let expected = Node::branch(&slacks, Node::FALSE_LEAF, Node::TRUE_LEAF);
         assert_eq!(
@@ -340,7 +269,7 @@ mod apply_tests {
         );
 
 
-        let actual = Node::apply(&parent_branch, &jeans, false);
+        let actual = Node::restrict(&parent_branch, &jeans, false);
 
         let expected = Node::branch(&slacks, Node::TRUE_LEAF, Node::FALSE_LEAF);
         assert_eq!(
@@ -358,7 +287,7 @@ mod apply_tests {
         let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let parent_branch = Node::branch(&slacks, low_branch.clone(), high_branch.clone());
 
-        let actual = Node::apply(&parent_branch, &slacks, true);
+        let actual = Node::restrict(&parent_branch, &slacks, true);
 
         let expected = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
         assert_eq!(
@@ -367,7 +296,7 @@ mod apply_tests {
         );
 
 
-        let actual = Node::apply(&parent_branch, &slacks, false);
+        let actual = Node::restrict(&parent_branch, &slacks, false);
 
         let expected = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
         assert_eq!(
@@ -548,8 +477,8 @@ mod bitnand_tests {
             let root = pants_family_branch & shirts_family_branch;
 
             let jeans_exclude_blue = {
-                let jeans_exclude_blue = Node::apply(&root, &jeans, true);
-                let jeans_exclude_blue = Node::apply(&jeans_exclude_blue, &blue, false);
+                let jeans_exclude_blue = Node::restrict(&root, &jeans, true);
+                let jeans_exclude_blue = Node::restrict(&jeans_exclude_blue, &blue, false);
                 jeans_exclude_blue
             };
 

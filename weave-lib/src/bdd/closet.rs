@@ -28,10 +28,11 @@ impl Closet {
     }
 
     pub fn select_item(&self, item: &Item) -> Closet {
-        let mut new_root = Node::apply(&self.root, item, true);
+        let mut new_root = Node::restrict(&self.root, item, true);
 
         if let Some(exclusions) = self.exclusions.get(item) {
-            new_root = exclusions.iter().fold(new_root, |root, exclusion| Node::apply(&root, exclusion, false))
+            new_root = exclusions.iter()
+                .fold(new_root, |root, exclusion| Node::restrict(&root, exclusion, false))
         }
         new_root = Node::reduce(&new_root);
 
@@ -43,7 +44,7 @@ impl Closet {
     }
 
     pub fn exclude_item(&self, item: &Item) -> Closet {
-        let new_root = Node::apply(&self.root, item, false);
+        let new_root = Node::restrict(&self.root, item, false);
         let new_root = Node::reduce(&new_root);
 
         Closet {
@@ -55,16 +56,6 @@ impl Closet {
 
     pub fn reduce(&self) -> Closet {
         let new_root = Node::reduce(&self.root);
-
-        Closet {
-            item_index: self.item_index.clone(),
-            root: new_root,
-            exclusions: self.exclusions.clone(),
-        }
-    }
-
-    pub fn reduce_iter(&self) -> Closet {
-        let new_root = Node::reduce_iter(&self.root);
 
         Closet {
             item_index: self.item_index.clone(),

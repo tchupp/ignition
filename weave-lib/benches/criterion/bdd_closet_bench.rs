@@ -58,10 +58,4 @@ pub fn bdd_closet_bench(c: &mut Criterion) {
                          |closet| closet.reduce(),
                      ),
     );
-    c.bench_function("bdd reduce(iterative)",
-                     move |b| b.iter_with_setup(
-                         || build_closet(),
-                         |closet| closet.reduce_iter(),
-                     ),
-    );
 }
