@@ -9,7 +9,7 @@ mod tests {
 
     #[test]
     fn adding_item_to_two_families_returns_error() {
-        let blue = Item::new("blue");
+        let blue = Item::new("shirts:blue");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
@@ -29,11 +29,11 @@ mod tests {
 
     #[test]
     fn include_rule_on_same_family_returns_error() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
@@ -56,11 +56,11 @@ mod tests {
 
     #[test]
     fn exclude_rule_on_same_family_returns_error() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");

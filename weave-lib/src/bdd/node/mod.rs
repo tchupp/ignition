@@ -170,8 +170,8 @@ mod reduce_tests {
 
     #[test]
     fn or_can_be_reduced_if_low_and_high_are_equal() {
-        let jeans = Item::new("jeans");
-        let blue_shirt = Item::new("blue_shirt");
+        let jeans = Item::new("pants:jeans");
+        let blue_shirt = Item::new("shirts:blue");
 
         let low_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
@@ -189,8 +189,8 @@ mod reduce_tests {
 
     #[test]
     fn sibling_relationship_cannot_be_reduced_in_nodes() {
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
         let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
@@ -207,8 +207,8 @@ mod reduce_tests {
 
     #[test]
     fn exclusion_rule_can_be_reduced() {
-        let jeans = Item::new("jeans");
-        let blue_shirt = Item::new("blue_shirt");
+        let jeans = Item::new("pants:jeans");
+        let blue_shirt = Item::new("shirts:blue");
 
         let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::TRUE_LEAF);
         let high_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
@@ -225,8 +225,8 @@ mod reduce_tests {
 
     #[test]
     fn inclusion_rule_can_be_reduced() {
-        let jeans = Item::new("jeans");
-        let blue_shirt = Item::new("blue_shirt");
+        let jeans = Item::new("pants:jeans");
+        let blue_shirt = Item::new("shirts:blue");
 
         let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::TRUE_LEAF);
         let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
@@ -249,8 +249,8 @@ mod restrict_tests {
 
     #[test]
     fn selecting_child_returns_correct_node() {
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
         let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
@@ -276,8 +276,8 @@ mod restrict_tests {
 
     #[test]
     fn selecting_parent_returns_correct_node() {
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
         let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
@@ -318,7 +318,7 @@ mod bitand_tests {
 
     #[test]
     fn and_leaf_node_with_branch() {
-        let jeans = Item::new("jeans");
+        let jeans = Item::new("pants:jeans");
 
         let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
 
@@ -331,7 +331,7 @@ mod bitand_tests {
 
     #[test]
     fn and_with_identical_branches_is_a_tautology() {
-        let jeans = Item::new("jeans");
+        let jeans = Item::new("pants:jeans");
 
         let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
 
@@ -340,7 +340,7 @@ mod bitand_tests {
 
     #[test]
     fn and_with_opposite_branches_is_always_false() {
-        let jeans = Item::new("jeans");
+        let jeans = Item::new("pants:jeans");
 
         let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let prime_pants_family = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
@@ -350,11 +350,11 @@ mod bitand_tests {
 
     #[test]
     fn and_two_branches() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let blue_false_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let blue_true_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
@@ -364,23 +364,15 @@ mod bitand_tests {
         let slacks_true_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
         let slacks_branch = Node::branch(&slacks, slacks_false_branch.clone(), slacks_true_branch.clone());
 
-        let combo_node_1 = {
-            let blue_false_branch = Node::branch(&red, Node::FALSE_LEAF, slacks_branch.clone());
-            let blue_true_branch = Node::branch(&red, slacks_branch.clone(), Node::FALSE_LEAF);
-            let blue_branch = Node::branch(&blue, blue_false_branch.clone(), blue_true_branch.clone());
+        let expected = {
+            let slacks_false_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch.clone());
+            let slacks_true_branch = Node::branch(&jeans, blue_branch.clone(), Node::FALSE_LEAF);
+            let slacks_branch = Node::branch(&slacks, slacks_false_branch.clone(), slacks_true_branch.clone());
 
-            blue_branch
+            slacks_branch
         };
-        assert_eq!(combo_node_1, slacks_branch.clone() & blue_branch.clone());
-
-        let combo_node_2 = {
-            let blue_false_branch = Node::branch(&red, Node::FALSE_LEAF, slacks_branch.clone());
-            let blue_true_branch = Node::branch(&red, slacks_branch.clone(), Node::FALSE_LEAF);
-            let blue_branch = Node::branch(&blue, blue_false_branch.clone(), blue_true_branch.clone());
-
-            blue_branch
-        };
-        assert_eq!(combo_node_2, blue_branch & slacks_branch);
+        assert_eq!(expected, slacks_branch.clone() & blue_branch.clone());
+        assert_eq!(expected, blue_branch & slacks_branch);
     }
 }
 
@@ -400,7 +392,7 @@ mod bitnand_tests {
 
     #[test]
     fn nand_leaf_node_with_branch() {
-        let jeans = Item::new("jeans");
+        let jeans = Item::new("pants:jeans");
 
         let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let nand_pants_family = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
@@ -415,11 +407,11 @@ mod bitnand_tests {
 
     #[test]
     fn nand_two_branches() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let blue_false_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let blue_true_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
@@ -429,38 +421,30 @@ mod bitnand_tests {
         let slacks_true_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
         let slacks_branch = Node::branch(&slacks, slacks_false_branch.clone(), slacks_true_branch.clone());
 
-        let combo_node_1 = {
-            let blue_high_branch = Node::branch(&red, Node::FALSE_LEAF, slacks_branch.clone());
-            let blue_low_branch = Node::branch(&red, slacks_branch.clone(), Node::FALSE_LEAF);
-            let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
+        let expected = {
+            let slacks_high_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch.clone());
+            let slacks_low_branch = Node::branch(&jeans, blue_branch.clone(), Node::FALSE_LEAF);
+            let slacks_branch = Node::branch(&slacks, slacks_low_branch, slacks_high_branch);
 
-            blue_branch
+            slacks_branch
         };
-        assert_eq!(combo_node_1, !(slacks_branch.clone() & blue_branch.clone()));
-
-        let combo_node_2 = {
-            let blue_high_branch = Node::branch(&red, Node::FALSE_LEAF, slacks_branch.clone());
-            let blue_low_branch = Node::branch(&red, slacks_branch.clone(), Node::FALSE_LEAF);
-            let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
-
-            blue_branch
-        };
-        assert_eq!(combo_node_2, !(blue_branch & slacks_branch));
+        assert_eq!(expected, !(slacks_branch.clone() & blue_branch.clone()));
+        assert_eq!(expected, !(blue_branch & slacks_branch));
     }
 
     #[test]
     fn nand_two_items_from_different_families() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
+        let jeans = Item::new("pants:jeans");
 
-        let combo_node_1 = {
+        let expected = {
             let red_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
-            let jeans_branch = Node::branch(&jeans, Node::FALSE_LEAF, red_branch.clone());
-            let blue_branch = Node::branch(&blue, jeans_branch.clone(), Node::FALSE_LEAF);
+            let blue_branch = Node::branch(&blue, red_branch, Node::FALSE_LEAF);
+            let jeans_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch);
 
-            blue_branch
+            jeans_branch
         };
         let actual = {
             let blue_high_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
@@ -480,6 +464,6 @@ mod bitnand_tests {
             root & jeans_exclude_blue
         };
 
-        assert_eq!(combo_node_1, actual);
+        assert_eq!(expected, actual);
     }
 }

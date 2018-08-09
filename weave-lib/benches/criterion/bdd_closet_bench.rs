@@ -5,25 +5,25 @@ use weave_lib::core::Family;
 use weave_lib::core::Item;
 
 fn build_closet() -> Closet {
-    let shirt1 = Item::new("shirt1");
-    let shirt2 = Item::new("shirt2");
-    let shirt3 = Item::new("shirt3");
-    let shirt4 = Item::new("shirt4");
+    let shirt1 = Item::new("shirts:1");
+    let shirt2 = Item::new("shirts:2");
+    let shirt3 = Item::new("shirts:3");
+    let shirt4 = Item::new("shirts:4");
 
-    let pants1 = Item::new("pants1");
-    let pants2 = Item::new("pants2");
-    let pants3 = Item::new("pants3");
-    let pants4 = Item::new("pants4");
+    let pants1 = Item::new("pants:1");
+    let pants2 = Item::new("pants:2");
+    let pants3 = Item::new("pants:3");
+    let pants4 = Item::new("pants:4");
 
-    let shoes1 = Item::new("shoes1");
-    let shoes2 = Item::new("shoes2");
-    let shoes3 = Item::new("shoes3");
-    let shoes4 = Item::new("shoes4");
+    let shoes1 = Item::new("shoes:1");
+    let shoes2 = Item::new("shoes:2");
+    let shoes3 = Item::new("shoes:3");
+    let shoes4 = Item::new("shoes:4");
 
-    let socks1 = Item::new("socks1");
-    let socks2 = Item::new("socks2");
-    let socks3 = Item::new("socks3");
-    let socks4 = Item::new("socks4");
+    let socks1 = Item::new("socks:1");
+    let socks2 = Item::new("socks:2");
+    let socks3 = Item::new("socks:3");
+    let socks4 = Item::new("socks:4");
 
     let shirts = Family::new("shirts");
     let pants = Family::new("pants");

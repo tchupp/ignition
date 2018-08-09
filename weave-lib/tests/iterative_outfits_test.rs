@@ -14,11 +14,11 @@ mod no_rules_tests {
 
     #[test]
     fn no_rules_no_selections() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
@@ -39,11 +39,11 @@ mod no_rules_tests {
 
     #[test]
     fn no_rules_one_selection() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
@@ -64,11 +64,11 @@ mod no_rules_tests {
 
     #[test]
     fn no_rules_selection_for_each_family() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
@@ -89,12 +89,12 @@ mod no_rules_tests {
 
     #[test]
     fn no_rules_unknown_selection() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
-        let black = Item::new("black");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+        let black = Item::new("shirts:black");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
@@ -115,11 +115,11 @@ mod no_rules_tests {
 
     #[test]
     fn no_rules_more_selections_than_families() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
@@ -157,11 +157,11 @@ mod exclusion_rules_tests {
 
     #[test]
     fn exclusion_rule_with_one_selection() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
@@ -189,11 +189,11 @@ mod exclusion_rules_tests {
 
     #[test]
     fn exclusion_rule_with_conflicting_selection() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
@@ -216,11 +216,11 @@ mod exclusion_rules_tests {
     #[test]
     #[should_panic]
     fn exclusion_rules_with_impossible_selection() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
@@ -252,11 +252,11 @@ mod inclusion_rules_tests {
 
     #[test]
     fn inclusion_rule_with_one_selection() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
@@ -292,11 +292,11 @@ mod inclusion_rules_tests {
 
     #[test]
     fn inclusion_rule_is_one_way() {
-        let blue = Item::new("blue");
-        let red = Item::new("red");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
 
-        let jeans = Item::new("jeans");
-        let slacks = Item::new("slacks");
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
 
         let shirts = Family::new("shirts");
         let pants = Family::new("pants");
