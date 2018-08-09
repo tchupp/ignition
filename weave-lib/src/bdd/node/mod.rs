@@ -1,12 +1,17 @@
-mod operations;
-mod apply;
-
+use bdd::node::apply::apply;
+use bdd::node::operations::AndOperation;
+use bdd::node::operations::OrOperation;
 use core::Item;
 use std::collections::HashMap;
 use std::fmt;
 use std::ops::BitAnd;
+use std::ops::BitOr;
 use std::ops::Not;
 use std::prelude::v1::Vec;
+
+mod operations;
+mod apply;
+mod from_item;
 
 #[derive(Eq, PartialEq, Clone, Hash, Ord, PartialOrd)]
 pub enum Node {
@@ -109,16 +114,20 @@ impl Node {
             Node::Branch(id, ref low, ref high) => {
                 if id == item {
                     if !selected {
-                        return Node::restrict(&**low, item, selected);
+                        return (**low).clone();
                     } else {
-                        return Node::restrict(&**high, item, selected);
+                        return (**high).clone();
                     }
                 }
 
-                let applied_low = Node::restrict(low, item, selected);
-                let applied_high = Node::restrict(high, item, selected);
+                let restricted_low = Node::restrict(low, item, selected);
+                let restricted_high = Node::restrict(high, item, selected);
 
-                return Node::branch(id, applied_low, applied_high);
+                if restricted_low == restricted_high {
+                    return restricted_low;
+                }
+
+                return Node::branch(id, restricted_low, restricted_high);
             }
         };
     }
@@ -128,31 +137,15 @@ impl BitAnd for Node {
     type Output = Self;
 
     fn bitand(self, rhs: Self) -> Self {
-        if Node::TRUE_LEAF == rhs {
-            return self;
-        }
-        if Node::TRUE_LEAF == self {
-            return rhs;
-        }
+        apply(&self, &rhs, &AndOperation::new())
+    }
+}
 
-        if Node::FALSE_LEAF == rhs {
-            return rhs;
-        }
-        if Node::FALSE_LEAF == self {
-            return self;
-        }
-        if self == rhs {
-            return self;
-        }
-        if self == !rhs.clone() {
-            return Node::FALSE_LEAF;
-        }
+impl BitOr for Node {
+    type Output = Self;
 
-        if let Node::Branch(id, low, high) = self {
-            return Node::branch(&id, *low & rhs.clone(), *high & rhs);
-        }
-
-        panic!("shouldn't get here");
+    fn bitor(self, rhs: Self) -> Self {
+        apply(&self, &rhs, &OrOperation::new())
     }
 }
 
@@ -372,11 +365,11 @@ mod bitand_tests {
         let slacks_branch = Node::branch(&slacks, slacks_false_branch.clone(), slacks_true_branch.clone());
 
         let combo_node_1 = {
-            let slacks_false_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch.clone());
-            let slacks_true_branch = Node::branch(&jeans, blue_branch.clone(), Node::FALSE_LEAF);
-            let slacks_branch = Node::branch(&slacks, slacks_false_branch.clone(), slacks_true_branch.clone());
+            let blue_false_branch = Node::branch(&red, Node::FALSE_LEAF, slacks_branch.clone());
+            let blue_true_branch = Node::branch(&red, slacks_branch.clone(), Node::FALSE_LEAF);
+            let blue_branch = Node::branch(&blue, blue_false_branch.clone(), blue_true_branch.clone());
 
-            slacks_branch
+            blue_branch
         };
         assert_eq!(combo_node_1, slacks_branch.clone() & blue_branch.clone());
 
@@ -437,18 +430,18 @@ mod bitnand_tests {
         let slacks_branch = Node::branch(&slacks, slacks_false_branch.clone(), slacks_true_branch.clone());
 
         let combo_node_1 = {
-            let slacks_high_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch.clone());
-            let slacks_low_branch = Node::branch(&jeans, blue_branch.clone(), Node::FALSE_LEAF);
-            let slacks_branch = Node::branch(&slacks, slacks_low_branch.clone(), slacks_high_branch.clone());
+            let blue_high_branch = Node::branch(&red, Node::FALSE_LEAF, slacks_branch.clone());
+            let blue_low_branch = Node::branch(&red, slacks_branch.clone(), Node::FALSE_LEAF);
+            let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
 
-            slacks_branch
+            blue_branch
         };
         assert_eq!(combo_node_1, !(slacks_branch.clone() & blue_branch.clone()));
 
         let combo_node_2 = {
             let blue_high_branch = Node::branch(&red, Node::FALSE_LEAF, slacks_branch.clone());
             let blue_low_branch = Node::branch(&red, slacks_branch.clone(), Node::FALSE_LEAF);
-            let blue_branch = Node::branch(&blue, blue_low_branch.clone(), blue_high_branch.clone());
+            let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
 
             blue_branch
         };
@@ -463,12 +456,11 @@ mod bitnand_tests {
         let jeans = Item::new("jeans");
 
         let combo_node_1 = {
-            let blue_low_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
-            let shirts_family_branch = Node::branch(&blue, blue_low_branch.clone(), Node::FALSE_LEAF);
+            let red_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
+            let jeans_branch = Node::branch(&jeans, Node::FALSE_LEAF, red_branch.clone());
+            let blue_branch = Node::branch(&blue, jeans_branch.clone(), Node::FALSE_LEAF);
 
-            let pants_family_branch = Node::branch(&jeans, Node::FALSE_LEAF, shirts_family_branch);
-
-            pants_family_branch
+            blue_branch
         };
         let actual = {
             let blue_high_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);

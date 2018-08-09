@@ -30,3 +30,30 @@ impl Operation for AndOperation {
         None
     }
 }
+
+pub struct OrOperation;
+
+impl OrOperation {
+    pub fn new() -> OrOperation {
+        OrOperation {}
+    }
+}
+
+impl Operation for OrOperation {
+    fn eval(&self, f1: &Node, f2: &Node) -> Option<Node> {
+        if &Node::FALSE_LEAF == f1 {
+            return Some(f2.clone());
+        }
+        if &Node::FALSE_LEAF == f2 {
+            return Some(f1.clone());
+        }
+
+        if let Node::Leaf(val_1) = f1 {
+            if let Node::Leaf(val_2) = f2 {
+                return Some(Node::Leaf(val_1 | val_2));
+            }
+        }
+
+        None
+    }
+}
