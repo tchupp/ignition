@@ -74,12 +74,17 @@ impl ClosetBuilder {
         let root = self.exclusions.iter()
             .flat_map(|(selection, exclusions)| exclusions.iter().map(|exclusion| (selection.clone(), exclusion.clone())).collect::<Vec<_>>())
             .map(|(selection, exclusion)| (Node::positive_branch(&selection), Node::positive_branch(&exclusion)))
-            .map(|(selection, exclusion)| (!exclusion) | (!selection))
+            .map(|(selection, exclusion)| !exclusion | !selection)
             .fold(root, |new_root, exclusion| new_root & exclusion);
 
+        let root = self.inclusions.iter()
+            .flat_map(|(selection, inclusions)| inclusions.iter().map(|exclusion| (selection.clone(), exclusion.clone())).collect::<Vec<_>>())
+            .map(|(selection, inclusion)| (Node::positive_branch(&selection), Node::positive_branch(&inclusion)))
+            .map(|(selection, inclusion)| !selection | inclusion)
+            .fold(root, |new_root, inclusion| new_root & inclusion);
+
         let item_index = self.item_index.clone();
-        let exclusions = self.exclusions.clone();
-        Ok(Closet::new(item_index, root, exclusions))
+        Ok(Closet::new(item_index, root))
     }
 
     fn validate(&self) -> Result<(), Error> {
@@ -388,19 +393,14 @@ mod exclude_rules_tests {
 
         let closet = closet_builder.must_build();
 
-        let blue_low_branch = Node::positive_branch(&red);
-        let blue_high_branch = Node::negative_branch(&red);
-        let blue_branch = Node::branch(&blue, blue_low_branch, &blue_high_branch);
+        let expected = {
+            let root = (Node::positive_branch(&red) ^ Node::positive_branch(&blue)) & (Node::positive_branch(&slacks) ^ Node::positive_branch(&jeans));
+            let exclusion = Node::negative_branch(&red) | Node::negative_branch(&jeans);
 
-        let blue_branch_red_excluded = Node::branch(&blue, Node::FALSE_LEAF, blue_high_branch);
-
-        let jeans_low_branch = Node::branch(&slacks, Node::FALSE_LEAF, blue_branch);
-        let jeans_high_branch = Node::branch(&slacks, blue_branch_red_excluded, Node::FALSE_LEAF);
-        let jeans_branch = Node::branch(&jeans, jeans_low_branch, jeans_high_branch);
-
-        let expected_sibling_node = jeans_branch;
+            root & exclusion
+        };
         assert_eq!(
-            &expected_sibling_node,
+            &expected,
             closet.root()
         );
 
@@ -445,13 +445,107 @@ mod exclude_rules_tests {
         );
 
 
-        let both_selected = {
+        let both_shirts_selected = {
             let closet = closet.select_item(&blue);
             closet.select_item(&red)
         };
         assert_eq!(
             &Node::FALSE_LEAF,
-            both_selected.root()
+            both_shirts_selected.root()
+        );
+    }
+}
+
+#[cfg(test)]
+mod include_rules_tests {
+    use bdd::node::Node;
+    use core::Family;
+    use core::Item;
+    use super::ClosetBuilder;
+
+    #[test]
+    fn two_families_with_two_items() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &blue)
+            .add_item(&pants, &slacks)
+            .add_item(&pants, &jeans)
+            .add_inclusion_rule(&red, &jeans);
+
+        let closet = closet_builder.must_build();
+
+        let expected = {
+            let root = (Node::positive_branch(&red) ^ Node::positive_branch(&blue)) & (Node::positive_branch(&slacks) ^ Node::positive_branch(&jeans));
+            let inclusion = Node::negative_branch(&red) | Node::positive_branch(&jeans);
+
+            root & inclusion
+        };
+        assert_eq!(
+            &expected,
+            closet.root()
+        );
+
+
+        let red_selected = {
+            let closet = closet.exclude_item(&blue);
+            closet.select_item(&red)
+        };
+        let expected = {
+            let slacks_branch = Node::negative_branch(&slacks);
+            Node::branch(&jeans, Node::FALSE_LEAF, slacks_branch)
+        };
+        assert_eq!(
+            &expected,
+            red_selected.root()
+        );
+
+
+        let blue_selected = {
+            let closet = closet.select_item(&blue);
+            closet.exclude_item(&red)
+        };
+        let expected = {
+            let jeans_low_branch = Node::positive_branch(&slacks);
+            let jeans_high_branch = Node::negative_branch(&slacks);
+
+            Node::branch(&jeans, jeans_low_branch, jeans_high_branch)
+        };
+        assert_eq!(
+            &expected,
+            blue_selected.root()
+        );
+
+
+        let jeans_selected = {
+            let closet = closet.exclude_item(&blue);
+            closet.select_item(&jeans)
+        };
+        let expected = {
+            let red_branch = Node::positive_branch(&red);
+            Node::branch(&slacks, red_branch, Node::FALSE_LEAF)
+        };
+        assert_eq!(
+            &expected,
+            jeans_selected.root()
+        );
+
+
+        let both_shirts_selected = {
+            let closet = closet.select_item(&blue);
+            closet.select_item(&red)
+        };
+        assert_eq!(
+            &Node::FALSE_LEAF,
+            both_shirts_selected.root()
         );
     }
 }

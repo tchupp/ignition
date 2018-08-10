@@ -21,6 +21,11 @@ The output of the binary operation is a boolean, telling us whether the combinat
 A and B are items in the same family  
 A and B may not be selected at the same time, but one of them **must** be selected
 
+Equation: `A ^ B`  
+Equation (DNF): `(A * ~B) + (~A * B)`  
+
+Truth table:
+
 | A | B | V |
 |:-:|:-:|:-:|
 | 0 | 0 | 0 |
@@ -33,6 +38,11 @@ A and B are items in different families
 Selection of A excludes the selection of B  
 Selection of B excludes the selection of A  
 
+Equation: `~(A * B)`  
+Equation (DNF): `~A + ~B`  
+
+Truth table:
+
 | A | B | V |
 |:-:|:-:|:-:|
 | 0 | 0 | 1 |
@@ -44,6 +54,12 @@ Selection of B excludes the selection of A
 A and B are items in different families  
 Selection of A requires that B is also selected
 Selection of B does not **require** that A is also selected
+
+Equation: `~(A * ~B)`  
+Equation (DNF): `~A + B`  
+**NOTE: A and B are *not* interchangeable**
+
+Truth table:
 
 | A | B | V |
 |:-:|:-:|:-:|

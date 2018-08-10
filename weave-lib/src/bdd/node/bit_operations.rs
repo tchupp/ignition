@@ -312,6 +312,24 @@ mod bitxor_tests {
     }
 
     #[test]
+    fn xor_between_two_different_positive_items_expands() {
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let jeans_branch = Node::positive_branch(&jeans);
+        let slacks_branch = Node::positive_branch(&slacks);
+
+        let expected = {
+            let slacks_branch = Node::positive_branch(&slacks);
+            let slacks_branch_prime = Node::negative_branch(&slacks);
+
+             Node::branch(&jeans, slacks_branch, slacks_branch_prime)
+        };
+
+        assert_eq!(expected, jeans_branch ^ slacks_branch);
+    }
+
+    #[test]
     fn xor_two_branches() {
         let blue = Item::new("shirts:blue");
         let red = Item::new("shirts:red");

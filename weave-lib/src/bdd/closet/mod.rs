@@ -7,16 +7,14 @@ use std::collections::BTreeMap;
 pub struct Closet {
     item_index: BTreeMap<Item, Family>,
     root: Node,
-    exclusions: BTreeMap<Item, Vec<Item>>,
 }
 
 impl Closet {
     pub fn new(
         item_index: BTreeMap<Item, Family>,
         root: Node,
-        exclusions: BTreeMap<Item, Vec<Item>>,
     ) -> Closet {
-        Closet { item_index, root, exclusions }
+        Closet { item_index, root }
     }
 
     pub fn get_family(&self, item: &Item) -> Option<&Family> {
@@ -33,7 +31,6 @@ impl Closet {
         Closet {
             item_index: self.item_index.clone(),
             root: new_root,
-            exclusions: self.exclusions.clone(),
         }
     }
 
@@ -43,7 +40,6 @@ impl Closet {
         Closet {
             item_index: self.item_index.clone(),
             root: new_root,
-            exclusions: self.exclusions.clone(),
         }
     }
 
@@ -53,7 +49,6 @@ impl Closet {
         Closet {
             item_index: self.item_index.clone(),
             root: new_root,
-            exclusions: self.exclusions.clone(),
         }
     }
 }
