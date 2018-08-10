@@ -2,7 +2,6 @@ use bdd::node::apply::apply;
 use bdd::node::Node;
 use bdd::node::operations::AndOperation;
 use bdd::node::operations::OrOperation;
-use core::Item;
 use std::ops::BitAnd;
 use std::ops::BitOr;
 use std::ops::BitXor;
@@ -43,12 +42,6 @@ impl Not for Node {
                 return Node::branch(&id, high, low);
             }
         };
-    }
-}
-
-impl Node {
-    pub fn xor(id: &Item, sibling: Node) -> Node {
-        Node::branch(id, sibling.clone(), !sibling)
     }
 }
 

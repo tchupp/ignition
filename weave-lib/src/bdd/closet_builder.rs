@@ -68,13 +68,13 @@ impl ClosetBuilder {
         self.validate()?;
 
         let root = self.contents.iter()
-            .map(|(_, items)| items.iter().fold(Node::FALSE_LEAF, |low_branch, item| Node::xor(item, low_branch)))
-            .fold(Node::TRUE_LEAF, |low_branch, family_node| low_branch & family_node);
+            .map(|(_, items)| items.iter().fold(Node::FALSE_LEAF, |other, item| Node::from(item) ^ other))
+            .fold(Node::TRUE_LEAF, |other, family_node| other & family_node);
 
         let root = self.exclusions.iter()
             .flat_map(|(selection, exclusions)| exclusions.iter().map(|exclusion| (selection.clone(), exclusion.clone())).collect::<Vec<_>>())
-            .map(|(selection, exclusion)| (selection.into(), exclusion.into()))
-            .map(|(selection, exclusion): (Node, Node)| (!exclusion) | (!selection))
+            .map(|(selection, exclusion)| (Node::from(selection), Node::from(exclusion)))
+            .map(|(selection, exclusion)| (!exclusion) | (!selection))
             .fold(root, |new_root, exclusion| new_root & exclusion);
 
         let item_index = self.item_index.clone();
@@ -298,8 +298,8 @@ mod no_rules_tests {
         let closet_builder = ClosetBuilder::new()
             .add_item(&shirts, &red)
             .add_item(&shirts, &blue)
-            .add_item(&pants, &slacks)
-            .add_item(&pants, &jeans);
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks);
 
         let closet = closet_builder.must_build();
 
