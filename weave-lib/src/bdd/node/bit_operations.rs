@@ -5,6 +5,7 @@ use bdd::node::operations::OrOperation;
 use core::Item;
 use std::ops::BitAnd;
 use std::ops::BitOr;
+use std::ops::BitXor;
 use std::ops::Not;
 
 impl BitOr for Node {
@@ -20,6 +21,14 @@ impl BitAnd for Node {
 
     fn bitand(self, rhs: Self) -> Self {
         apply(&self, &rhs, &AndOperation::new())
+    }
+}
+
+impl BitXor for Node {
+    type Output = Self;
+
+    fn bitxor(self, rhs: Self) -> Self {
+        (self.clone() & !(rhs.clone())) | (!self.clone() & (rhs.clone()))
     }
 }
 
@@ -40,10 +49,6 @@ impl Not for Node {
 impl Node {
     pub fn xor(id: &Item, sibling: Node) -> Node {
         Node::branch(id, sibling.clone(), !sibling)
-    }
-
-    pub fn nand(id: &Item, sibling: Node) -> Node {
-        Node::branch(id, Node::TRUE_LEAF, !sibling)
     }
 }
 
@@ -136,21 +141,6 @@ mod bitnand_tests {
     }
 
     #[test]
-    fn nand_leaf_node_with_branch() {
-        let jeans = Item::new("pants:jeans");
-
-        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let nand_pants_family = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
-
-        assert_eq!(nand_pants_family.clone(), !(Node::TRUE_LEAF & pants_family.clone()));
-        assert_eq!(nand_pants_family.clone(), !(pants_family.clone() & Node::TRUE_LEAF));
-        assert_eq!(nand_pants_family.clone(), Node::nand(&jeans, Node::TRUE_LEAF));
-
-        assert_eq!(Node::TRUE_LEAF, !(Node::FALSE_LEAF & pants_family.clone()));
-        assert_eq!(Node::TRUE_LEAF, !(pants_family.clone() & Node::FALSE_LEAF));
-    }
-
-    #[test]
     fn nand_two_branches() {
         let blue = Item::new("shirts:blue");
         let red = Item::new("shirts:red");
@@ -209,6 +199,149 @@ mod bitnand_tests {
             root & jeans_exclude_blue
         };
 
+        assert_eq!(expected, actual);
+    }
+}
+
+#[cfg(test)]
+mod bitor_tests {
+    use bdd::node::Node;
+    use core::Item;
+
+    #[test]
+    fn or_leaf_nodes() {
+        assert_eq!(Node::TRUE_LEAF, Node::TRUE_LEAF | Node::TRUE_LEAF);
+        assert_eq!(Node::TRUE_LEAF, Node::FALSE_LEAF | Node::TRUE_LEAF);
+        assert_eq!(Node::TRUE_LEAF, Node::TRUE_LEAF | Node::FALSE_LEAF);
+        assert_eq!(Node::FALSE_LEAF, Node::FALSE_LEAF | Node::FALSE_LEAF);
+    }
+
+    #[test]
+    fn or_leaf_node_with_branch() {
+        let jeans = Item::new("pants:jeans");
+
+        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+
+        assert_eq!(Node::TRUE_LEAF, Node::TRUE_LEAF | pants_family.clone());
+        assert_eq!(Node::TRUE_LEAF, pants_family.clone() | Node::TRUE_LEAF);
+
+        assert_eq!(pants_family.clone(), Node::FALSE_LEAF | pants_family.clone());
+        assert_eq!(pants_family.clone(), pants_family.clone() | Node::FALSE_LEAF);
+    }
+
+    #[test]
+    fn or_with_identical_branches_is_a_tautology() {
+        let jeans = Item::new("pants:jeans");
+
+        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+
+        assert_eq!(pants_family.clone(), pants_family.clone() | pants_family.clone());
+    }
+
+    #[test]
+    fn or_with_opposite_branches_is_always_false() {
+        let jeans = Item::new("pants:jeans");
+
+        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let prime_pants_family = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+
+        assert_eq!(Node::TRUE_LEAF, pants_family.clone() | prime_pants_family.clone());
+    }
+
+    #[test]
+    fn or_two_branches() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let expected = {
+            let red_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
+            let blue_branch = Node::branch(&blue, red_branch, Node::TRUE_LEAF);
+            let slacks_branch = Node::branch(&slacks, blue_branch, Node::TRUE_LEAF);
+            let jeans_branch = Node::branch(&jeans, slacks_branch, Node::TRUE_LEAF);
+
+            jeans_branch
+        };
+
+        let actual = Node::from(&red) | Node::from(&blue) | Node::from(&jeans) | Node::from(&slacks);
+        assert_eq!(expected, actual);
+
+        let actual = Node::from(&blue) | Node::from(&red) | Node::from(&slacks) | Node::from(&jeans);
+        assert_eq!(expected, actual);
+    }
+}
+
+#[cfg(test)]
+mod bitxor_tests {
+    use bdd::node::Node;
+    use core::Item;
+
+    #[test]
+    fn xor_leaf_nodes() {
+        assert_eq!(Node::FALSE_LEAF, Node::TRUE_LEAF ^ Node::TRUE_LEAF);
+        assert_eq!(Node::TRUE_LEAF, Node::FALSE_LEAF ^ Node::TRUE_LEAF);
+        assert_eq!(Node::TRUE_LEAF, Node::TRUE_LEAF ^ Node::FALSE_LEAF);
+        assert_eq!(Node::FALSE_LEAF, Node::FALSE_LEAF ^ Node::FALSE_LEAF);
+    }
+
+    #[test]
+    fn xor_leaf_node_with_branch() {
+        let jeans = Item::new("pants:jeans");
+
+        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+
+        assert_eq!(!pants_family.clone(), Node::TRUE_LEAF ^ pants_family.clone());
+        assert_eq!(!pants_family.clone(), pants_family.clone() ^ Node::TRUE_LEAF);
+
+        assert_eq!(pants_family.clone(), Node::FALSE_LEAF ^ pants_family.clone());
+        assert_eq!(pants_family.clone(), pants_family.clone() ^ Node::FALSE_LEAF);
+    }
+
+    #[test]
+    fn xor_with_identical_branches_is_always_false() {
+        let jeans = Item::new("pants:jeans");
+
+        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+
+        assert_eq!(Node::FALSE_LEAF, pants_family.clone() ^ pants_family.clone());
+    }
+
+    #[test]
+    fn xor_with_opposite_branches_is_always_true() {
+        let jeans = Item::new("pants:jeans");
+
+        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let prime_pants_family = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+
+        assert_eq!(Node::TRUE_LEAF, pants_family.clone() ^ prime_pants_family.clone());
+    }
+
+    #[test]
+    fn xor_two_branches() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let expected = {
+            let blue_low_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
+            let blue_high_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
+            let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
+
+            let jeans_low_branch = Node::branch(&slacks, blue_branch.clone(), !blue_branch.clone());
+            let jeans_high_branch = Node::branch(&slacks, !blue_branch.clone(), blue_branch.clone());
+            let jeans_branch = Node::branch(&jeans, jeans_low_branch, jeans_high_branch);
+
+            jeans_branch
+        };
+
+        let actual = Node::from(&red) ^ Node::from(&blue) ^ Node::from(&jeans) ^ Node::from(&slacks);
+        assert_eq!(expected, actual);
+
+        let actual = Node::from(&blue) ^ Node::from(&red) ^ Node::from(&slacks) ^ Node::from(&jeans);
         assert_eq!(expected, actual);
     }
 }
