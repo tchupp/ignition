@@ -8,7 +8,7 @@ fn get_node(id: &Item, low: &Node, high: &Node) -> Node {
         return low.clone();
     }
 
-    return Node::branch(id, low.clone(), high.clone());
+    return Node::branch(id, low, high);
 }
 
 fn get_first_id(f1: &Node, f2: &Node) -> Option<Item> {
@@ -89,7 +89,7 @@ mod tests {
         let actual = apply(&slacks_branch, &blue_branch, &AndOperation::new());
 
         let expected = {
-            let slacks_low_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch.clone());
+            let slacks_low_branch = Node::branch(&jeans, Node::FALSE_LEAF, &blue_branch);
             let slacks_high_branch = Node::branch(&jeans, blue_branch, Node::FALSE_LEAF);
             let slacks_branch = Node::branch(&slacks, slacks_low_branch, slacks_high_branch);
 

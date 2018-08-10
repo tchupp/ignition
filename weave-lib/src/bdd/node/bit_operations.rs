@@ -31,7 +31,7 @@ impl Not for Node {
             Node::Leaf(true) => Node::FALSE_LEAF,
             Node::Leaf(false) => Node::TRUE_LEAF,
             Node::Branch(id, ref low, ref high) => {
-                return Node::branch(&id, (**high).clone(), (**low).clone());
+                return Node::branch(&id, &**high, &**low);
             }
         };
     }
@@ -103,16 +103,16 @@ mod bitand_tests {
 
         let blue_low_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let blue_high_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let blue_branch = Node::branch(&blue, blue_low_branch.clone(), blue_high_branch.clone());
+        let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
 
         let slacks_low_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let slacks_high_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let slacks_branch = Node::branch(&slacks, slacks_low_branch.clone(), slacks_high_branch.clone());
+        let slacks_branch = Node::branch(&slacks, slacks_low_branch, slacks_high_branch);
 
         let expected = {
-            let slacks_low_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch.clone());
-            let slacks_high_branch = Node::branch(&jeans, blue_branch.clone(), Node::FALSE_LEAF);
-            let slacks_branch = Node::branch(&slacks, slacks_low_branch.clone(), slacks_high_branch.clone());
+            let slacks_low_branch = Node::branch(&jeans, Node::FALSE_LEAF, &blue_branch);
+            let slacks_high_branch = Node::branch(&jeans, &blue_branch, Node::FALSE_LEAF);
+            let slacks_branch = Node::branch(&slacks, slacks_low_branch, slacks_high_branch);
 
             slacks_branch
         };
@@ -160,15 +160,15 @@ mod bitnand_tests {
 
         let blue_low_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let blue_high_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let blue_branch = Node::branch(&blue, blue_low_branch.clone(), blue_high_branch.clone());
+        let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
 
         let slacks_low_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let slacks_high_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let slacks_branch = Node::branch(&slacks, slacks_low_branch.clone(), slacks_high_branch.clone());
+        let slacks_branch = Node::branch(&slacks, slacks_low_branch, slacks_high_branch);
 
         let expected = {
-            let slacks_high_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch.clone());
-            let slacks_low_branch = Node::branch(&jeans, blue_branch.clone(), Node::FALSE_LEAF);
+            let slacks_high_branch = Node::branch(&jeans, Node::FALSE_LEAF, &blue_branch);
+            let slacks_low_branch = Node::branch(&jeans, &blue_branch, Node::FALSE_LEAF);
             let slacks_branch = Node::branch(&slacks, slacks_low_branch, slacks_high_branch);
 
             slacks_branch
@@ -194,7 +194,7 @@ mod bitnand_tests {
         let actual = {
             let blue_high_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
             let blue_low_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
-            let shirts_family_branch = Node::branch(&blue, blue_low_branch.clone(), blue_high_branch.clone());
+            let shirts_family_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
 
             let pants_family_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
 

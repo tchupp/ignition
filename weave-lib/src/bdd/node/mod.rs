@@ -41,7 +41,13 @@ impl Node {
     pub const TRUE_LEAF: Node = Node::Leaf(true);
     pub const FALSE_LEAF: Node = Node::Leaf(false);
 
-    pub fn branch(id: &Item, low: Node, high: Node) -> Node {
-        Node::Branch(id.clone(), Box::new(low), Box::new(high))
+    pub fn branch<L, H>(id: &Item, low: L, high: H) -> Node where L: Into<Node>, H: Into<Node> {
+        Node::Branch(id.clone(), Box::new(low.into()), Box::new(high.into()))
+    }
+}
+
+impl<'a> From<&'a Node> for Node {
+    fn from(node: &Node) -> Self {
+        node.clone()
     }
 }

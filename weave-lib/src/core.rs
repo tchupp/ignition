@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 pub struct Family(String);
 
 impl Family {
-    pub fn new(id: &str) -> Family {
+    pub fn new<S>(id: S) -> Family where S: Into<String> {
         Family(id.into())
     }
 }
@@ -13,7 +13,7 @@ impl Family {
 pub struct Item(String);
 
 impl Item {
-    pub fn new(id: &str) -> Item {
+    pub fn new<S>(id: S) -> Item where S: Into<String> {
         Item(id.into())
     }
 }

@@ -305,11 +305,11 @@ mod no_rules_tests {
 
         let blue_low_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let blue_high_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch.clone());
+        let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
 
-        let jeans_low_branch = Node::branch(&slacks, Node::FALSE_LEAF, blue_branch.clone());
-        let jeans_high_branch = Node::branch(&slacks, blue_branch.clone(), Node::FALSE_LEAF);
-        let jeans_branch = Node::branch(&jeans, jeans_low_branch.clone(), jeans_high_branch.clone());
+        let jeans_low_branch = Node::branch(&slacks, Node::FALSE_LEAF, &blue_branch);
+        let jeans_high_branch = Node::branch(&slacks, blue_branch, Node::FALSE_LEAF);
+        let jeans_branch = Node::branch(&jeans, jeans_low_branch, jeans_high_branch);
 
         let expected_sibling_node = jeans_branch;
         assert_eq!(
@@ -390,13 +390,13 @@ mod exclude_rules_tests {
 
         let blue_low_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
         let blue_high_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch.clone());
+        let blue_branch = Node::branch(&blue, blue_low_branch, &blue_high_branch);
 
         let blue_branch_red_excluded = Node::branch(&blue, Node::FALSE_LEAF, blue_high_branch);
 
-        let jeans_low_branch = Node::branch(&slacks, Node::FALSE_LEAF, blue_branch.clone());
+        let jeans_low_branch = Node::branch(&slacks, Node::FALSE_LEAF, blue_branch);
         let jeans_high_branch = Node::branch(&slacks, blue_branch_red_excluded, Node::FALSE_LEAF);
-        let jeans_branch = Node::branch(&jeans, jeans_low_branch.clone(), jeans_high_branch.clone());
+        let jeans_branch = Node::branch(&jeans, jeans_low_branch, jeans_high_branch);
 
         let expected_sibling_node = jeans_branch;
         assert_eq!(

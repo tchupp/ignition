@@ -83,7 +83,7 @@ mod reduce_tests {
 
         let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
         let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let parent_branch = Node::branch(&slacks, low_branch.clone(), high_branch.clone());
+        let parent_branch = Node::branch(&slacks, &low_branch, &high_branch);
 
         let actual = Node::reduce(&parent_branch);
 
