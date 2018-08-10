@@ -3,7 +3,6 @@ use std::fmt;
 
 mod apply;
 mod bit_operations;
-mod from_item;
 mod reduce;
 mod restrict;
 mod operations;
@@ -43,6 +42,14 @@ impl Node {
 
     pub fn branch<L, H>(id: &Item, low: L, high: H) -> Node where L: Into<Node>, H: Into<Node> {
         Node::Branch(id.clone(), Box::new(low.into()), Box::new(high.into()))
+    }
+
+    pub fn positive_branch(id: &Item) -> Node {
+        Node::branch(id, Node::FALSE_LEAF, Node::TRUE_LEAF)
+    }
+
+    pub fn negative_branch(id: &Item) -> Node {
+        Node::branch(id, Node::TRUE_LEAF, Node::FALSE_LEAF)
     }
 }
 

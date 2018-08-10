@@ -62,13 +62,13 @@ mod reduce_tests {
         let jeans = Item::new("pants:jeans");
         let blue_shirt = Item::new("shirts:blue");
 
-        let low_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let low_branch = Node::positive_branch(&jeans);
+        let high_branch = Node::positive_branch(&jeans);
         let parent_branch = Node::branch(&blue_shirt, low_branch, high_branch);
 
         let actual = Node::reduce(&parent_branch);
 
-        let expected = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let expected = Node::positive_branch(&jeans);
         assert_eq!(
             expected,
             actual
@@ -81,8 +81,8 @@ mod reduce_tests {
         let jeans = Item::new("pants:jeans");
         let slacks = Item::new("pants:slacks");
 
-        let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let low_branch = Node::negative_branch(&jeans);
+        let high_branch = Node::positive_branch(&jeans);
         let parent_branch = Node::branch(&slacks, &low_branch, &high_branch);
 
         let actual = Node::reduce(&parent_branch);
@@ -100,7 +100,7 @@ mod reduce_tests {
         let blue_shirt = Item::new("shirts:blue");
 
         let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::TRUE_LEAF);
-        let high_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let high_branch = Node::negative_branch(&jeans);
         let parent_branch = Node::branch(&blue_shirt, low_branch.clone(), high_branch.clone());
 
         let actual = Node::reduce(&parent_branch);
@@ -118,7 +118,7 @@ mod reduce_tests {
         let blue_shirt = Item::new("shirts:blue");
 
         let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::TRUE_LEAF);
-        let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let high_branch = Node::positive_branch(&jeans);
         let parent_branch = Node::branch(&blue_shirt, low_branch.clone(), high_branch.clone());
 
         let actual = Node::reduce(&parent_branch);

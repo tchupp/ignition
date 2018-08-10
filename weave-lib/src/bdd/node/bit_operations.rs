@@ -63,7 +63,7 @@ mod bitand_tests {
     fn and_leaf_node_with_branch() {
         let jeans = Item::new("pants:jeans");
 
-        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let pants_family = Node::positive_branch(&jeans);
 
         assert_eq!(pants_family.clone(), Node::TRUE_LEAF & pants_family.clone());
         assert_eq!(pants_family.clone(), pants_family.clone() & Node::TRUE_LEAF);
@@ -76,7 +76,7 @@ mod bitand_tests {
     fn and_with_identical_branches_is_a_tautology() {
         let jeans = Item::new("pants:jeans");
 
-        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let pants_family = Node::positive_branch(&jeans);
 
         assert_eq!(pants_family.clone(), pants_family.clone() & pants_family.clone());
     }
@@ -85,8 +85,8 @@ mod bitand_tests {
     fn and_with_opposite_branches_is_always_false() {
         let jeans = Item::new("pants:jeans");
 
-        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let prime_pants_family = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let pants_family = Node::positive_branch(&jeans);
+        let prime_pants_family = Node::negative_branch(&jeans);
 
         assert_eq!(Node::FALSE_LEAF, pants_family.clone() & prime_pants_family.clone());
     }
@@ -99,12 +99,12 @@ mod bitand_tests {
         let jeans = Item::new("pants:jeans");
         let slacks = Item::new("pants:slacks");
 
-        let blue_low_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let blue_high_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let blue_low_branch = Node::positive_branch(&red);
+        let blue_high_branch = Node::negative_branch(&red);
         let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
 
-        let slacks_low_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let slacks_high_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let slacks_low_branch = Node::positive_branch(&jeans);
+        let slacks_high_branch = Node::negative_branch(&jeans);
         let slacks_branch = Node::branch(&slacks, slacks_low_branch, slacks_high_branch);
 
         let expected = {
@@ -141,12 +141,12 @@ mod bitnand_tests {
         let jeans = Item::new("pants:jeans");
         let slacks = Item::new("pants:slacks");
 
-        let blue_low_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let blue_high_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let blue_low_branch = Node::positive_branch(&red);
+        let blue_high_branch = Node::negative_branch(&red);
         let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
 
-        let slacks_low_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let slacks_high_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let slacks_low_branch = Node::positive_branch(&jeans);
+        let slacks_high_branch = Node::negative_branch(&jeans);
         let slacks_branch = Node::branch(&slacks, slacks_low_branch, slacks_high_branch);
 
         let expected = {
@@ -168,18 +168,18 @@ mod bitnand_tests {
         let jeans = Item::new("pants:jeans");
 
         let expected = {
-            let red_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
+            let red_branch = Node::negative_branch(&red);
             let blue_branch = Node::branch(&blue, red_branch, Node::FALSE_LEAF);
             let jeans_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch);
 
             jeans_branch
         };
         let actual = {
-            let blue_high_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
-            let blue_low_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
+            let blue_high_branch = Node::positive_branch(&red);
+            let blue_low_branch = Node::negative_branch(&red);
             let shirts_family_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
 
-            let pants_family_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+            let pants_family_branch = Node::positive_branch(&jeans);
 
             let root = pants_family_branch & shirts_family_branch;
 
@@ -213,7 +213,7 @@ mod bitor_tests {
     fn or_leaf_node_with_branch() {
         let jeans = Item::new("pants:jeans");
 
-        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let pants_family = Node::positive_branch(&jeans);
 
         assert_eq!(Node::TRUE_LEAF, Node::TRUE_LEAF | pants_family.clone());
         assert_eq!(Node::TRUE_LEAF, pants_family.clone() | Node::TRUE_LEAF);
@@ -226,7 +226,7 @@ mod bitor_tests {
     fn or_with_identical_branches_is_a_tautology() {
         let jeans = Item::new("pants:jeans");
 
-        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let pants_family = Node::positive_branch(&jeans);
 
         assert_eq!(pants_family.clone(), pants_family.clone() | pants_family.clone());
     }
@@ -235,8 +235,8 @@ mod bitor_tests {
     fn or_with_opposite_branches_is_always_false() {
         let jeans = Item::new("pants:jeans");
 
-        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let prime_pants_family = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let pants_family = Node::positive_branch(&jeans);
+        let prime_pants_family = Node::negative_branch(&jeans);
 
         assert_eq!(Node::TRUE_LEAF, pants_family.clone() | prime_pants_family.clone());
     }
@@ -250,7 +250,7 @@ mod bitor_tests {
         let slacks = Item::new("pants:slacks");
 
         let expected = {
-            let red_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
+            let red_branch = Node::positive_branch(&red);
             let blue_branch = Node::branch(&blue, red_branch, Node::TRUE_LEAF);
             let slacks_branch = Node::branch(&slacks, blue_branch, Node::TRUE_LEAF);
             let jeans_branch = Node::branch(&jeans, slacks_branch, Node::TRUE_LEAF);
@@ -258,10 +258,10 @@ mod bitor_tests {
             jeans_branch
         };
 
-        let actual = Node::from(&red) | Node::from(&blue) | Node::from(&jeans) | Node::from(&slacks);
+        let actual = Node::positive_branch(&red) | Node::positive_branch(&blue) | Node::positive_branch(&jeans) | Node::positive_branch(&slacks);
         assert_eq!(expected, actual);
 
-        let actual = Node::from(&blue) | Node::from(&red) | Node::from(&slacks) | Node::from(&jeans);
+        let actual = Node::positive_branch(&blue) | Node::positive_branch(&red) | Node::positive_branch(&slacks) | Node::positive_branch(&jeans);
         assert_eq!(expected, actual);
     }
 }
@@ -283,7 +283,7 @@ mod bitxor_tests {
     fn xor_leaf_node_with_branch() {
         let jeans = Item::new("pants:jeans");
 
-        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let pants_family = Node::positive_branch(&jeans);
 
         assert_eq!(!pants_family.clone(), Node::TRUE_LEAF ^ pants_family.clone());
         assert_eq!(!pants_family.clone(), pants_family.clone() ^ Node::TRUE_LEAF);
@@ -296,7 +296,7 @@ mod bitxor_tests {
     fn xor_with_identical_branches_is_always_false() {
         let jeans = Item::new("pants:jeans");
 
-        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let pants_family = Node::positive_branch(&jeans);
 
         assert_eq!(Node::FALSE_LEAF, pants_family.clone() ^ pants_family.clone());
     }
@@ -305,8 +305,8 @@ mod bitxor_tests {
     fn xor_with_opposite_branches_is_always_true() {
         let jeans = Item::new("pants:jeans");
 
-        let pants_family = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let prime_pants_family = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let pants_family = Node::positive_branch(&jeans);
+        let prime_pants_family = Node::negative_branch(&jeans);
 
         assert_eq!(Node::TRUE_LEAF, pants_family.clone() ^ prime_pants_family.clone());
     }
@@ -320,8 +320,8 @@ mod bitxor_tests {
         let slacks = Item::new("pants:slacks");
 
         let expected = {
-            let blue_low_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
-            let blue_high_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
+            let blue_low_branch = Node::positive_branch(&red);
+            let blue_high_branch = Node::negative_branch(&red);
             let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
 
             let jeans_low_branch = Node::branch(&slacks, blue_branch.clone(), !blue_branch.clone());
@@ -331,10 +331,10 @@ mod bitxor_tests {
             jeans_branch
         };
 
-        let actual = Node::from(&red) ^ Node::from(&blue) ^ Node::from(&jeans) ^ Node::from(&slacks);
+        let actual = Node::positive_branch(&red) ^ Node::positive_branch(&blue) ^ Node::positive_branch(&jeans) ^ Node::positive_branch(&slacks);
         assert_eq!(expected, actual);
 
-        let actual = Node::from(&blue) ^ Node::from(&red) ^ Node::from(&slacks) ^ Node::from(&jeans);
+        let actual = Node::positive_branch(&blue) ^ Node::positive_branch(&red) ^ Node::positive_branch(&slacks) ^ Node::positive_branch(&jeans);
         assert_eq!(expected, actual);
     }
 }

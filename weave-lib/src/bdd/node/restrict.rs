@@ -38,13 +38,13 @@ mod restrict_tests {
         let jeans = Item::new("pants:jeans");
         let slacks = Item::new("pants:slacks");
 
-        let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let low_branch = Node::negative_branch(&jeans);
+        let high_branch = Node::positive_branch(&jeans);
         let parent_branch = Node::branch(&slacks, low_branch, high_branch);
 
         let actual = Node::restrict(&parent_branch, &jeans, true);
 
-        let expected = Node::branch(&slacks, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let expected = Node::positive_branch(&slacks);
         assert_eq!(
             expected,
             actual
@@ -53,7 +53,7 @@ mod restrict_tests {
 
         let actual = Node::restrict(&parent_branch, &jeans, false);
 
-        let expected = Node::branch(&slacks, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let expected = Node::negative_branch(&slacks);
         assert_eq!(
             expected,
             actual
@@ -65,13 +65,13 @@ mod restrict_tests {
         let jeans = Item::new("pants:jeans");
         let slacks = Item::new("pants:slacks");
 
-        let low_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let high_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let low_branch = Node::negative_branch(&jeans);
+        let high_branch = Node::positive_branch(&jeans);
         let parent_branch = Node::branch(&slacks, low_branch, high_branch);
 
         let actual = Node::restrict(&parent_branch, &slacks, true);
 
-        let expected = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let expected = Node::positive_branch(&jeans);
         assert_eq!(
             expected,
             actual
@@ -80,7 +80,7 @@ mod restrict_tests {
 
         let actual = Node::restrict(&parent_branch, &slacks, false);
 
-        let expected = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let expected = Node::negative_branch(&jeans);
         assert_eq!(
             expected,
             actual
