@@ -78,20 +78,20 @@ mod tests {
         let jeans = Item::new("pants:jeans");
         let slacks = Item::new("pants:slacks");
 
-        let blue_false_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let blue_true_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let blue_branch = Node::branch(&blue, blue_false_branch, blue_true_branch);
+        let blue_low_branch = Node::branch(&red, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let blue_high_branch = Node::branch(&red, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let blue_branch = Node::branch(&blue, blue_low_branch, blue_high_branch);
 
-        let slacks_false_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
-        let slacks_true_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
-        let slacks_branch = Node::branch(&slacks, slacks_false_branch, slacks_true_branch);
+        let slacks_low_branch = Node::branch(&jeans, Node::FALSE_LEAF, Node::TRUE_LEAF);
+        let slacks_high_branch = Node::branch(&jeans, Node::TRUE_LEAF, Node::FALSE_LEAF);
+        let slacks_branch = Node::branch(&slacks, slacks_low_branch, slacks_high_branch);
 
         let actual = apply(&slacks_branch, &blue_branch, &AndOperation::new());
 
         let expected = {
-            let slacks_false_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch.clone());
-            let slacks_true_branch = Node::branch(&jeans, blue_branch, Node::FALSE_LEAF);
-            let slacks_branch = Node::branch(&slacks, slacks_false_branch, slacks_true_branch);
+            let slacks_low_branch = Node::branch(&jeans, Node::FALSE_LEAF, blue_branch.clone());
+            let slacks_high_branch = Node::branch(&jeans, blue_branch, Node::FALSE_LEAF);
+            let slacks_branch = Node::branch(&slacks, slacks_low_branch, slacks_high_branch);
 
             slacks_branch
         };
