@@ -51,3 +51,15 @@ impl<'a> From<&'a Node> for Node {
         node.clone()
     }
 }
+
+impl From<Box<Node>> for Node {
+    fn from(node: Box<Node>) -> Self {
+        *node.clone()
+    }
+}
+
+impl<'a> From<&'a Box<Node>> for Node {
+    fn from(node: &Box<Node>) -> Self {
+        *node.clone()
+    }
+}

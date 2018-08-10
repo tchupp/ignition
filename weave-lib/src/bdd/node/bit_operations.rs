@@ -31,7 +31,7 @@ impl Not for Node {
             Node::Leaf(true) => Node::FALSE_LEAF,
             Node::Leaf(false) => Node::TRUE_LEAF,
             Node::Branch(id, ref low, ref high) => {
-                return Node::branch(&id, &**high, &**low);
+                return Node::branch(&id, high, low);
             }
         };
     }
