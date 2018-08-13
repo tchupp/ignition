@@ -1,18 +1,12 @@
+use closet_builder::ClosetBuilderError;
+use closet_builder::ClosetBuilderError::ConflictingFamilies;
+use closet_builder::ClosetBuilderError::ExclusionError;
+use closet_builder::ClosetBuilderError::InclusionError;
 use core::Family;
 use core::Item;
 use iterative::closet::Closet;
-use iterative::closet_builder::Error::ConflictingFamilies;
-use iterative::closet_builder::Error::ExclusionError;
-use iterative::closet_builder::Error::InclusionError;
 use std::collections::BTreeMap;
 use std::collections::HashSet;
-
-#[derive(Debug, Eq, PartialEq)]
-pub enum Error {
-    ConflictingFamilies(Vec<(Item, Vec<Family>)>),
-    InclusionError(Vec<(Family, Vec<Item>)>),
-    ExclusionError(Vec<(Family, Vec<Item>)>),
-}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ClosetBuilder {
@@ -66,7 +60,7 @@ impl ClosetBuilder {
         self.build().expect("expected build to return Closet")
     }
 
-    pub fn build(&self) -> Result<Closet, Error> {
+    pub fn build(&self) -> Result<Closet, ClosetBuilderError> {
         ClosetBuilder::validate(self)?;
 
         let contents = self.contents.clone();
@@ -76,7 +70,7 @@ impl ClosetBuilder {
         Ok(Closet::new(contents, item_index, exclusions, inclusions))
     }
 
-    fn validate(&self) -> Result<(), Error> {
+    fn validate(&self) -> Result<(), ClosetBuilderError> {
         let conflicts = ClosetBuilder::find_conflicting_families(self);
         if !conflicts.is_empty() {
             return Err(ConflictingFamilies(conflicts));
