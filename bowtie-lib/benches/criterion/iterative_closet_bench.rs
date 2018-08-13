@@ -1,9 +1,9 @@
 use criterion::Criterion;
-use weave_lib::core::Family;
-use weave_lib::core::Item;
-use weave_lib::iterative::closet::Closet;
-use weave_lib::iterative::closet_builder::ClosetBuilder;
-use weave_lib::iterative::outfits::complete_outfit;
+use bowtie_lib::core::Family;
+use bowtie_lib::core::Item;
+use bowtie_lib::iterative::closet::Closet;
+use bowtie_lib::iterative::closet_builder::ClosetBuilder;
+use bowtie_lib::iterative::outfits::complete_outfit;
 
 fn families_2_items_4_no_selections() -> Closet {
     let shirt1 = Item::new("shirts:1");

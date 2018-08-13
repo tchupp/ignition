@@ -1,11 +1,11 @@
-extern crate weave_lib;
+extern crate bowtie_lib;
 
 #[cfg(test)]
 mod tests {
-    use weave_lib::core::Family;
-    use weave_lib::core::Item;
-    use weave_lib::bdd::closet_builder::ClosetBuilder;
-    use weave_lib::bdd::closet_builder::Error;
+    use bowtie_lib::core::Family;
+    use bowtie_lib::core::Item;
+    use bowtie_lib::bdd::closet_builder::ClosetBuilder;
+    use bowtie_lib::bdd::closet_builder::Error;
 
     #[test]
     fn adding_item_to_two_families_returns_error() {

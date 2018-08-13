@@ -1,8 +1,8 @@
 use criterion::Criterion;
-use weave_lib::bdd::closet::Closet;
-use weave_lib::bdd::closet_builder::ClosetBuilder;
-use weave_lib::core::Family;
-use weave_lib::core::Item;
+use bowtie_lib::bdd::closet::Closet;
+use bowtie_lib::bdd::closet_builder::ClosetBuilder;
+use bowtie_lib::core::Family;
+use bowtie_lib::core::Item;
 
 fn build_closet() -> Closet {
     let shirt1 = Item::new("shirts:1");

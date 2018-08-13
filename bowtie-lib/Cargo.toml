@@ -1,5 +1,5 @@
 [package]
-name = "weave-lib"
+name = "bowtie-lib"
 version = "0.1.0"
 authors = ["theochupp <tclchiam@gmail.com>"]
 
@@ -10,6 +10,6 @@ authors = ["theochupp <tclchiam@gmail.com>"]
 criterion = "0.2.4"
 
 [[bench]]
-name = "weave_bench"
+name = "bowtie_bench"
 harness = false
 path = "benches/criterion/lib.rs"

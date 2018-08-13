@@ -1,16 +1,16 @@
-extern crate weave_lib;
+extern crate bowtie_lib;
 
 #[cfg(test)]
 mod no_rules_tests {
     use std::collections::BTreeMap;
-    use weave_lib::core::Family;
-    use weave_lib::core::Item;
-    use weave_lib::core::Outfit;
-    use weave_lib::core::OutfitError::Validation;
-    use weave_lib::core::ValidationError::MultipleItemsPerFamily;
-    use weave_lib::core::ValidationError::UnknownItems;
-    use weave_lib::iterative::closet_builder::ClosetBuilder;
-    use weave_lib::iterative::outfits::complete_outfit;
+    use bowtie_lib::core::Family;
+    use bowtie_lib::core::Item;
+    use bowtie_lib::core::Outfit;
+    use bowtie_lib::core::OutfitError::Validation;
+    use bowtie_lib::core::ValidationError::MultipleItemsPerFamily;
+    use bowtie_lib::core::ValidationError::UnknownItems;
+    use bowtie_lib::iterative::closet_builder::ClosetBuilder;
+    use bowtie_lib::iterative::outfits::complete_outfit;
 
     #[test]
     fn no_rules_no_selections() {
@@ -147,13 +147,13 @@ mod no_rules_tests {
 
 #[cfg(test)]
 mod exclusion_rules_tests {
-    use weave_lib::core::Family;
-    use weave_lib::core::Item;
-    use weave_lib::core::Outfit;
-    use weave_lib::core::OutfitError::Validation;
-    use weave_lib::core::ValidationError::ConflictingItems;
-    use weave_lib::iterative::closet_builder::ClosetBuilder;
-    use weave_lib::iterative::outfits::complete_outfit;
+    use bowtie_lib::core::Family;
+    use bowtie_lib::core::Item;
+    use bowtie_lib::core::Outfit;
+    use bowtie_lib::core::OutfitError::Validation;
+    use bowtie_lib::core::ValidationError::ConflictingItems;
+    use bowtie_lib::iterative::closet_builder::ClosetBuilder;
+    use bowtie_lib::iterative::outfits::complete_outfit;
 
     #[test]
     fn exclusion_rule_with_one_selection() {
@@ -244,11 +244,11 @@ mod exclusion_rules_tests {
 
 #[cfg(test)]
 mod inclusion_rules_tests {
-    use weave_lib::core::Family;
-    use weave_lib::core::Item;
-    use weave_lib::core::Outfit;
-    use weave_lib::iterative::closet_builder::ClosetBuilder;
-    use weave_lib::iterative::outfits::complete_outfit;
+    use bowtie_lib::core::Family;
+    use bowtie_lib::core::Item;
+    use bowtie_lib::core::Outfit;
+    use bowtie_lib::iterative::closet_builder::ClosetBuilder;
+    use bowtie_lib::iterative::outfits::complete_outfit;
 
     #[test]
     fn inclusion_rule_with_one_selection() {

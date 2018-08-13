@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    "weave-cli",
-    "weave-lib"
+    "bowtie-cli",
+    "bowtie-lib"
 ]

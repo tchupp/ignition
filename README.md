@@ -1,5 +1,5 @@
 # Weave
-[![Build Status](https://travis-ci.org/tclchiam/weave-ce.svg?branch=master)](https://travis-ci.org/tclchiam/weave-ce)
+[![Build Status](https://travis-ci.org/tclchiam/bowtie.svg?branch=master)](https://travis-ci.org/tclchiam/bowtie)
 
 Weave is a library that helps us model Sparse Sets of Subsets Completions
 
