@@ -4,8 +4,8 @@ extern crate bowtie_lib;
 mod tests {
     use bowtie_lib::core::Family;
     use bowtie_lib::core::Item;
-    use bowtie_lib::iterative::closet_builder::ClosetBuilder;
-    use bowtie_lib::iterative::closet_builder::Error;
+    use bowtie_lib::bdd::closet_builder::ClosetBuilder;
+    use bowtie_lib::closet_builder::ClosetBuilderError;
 
     #[test]
     fn adding_item_to_two_families_returns_error() {
@@ -22,7 +22,7 @@ mod tests {
         let error = closet.expect_err("expected ConflictingFamiliesError, but was");
 
         assert_eq!(
-            Error::ConflictingFamilies(vec![(blue, vec![shirts, pants])]),
+            ClosetBuilderError::ConflictingFamilies(vec![(blue, vec![shirts, pants])]),
             error
         );
     }
@@ -49,7 +49,7 @@ mod tests {
         let error = closet.expect_err("expected InclusionError, but was");
 
         assert_eq!(
-            Error::InclusionError(vec![(shirts, vec![blue, red])]),
+            ClosetBuilderError::InclusionError(vec![(shirts, vec![blue, red])]),
             error
         );
     }
@@ -76,7 +76,7 @@ mod tests {
         let error = closet.expect_err("expected ExclusionError, but was");
 
         assert_eq!(
-            Error::ExclusionError(vec![(shirts, vec![blue, red])]),
+            ClosetBuilderError::ExclusionError(vec![(shirts, vec![blue, red])]),
             error
         );
     }
