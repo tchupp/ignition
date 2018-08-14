@@ -6,12 +6,12 @@ use core::OutfitError;
 use core::OutfitError::Validation;
 use core::ValidationError::UnknownItems;
 use core::ValidationError::MultipleItemsPerFamily;
-use core::ValidationError::ConflictingItems;
+use core::ValidationError::IncompatibleSelections;
 use std::collections::BTreeMap;
 use core::Family;
 
 pub fn complete_outfit(closet: &Closet, selections: Vec<Item>) -> Result<Outfit, OutfitError> {
-    validate(&closet, &selections)?;
+    validate(closet, &selections)?;
 
     let mut root: Node = selections.iter()
         .fold(closet.root().clone(), |new_root, selection| Node::restrict(&new_root, selection, true));
@@ -42,6 +42,9 @@ fn validate(closet: &Closet, selections: &Vec<Item>) -> Result<(), OutfitError> 
     }
     if let Some(items) = find_duplicate_items(&closet, &selections) {
         return Err(Validation(MultipleItemsPerFamily(items)));
+    }
+    if let Some(items) = find_conflicting_items(&closet, &selections) {
+        return Err(Validation(IncompatibleSelections(items)));
     }
 
     return Ok(());
@@ -79,3 +82,22 @@ fn find_duplicate_items(closet: &Closet, selections: &Vec<Item>) -> Option<BTree
         None
     }
 }
+
+fn find_conflicting_items(closet: &Closet, selections: &Vec<Item>) -> Option<Vec<Item>> {
+    let root: Node = selections.iter()
+        .fold(closet.root().clone(), |new_root, selection| Node::restrict(&new_root, selection, true));
+
+    let mut outfit_items = selections.clone();
+    loop {
+        match root {
+            Node::Leaf(false) => {
+                outfit_items.sort();
+                return Some(outfit_items);
+            },
+            _ => {
+                return None;
+            },
+        }
+    }
+}
+

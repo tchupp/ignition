@@ -3,7 +3,7 @@ use core::Item;
 use core::Outfit;
 use core::OutfitError;
 use core::OutfitError::Validation;
-use core::ValidationError::ConflictingItems;
+use core::ValidationError::IncompatibleSelections;
 use core::ValidationError::MultipleItemsPerFamily;
 use core::ValidationError::UnknownItems;
 use iterative::closet::Closet;
@@ -61,7 +61,7 @@ fn validate(closet: &Closet, selections: &Vec<Item>) -> Result<(), OutfitError> 
         return Err(Validation(MultipleItemsPerFamily(items)));
     }
     if let Some(items) = find_conflicting_items(&closet, &selections) {
-        return Err(Validation(ConflictingItems(items)));
+        return Err(Validation(IncompatibleSelections(items)));
     }
 
     return Ok(());

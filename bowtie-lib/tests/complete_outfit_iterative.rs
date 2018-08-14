@@ -151,7 +151,7 @@ mod exclusion_rules_tests {
     use bowtie_lib::core::Item;
     use bowtie_lib::core::Outfit;
     use bowtie_lib::core::OutfitError::Validation;
-    use bowtie_lib::core::ValidationError::ConflictingItems;
+    use bowtie_lib::core::ValidationError::IncompatibleSelections;
     use bowtie_lib::iterative::closet_builder::ClosetBuilder;
     use bowtie_lib::iterative::outfits::complete_outfit;
 
@@ -206,7 +206,7 @@ mod exclusion_rules_tests {
             .add_exclusion_rule(&blue, &jeans);
         let closet = closet_builder.must_build();
 
-        let expected = Err(Validation(ConflictingItems(vec![jeans.clone(), blue.clone()])));
+        let expected = Err(Validation(IncompatibleSelections(vec![jeans.clone(), blue.clone()])));
         assert_eq!(
             expected,
             complete_outfit(closet, vec![blue, jeans])

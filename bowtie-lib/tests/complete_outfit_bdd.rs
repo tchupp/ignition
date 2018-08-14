@@ -151,7 +151,7 @@ mod exclusion_rules_tests {
     use bowtie_lib::core::Item;
     use bowtie_lib::core::Outfit;
     use bowtie_lib::core::OutfitError::Validation;
-    use bowtie_lib::core::ValidationError::ConflictingItems;
+    use bowtie_lib::core::ValidationError::IncompatibleSelections;
 
     #[test]
     fn exclusion_rule_with_one_selection() {
@@ -182,6 +182,59 @@ mod exclusion_rules_tests {
         assert_eq!(
             expected,
             closet.complete_outfit(vec![jeans])
+        );
+    }
+
+    #[test]
+    fn exclusion_rule_with_conflicting_selection() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks)
+            .add_exclusion_rule(&blue, &jeans);
+        let closet = closet_builder.must_build();
+
+        let expected = Err(Validation(IncompatibleSelections(vec![jeans.clone(), blue.clone()])));
+        assert_eq!(
+            expected,
+            closet.complete_outfit(vec![blue, jeans])
+        );
+    }
+
+    #[test]
+    fn exclusion_rules_with_impossible_selection() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks)
+            .add_exclusion_rule(&blue, &jeans)
+            .add_exclusion_rule(&blue, &slacks);
+        let closet = closet_builder.must_build();
+
+        let expected = Err(Validation(IncompatibleSelections(vec![blue.clone()])));
+        assert_eq!(
+            expected,
+            closet.complete_outfit(vec![blue])
         );
     }
 }

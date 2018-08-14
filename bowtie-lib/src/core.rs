@@ -37,6 +37,6 @@ pub enum OutfitError {
 #[derive(Debug, Eq, PartialEq)]
 pub enum ValidationError {
     UnknownItems(Vec<Item>),
-    ConflictingItems(Vec<Item>),
+    IncompatibleSelections(Vec<Item>),
     MultipleItemsPerFamily(BTreeMap<Family, Vec<Item>>),
 }
