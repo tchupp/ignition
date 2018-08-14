@@ -1,14 +1,14 @@
 use bdd::closet::Closet;
 use bdd::node::Node;
+use core::Family;
 use core::Item;
 use core::Outfit;
 use core::OutfitError;
 use core::OutfitError::Validation;
-use core::ValidationError::UnknownItems;
-use core::ValidationError::MultipleItemsPerFamily;
 use core::ValidationError::IncompatibleSelections;
+use core::ValidationError::MultipleItemsPerFamily;
+use core::ValidationError::UnknownItems;
 use std::collections::BTreeMap;
-use core::Family;
 
 pub fn complete_outfit(closet: &Closet, selections: Vec<Item>) -> Result<Outfit, OutfitError> {
     validate(closet, &selections)?;
@@ -18,16 +18,17 @@ pub fn complete_outfit(closet: &Closet, selections: Vec<Item>) -> Result<Outfit,
 
     let mut outfit_items = selections;
     loop {
-        match root.clone() {
+        match root {
             Node::Branch(id, low, high) => {
-                let high = Node::from(high);
-                if &high != &Node::FALSE_LEAF {
-                    outfit_items.push(id);
-                    root = high;
-                } else {
-                    root = Node::from(low);
+                let high = *high;
+                match high {
+                    Node::Leaf(false) => root = *low,
+                    _ => {
+                        outfit_items.push(id);
+                        root = high;
+                    }
                 }
-            },
+            }
             Node::Leaf(_val) => {
                 outfit_items.sort();
                 return Ok(Outfit::new(outfit_items));
@@ -93,10 +94,10 @@ fn find_conflicting_items(closet: &Closet, selections: &Vec<Item>) -> Option<Vec
             Node::Leaf(false) => {
                 outfit_items.sort();
                 return Some(outfit_items);
-            },
+            }
             _ => {
                 return None;
-            },
+            }
         }
     }
 }

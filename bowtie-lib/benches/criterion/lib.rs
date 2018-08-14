@@ -2,12 +2,12 @@
 extern crate criterion;
 extern crate bowtie_lib;
 
-mod bdd_closet_bench;
-mod iterative_closet_bench;
+mod closet_bench_bdd;
+mod closet_bench_iterative;
 
 use criterion::Criterion;
-use bdd_closet_bench::bdd_closet_bench;
-use iterative_closet_bench::iterative_closet_bench;
+use closet_bench_bdd::bdd_closet_bench;
+use closet_bench_iterative::iterative_closet_bench;
 
 criterion_group!(
     benches,
