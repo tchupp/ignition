@@ -2,6 +2,7 @@ use bdd::node::Node;
 use bdd::node::operations::Operation;
 use core::Item;
 use std::cmp::Ordering;
+use bdd::node::arena;
 
 fn get_node(id: &Item, low: &Node, high: &Node) -> Node {
     if low == high {
@@ -13,22 +14,21 @@ fn get_node(id: &Item, low: &Node, high: &Node) -> Node {
 
 fn get_first_id(f1: &Node, f2: &Node) -> Option<Item> {
     match f1 {
-        Node::Leaf(_) => {
+        Node::Leaf(_) =>
             match f2 {
                 Node::Leaf(_) => None,
-                Node::Branch(id_2, ref _low, ref _high) => Some(id_2.clone())
-            }
-        }
-        Node::Branch(id_1, ref _low, ref _high) => {
+                Node::Branch(id_2, _low, _high) => Some(id_2.clone())
+            },
+        Node::Branch(id_1, _low, _high) =>
             match f2 {
                 Node::Leaf(_) => Some(id_1.clone()),
-                Node::Branch(id_2, ref _low, ref _high) => match id_1.cmp(&id_2) {
-                    Ordering::Less => Some(id_1.clone()),
-                    Ordering::Equal => Some(id_1.clone()),
-                    Ordering::Greater => Some(id_2.clone()),
-                }
+                Node::Branch(id_2, _low, _high) =>
+                    match id_1.cmp(&id_2) {
+                        Ordering::Less => Some(id_1.clone()),
+                        Ordering::Equal => Some(id_1.clone()),
+                        Ordering::Greater => Some(id_2.clone()),
+                    },
             }
-        }
     }
 }
 
@@ -38,28 +38,33 @@ pub fn apply(f1: &Node, f2: &Node, op: &Operation) -> Node {
     }
 
     let first_id = get_first_id(f1, f2).expect("BLAH");
-    let (f1_l, f1_h) = if let Node::Branch(id, ref low, ref high) = f1 {
+
+    let (f1_l, f1_h) = if let Node::Branch(id, low, high) = f1 {
         if &first_id == id {
-            (&**low, &**high)
+            let low = arena::get(*low);
+            let high = arena::get(*high);
+            (low, high)
         } else {
-            (f1, f1)
+            (f1.clone(), f1.clone())
         }
     } else {
-        (f1, f1)
+        (f1.clone(), f1.clone())
     };
 
-    let (f2_l, f2_h) = if let Node::Branch(id, ref low, ref high) = f2 {
+    let (f2_l, f2_h) = if let Node::Branch(id, low, high) = f2 {
         if &first_id == id {
-            (&**low, &**high)
+            let low = arena::get(*low);
+            let high = arena::get(*high);
+            (low, high)
         } else {
-            (f2, f2)
+            (f2.clone(), f2.clone())
         }
     } else {
-        (f2, f2)
+        (f2.clone(), f2.clone())
     };
 
-    let low = apply(f1_l, f2_l, op);
-    let high = apply(f1_h, f2_h, op);
+    let low = apply(&f1_l, &f2_l, op);
+    let high = apply(&f1_h, &f2_h, op);
     return get_node(&first_id, &low, &high);
 }
 

@@ -1,54 +1,25 @@
+use bdd::node::arena;
 use bdd::node::Node;
-use std::collections::HashMap;
 
 impl Node {
     pub fn reduce(node: &Node) -> Node {
         return match node {
             Node::Leaf(true) => Node::TRUE_LEAF,
             Node::Leaf(false) => Node::FALSE_LEAF,
-            Node::Branch(id, ref low, ref high) => {
-                let reduced_low = Node::reduce(low);
-                let reduced_high = Node::reduce(high);
+            Node::Branch(id, low, high) => {
+                let low = arena::get(*low);
+                let high = arena::get(*high);
+
+                let reduced_low = Node::reduce(&low);
+                let reduced_high = Node::reduce(&high);
 
                 if reduced_low == reduced_high {
                     return reduced_low;
                 }
 
                 return Node::branch(id, reduced_low, reduced_high);
-            }
+            },
         };
-    }
-
-    pub fn reduce_iter(node: &Node) -> Node {
-        let mut inner_stack: Vec<&Node> = vec![node];
-        let mut stack: Vec<&Node> = vec![];
-
-        while !inner_stack.is_empty() {
-            let current = inner_stack.pop();
-
-            if let Some(current_node) = current {
-                if let Node::Branch(_id, ref low, ref high) = current_node {
-                    stack.push(current_node);
-
-                    if let Node::Branch(_id, ref _low, ref _high) = &**low {
-                        inner_stack.push(low);
-                    }
-                    if let Node::Branch(_id, ref _low, ref _high) = &**high {
-                        inner_stack.push(high);
-                    }
-                }
-            }
-        }
-        stack.reverse();
-
-        let reduce_cache = stack.iter()
-            .fold(HashMap::new(), |mut reduce_cache: HashMap<&Node, Node>, &current_node| {
-                reduce_cache.entry(current_node).or_insert_with(|| Node::reduce(current_node));
-                reduce_cache
-            });
-
-
-        return reduce_cache.get(node).unwrap_or(node).clone();
     }
 }
 

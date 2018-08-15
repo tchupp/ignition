@@ -1,4 +1,5 @@
 use bdd::closet::Closet;
+use bdd::node::arena;
 use bdd::node::Node;
 use std::cmp::Ordering;
 
@@ -9,8 +10,12 @@ impl Closet {
 
     fn node_count_internal(node: &Node) -> u64 {
         return 1 + match node {
-            Node::Branch(_id, ref low, ref high) => Closet::node_count_internal(low) + Closet::node_count_internal(high),
-            Node::Leaf(_val) => 0
+            Node::Leaf(_val) => 0,
+            Node::Branch(_id, low, high) => {
+                let low = arena::get(*low);
+                let high = arena::get(*high);
+                Closet::node_count_internal(&low) + Closet::node_count_internal(&high)
+            }
         };
     }
 
@@ -20,8 +25,12 @@ impl Closet {
 
     fn leaf_count_internal(node: &Node) -> u64 {
         return match node {
-            Node::Branch(_id, ref low, ref high) => Closet::leaf_count_internal(low) + Closet::leaf_count_internal(high),
-            Node::Leaf(_val) => 1
+            Node::Leaf(_val) => 1,
+            Node::Branch(_id, low, high) => {
+                let low = arena::get(*low);
+                let high = arena::get(*high);
+                Closet::leaf_count_internal(&low) + Closet::leaf_count_internal(&high)
+            }
         };
     }
 
@@ -32,9 +41,11 @@ impl Closet {
     fn depth_internal(node: &Node) -> u64 {
         return match node {
             Node::Leaf(_val) => 1,
-            Node::Branch(_id, ref low, ref high) => {
-                let low_depth = Closet::depth_internal(low);
-                let high_depth = Closet::depth_internal(high);
+            Node::Branch(_id, low, high) => {
+                let low = arena::get(*low);
+                let high = arena::get(*high);
+                let low_depth = Closet::depth_internal(&low);
+                let high_depth = Closet::depth_internal(&high);
 
                 return match low_depth.cmp(&high_depth) {
                     Ordering::Less => 1 + high_depth,

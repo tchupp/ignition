@@ -38,9 +38,7 @@ impl Not for Node {
         return match &self {
             Node::Leaf(true) => Node::FALSE_LEAF,
             Node::Leaf(false) => Node::TRUE_LEAF,
-            Node::Branch(id, ref low, ref high) => {
-                return Node::branch(&id, high, low);
-            }
+            Node::Branch(id, low, high) => Node::branch(id, *high, *low)
         };
     }
 }
@@ -323,7 +321,7 @@ mod bitxor_tests {
             let slacks_branch = Node::positive_branch(&slacks);
             let slacks_branch_prime = Node::negative_branch(&slacks);
 
-             Node::branch(&jeans, slacks_branch, slacks_branch_prime)
+            Node::branch(&jeans, slacks_branch, slacks_branch_prime)
         };
 
         assert_eq!(expected, jeans_branch ^ slacks_branch);

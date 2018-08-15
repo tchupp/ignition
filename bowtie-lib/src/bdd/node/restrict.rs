@@ -1,3 +1,4 @@
+use bdd::node::arena;
 use bdd::node::Node;
 use core::Item;
 
@@ -6,17 +7,20 @@ impl Node {
         return match node {
             Node::Leaf(true) => Node::TRUE_LEAF,
             Node::Leaf(false) => Node::FALSE_LEAF,
-            Node::Branch(id, ref low, ref high) => {
+            Node::Branch(id, low, high) => {
+                let low = arena::get(*low);
+                let high = arena::get(*high);
+
                 if id == item {
                     if !selected {
-                        return (**low).clone();
+                        return low;
                     } else {
-                        return (**high).clone();
+                        return high;
                     }
                 }
 
-                let restricted_low = Node::restrict(low, item, selected);
-                let restricted_high = Node::restrict(high, item, selected);
+                let restricted_low = Node::restrict(&low, item, selected);
+                let restricted_high = Node::restrict(&high, item, selected);
 
                 if restricted_low == restricted_high {
                     return restricted_low;

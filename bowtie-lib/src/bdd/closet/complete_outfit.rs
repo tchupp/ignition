@@ -1,4 +1,5 @@
 use bdd::closet::Closet;
+use bdd::node::arena;
 use bdd::node::Node;
 use core::Family;
 use core::Item;
@@ -20,11 +21,14 @@ pub fn complete_outfit(closet: &Closet, selections: Vec<Item>) -> Result<Outfit,
     loop {
         match root {
             Node::Branch(id, low, high) => {
-                match *high {
-                    Node::Leaf(false) => root = *low,
+                let high = arena::get(high);
+                let low = arena::get(low);
+
+                match high {
+                    Node::Leaf(false) => root = low,
                     _ => {
                         outfit_items.push(id);
-                        root = *high;
+                        root = high;
                     }
                 }
             }
