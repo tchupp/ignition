@@ -20,12 +20,11 @@ pub fn complete_outfit(closet: &Closet, selections: Vec<Item>) -> Result<Outfit,
     loop {
         match root {
             Node::Branch(id, low, high) => {
-                let high = *high;
-                match high {
+                match *high {
                     Node::Leaf(false) => root = *low,
                     _ => {
                         outfit_items.push(id);
-                        root = high;
+                        root = *high;
                     }
                 }
             }

@@ -7,6 +7,7 @@ use core::OutfitError;
 use std::collections::BTreeMap;
 
 mod complete_outfit;
+mod node_count;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Closet {
