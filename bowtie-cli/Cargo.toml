@@ -1,6 +1,0 @@
-[package]
-name = "bowtie-cli"
-version = "0.1.0"
-authors = ["theochupp <tclchiam@gmail.com>"]
-
-[dependencies]
