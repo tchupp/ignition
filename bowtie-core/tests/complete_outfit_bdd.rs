@@ -1,14 +1,14 @@
-extern crate bowtie_lib;
+extern crate bowtie_core;
 
 #[cfg(test)]
 mod no_rules_tests {
-    use bowtie_lib::core::Family;
-    use bowtie_lib::core::Item;
-    use bowtie_lib::core::Outfit;
-    use bowtie_lib::core::OutfitError::Validation;
-    use bowtie_lib::core::ValidationError::MultipleItemsPerFamily;
-    use bowtie_lib::core::ValidationError::UnknownItems;
-    use bowtie_lib::iterative::closet_builder::ClosetBuilder;
+    use bowtie_core::bdd::closet_builder::ClosetBuilder;
+    use bowtie_core::core::Family;
+    use bowtie_core::core::Item;
+    use bowtie_core::core::Outfit;
+    use bowtie_core::core::OutfitError::Validation;
+    use bowtie_core::core::ValidationError::MultipleItemsPerFamily;
+    use bowtie_core::core::ValidationError::UnknownItems;
     use std::collections::BTreeMap;
 
     #[test]
@@ -146,12 +146,12 @@ mod no_rules_tests {
 
 #[cfg(test)]
 mod exclusion_rules_tests {
-    use bowtie_lib::core::Family;
-    use bowtie_lib::core::Item;
-    use bowtie_lib::core::Outfit;
-    use bowtie_lib::core::OutfitError::Validation;
-    use bowtie_lib::core::ValidationError::IncompatibleSelections;
-    use bowtie_lib::iterative::closet_builder::ClosetBuilder;
+    use bowtie_core::bdd::closet_builder::ClosetBuilder;
+    use bowtie_core::core::Family;
+    use bowtie_core::core::Item;
+    use bowtie_core::core::Outfit;
+    use bowtie_core::core::OutfitError::Validation;
+    use bowtie_core::core::ValidationError::IncompatibleSelections;
 
     #[test]
     fn exclusion_rule_with_one_selection() {
@@ -212,7 +212,6 @@ mod exclusion_rules_tests {
     }
 
     #[test]
-    #[should_panic]
     fn exclusion_rules_with_impossible_selection() {
         let blue = Item::new("shirts:blue");
         let red = Item::new("shirts:red");
@@ -232,7 +231,7 @@ mod exclusion_rules_tests {
             .add_exclusion_rule(&blue, &slacks);
         let closet = closet_builder.must_build();
 
-        let expected = Ok(Outfit::new(vec![blue.clone()]));
+        let expected = Err(Validation(IncompatibleSelections(vec![blue.clone()])));
         assert_eq!(
             expected,
             closet.complete_outfit(vec![blue])
@@ -242,10 +241,10 @@ mod exclusion_rules_tests {
 
 #[cfg(test)]
 mod inclusion_rules_tests {
-    use bowtie_lib::core::Family;
-    use bowtie_lib::core::Item;
-    use bowtie_lib::core::Outfit;
-    use bowtie_lib::iterative::closet_builder::ClosetBuilder;
+    use bowtie_core::bdd::closet_builder::ClosetBuilder;
+    use bowtie_core::core::Family;
+    use bowtie_core::core::Item;
+    use bowtie_core::core::Outfit;
 
     #[test]
     fn inclusion_rule_with_one_selection() {

@@ -1,8 +1,8 @@
+use bowtie_core::core::Family;
+use bowtie_core::core::Item;
+use bowtie_core::iterative::closet::Closet;
+use bowtie_core::iterative::closet_builder::ClosetBuilder;
 use criterion::Criterion;
-use bowtie_lib::core::Family;
-use bowtie_lib::core::Item;
-use bowtie_lib::bdd::closet::Closet;
-use bowtie_lib::bdd::closet_builder::ClosetBuilder;
 
 fn families_2_items_4_no_selections() -> Closet {
     let shirt1 = Item::new("shirts:1");
@@ -113,20 +113,20 @@ fn families_4_items_16_no_selections() -> Closet {
     closet_builder.must_build()
 }
 
-pub fn bdd_closet_bench(c: &mut Criterion) {
-    c.bench_function("bdd complete_outfit(2 families, 4 items)",
+pub fn iterative_closet_bench(c: &mut Criterion) {
+    c.bench_function("iterative complete_outfit(2 families, 4 items)",
                      move |b| b.iter_with_setup(
                          || families_2_items_4_no_selections(),
                          |closet| closet.complete_outfit(vec![]),
                      ),
     );
-    c.bench_function("bdd complete_outfit(2 families, 16 items)",
+    c.bench_function("iterative complete_outfit(2 families, 16 items)",
                      move |b| b.iter_with_setup(
                          || families_2_items_16_no_selections(),
                          |closet| closet.complete_outfit(vec![]),
                      ),
     );
-    c.bench_function("bdd complete_outfit(4 families, 16 items)",
+    c.bench_function("iterative complete_outfit(4 families, 16 items)",
                      move |b| b.iter_with_setup(
                          || families_4_items_16_no_selections(),
                          |closet| closet.complete_outfit(vec![]),

@@ -1,6 +1,6 @@
 #[macro_use]
 extern crate criterion;
-extern crate bowtie_lib;
+extern crate bowtie_core;
 
 mod closet_bench_bdd;
 mod closet_bench_iterative;

@@ -1,5 +1,5 @@
 [package]
-name = "bowtie-lib"
+name = "bowtie-core"
 version = "0.1.0"
 authors = ["theochupp <tclchiam@gmail.com>"]
 
