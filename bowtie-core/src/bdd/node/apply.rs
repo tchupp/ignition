@@ -1,8 +1,8 @@
+use bdd::node;
 use bdd::node::Node;
 use bdd::node::operations::Operation;
 use core::Item;
 use std::cmp::Ordering;
-use bdd::node::arena;
 
 fn get_node(id: &Item, low: &Node, high: &Node) -> Node {
     if low == high {
@@ -41,8 +41,8 @@ pub fn apply(f1: &Node, f2: &Node, op: &Operation) -> Node {
 
     let (f1_l, f1_h) = if let Node::Branch(id, low, high) = f1 {
         if &first_id == id {
-            let low = arena::get(*low);
-            let high = arena::get(*high);
+            let low = node::get(*low);
+            let high = node::get(*high);
             (low, high)
         } else {
             (f1.clone(), f1.clone())
@@ -53,8 +53,8 @@ pub fn apply(f1: &Node, f2: &Node, op: &Operation) -> Node {
 
     let (f2_l, f2_h) = if let Node::Branch(id, low, high) = f2 {
         if &first_id == id {
-            let low = arena::get(*low);
-            let high = arena::get(*high);
+            let low = node::get(*low);
+            let high = node::get(*high);
             (low, high)
         } else {
             (f2.clone(), f2.clone())

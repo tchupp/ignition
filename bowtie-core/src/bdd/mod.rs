@@ -1,3 +1,3 @@
-pub mod node;
+mod node;
 pub mod closet;
 pub mod closet_builder;

@@ -42,10 +42,7 @@ impl Arena {
         self.nodes.get(index.0)
     }
 
-    fn must_get(&self, index: NodeId) -> &Node {
-        self.nodes.get(index.0).expect("Expected node to exist")
-    }
-
+    #[allow(dead_code)]
     fn count(&self) -> usize {
         self.nodes.len()
     }
@@ -58,9 +55,13 @@ pub fn add(node: Node) -> NodeId {
 
 pub fn get(index: NodeId) -> Node {
     let arena = ARENA.lock().unwrap();
-    arena.must_get(index).clone()
+
+    arena.get(index)
+        .expect(&format!("Expected node to exist for: {:?}", index))
+        .clone()
 }
 
+#[allow(dead_code)]
 pub fn count() -> usize {
     let arena = ARENA.lock().unwrap();
     arena.count()
@@ -81,8 +82,8 @@ mod tests {
         let node1_id = arena.add(node1.clone());
         let node2_id = arena.add(node2.clone());
 
-        assert_eq!(&node1, arena.must_get(node1_id));
-        assert_eq!(&node2, arena.must_get(node2_id));
+        assert_eq!(&node1, arena.get(node1_id).expect("Expected node to exist"));
+        assert_eq!(&node2, arena.get(node2_id).expect("Expected node to exist"));
     }
 
     #[test]

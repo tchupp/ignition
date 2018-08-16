@@ -1,5 +1,5 @@
 use bdd::closet::Closet;
-use bdd::node::arena;
+use bdd::node;
 use bdd::node::Node;
 use std::cmp::Ordering;
 
@@ -12,8 +12,8 @@ impl Closet {
         return 1 + match node {
             Node::Leaf(_val) => 0,
             Node::Branch(_id, low, high) => {
-                let low = arena::get(*low);
-                let high = arena::get(*high);
+                let low = node::get(*low);
+                let high = node::get(*high);
                 Closet::node_count_internal(&low) + Closet::node_count_internal(&high)
             }
         };
@@ -27,8 +27,8 @@ impl Closet {
         return match node {
             Node::Leaf(_val) => 1,
             Node::Branch(_id, low, high) => {
-                let low = arena::get(*low);
-                let high = arena::get(*high);
+                let low = node::get(*low);
+                let high = node::get(*high);
                 Closet::leaf_count_internal(&low) + Closet::leaf_count_internal(&high)
             }
         };
@@ -42,8 +42,8 @@ impl Closet {
         return match node {
             Node::Leaf(_val) => 1,
             Node::Branch(_id, low, high) => {
-                let low = arena::get(*low);
-                let high = arena::get(*high);
+                let low = node::get(*low);
+                let high = node::get(*high);
                 let low_depth = Closet::depth_internal(&low);
                 let high_depth = Closet::depth_internal(&high);
 

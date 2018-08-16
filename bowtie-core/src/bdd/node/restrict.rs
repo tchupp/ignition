@@ -1,4 +1,4 @@
-use bdd::node::arena;
+use bdd::node;
 use bdd::node::Node;
 use core::Item;
 
@@ -8,8 +8,8 @@ impl Node {
             Node::Leaf(true) => Node::TRUE_LEAF,
             Node::Leaf(false) => Node::FALSE_LEAF,
             Node::Branch(id, low, high) => {
-                let low = arena::get(*low);
-                let high = arena::get(*high);
+                let low = node::get(*low);
+                let high = node::get(*high);
 
                 if id == item {
                     if !selected {

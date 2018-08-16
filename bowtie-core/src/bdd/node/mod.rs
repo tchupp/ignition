@@ -1,10 +1,11 @@
+use bdd::node;
 pub use bdd::node::arena::add;
 pub use bdd::node::arena::get;
 use core::Item;
 use std::fmt;
 
 mod apply;
-pub mod arena;
+mod arena;
 mod bit_operations;
 mod reduce;
 mod restrict;
@@ -61,13 +62,13 @@ impl Node {
 
 impl<'a> From<Node> for NodeId {
     fn from(node: Node) -> Self {
-        arena::add(node)
+        node::add(node)
     }
 }
 
 impl<'a> From<&'a Node> for NodeId {
     fn from(node: &Node) -> Self {
-        arena::add(node.clone())
+        node::add(node.clone())
     }
 }
 

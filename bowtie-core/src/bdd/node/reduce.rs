@@ -1,4 +1,4 @@
-use bdd::node::arena;
+use bdd::node;
 use bdd::node::Node;
 
 impl Node {
@@ -7,8 +7,8 @@ impl Node {
             Node::Leaf(true) => Node::TRUE_LEAF,
             Node::Leaf(false) => Node::FALSE_LEAF,
             Node::Branch(id, low, high) => {
-                let low = arena::get(*low);
-                let high = arena::get(*high);
+                let low = node::get(*low);
+                let high = node::get(*high);
 
                 let reduced_low = Node::reduce(&low);
                 let reduced_high = Node::reduce(&high);

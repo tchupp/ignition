@@ -1,5 +1,5 @@
 use bdd::closet::Closet;
-use bdd::node::arena;
+use bdd::node;
 use bdd::node::Node;
 use core::Family;
 use core::Item;
@@ -22,8 +22,8 @@ impl Closet {
         loop {
             match root {
                 Node::Branch(id, low, high) => {
-                    let high = arena::get(high);
-                    let low = arena::get(low);
+                    let high = node::get(high);
+                    let low = node::get(low);
 
                     match high {
                         Node::Leaf(false) => root = low,
