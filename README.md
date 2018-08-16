@@ -38,7 +38,7 @@ A and B are items in different families
 Selection of A excludes the selection of B  
 Selection of B excludes the selection of A  
 
-Equation: `~(A * B)`  
+Equation: `A -> ~B` or `~(A * B)`  
 Equation (DNF): `~A + ~B`  
 
 Truth table:
@@ -55,7 +55,7 @@ A and B are items in different families
 Selection of A requires that B is also selected
 Selection of B does not **require** that A is also selected
 
-Equation: `~(A * ~B)`  
+Equation: `A -> B` or `~(A * ~B)`  
 Equation (DNF): `~A + B`  
 **NOTE: A and B are *not* interchangeable**
 
