@@ -3,6 +3,8 @@ use core::Item;
 use std::collections::BTreeMap;
 use std::collections::HashSet;
 
+mod categorize;
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Closet {
     contents: BTreeMap<Family, Vec<Item>>,

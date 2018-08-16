@@ -6,6 +6,7 @@ use core::Outfit;
 use core::OutfitError;
 use std::collections::BTreeMap;
 
+mod categorize;
 mod complete_outfit;
 mod node_count;
 
