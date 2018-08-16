@@ -27,6 +27,10 @@ impl Outfit {
     pub fn new(items: Vec<Item>) -> Outfit {
         Outfit { items }
     }
+
+    pub fn items(&self) -> &Vec<Item> {
+        &self.items
+    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
