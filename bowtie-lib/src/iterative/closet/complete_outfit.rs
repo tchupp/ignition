@@ -10,47 +10,49 @@ use iterative::closet::Closet;
 use std::collections::BTreeMap;
 use std::collections::HashSet;
 
-pub fn complete_outfit(closet: Closet, selections: Vec<Item>) -> Result<Outfit, OutfitError> {
-    let selections = selections.iter()
-        .chain(&closet.get_included_items(&selections))
-        .cloned()
-        .collect::<Vec<Item>>();
+impl Closet {
+    pub fn complete_outfit(&self, selections: Vec<Item>) -> Result<Outfit, OutfitError> {
+        let selections = selections.iter()
+            .cloned()
+            .chain(self.get_included_items(&selections))
+            .collect::<Vec<Item>>();
 
-    validate(&closet, &selections)?;
+        validate(self, &selections)?;
 
-    let selections: BTreeMap<&Family, Item> = selections.iter()
-        .map(|item| (closet.get_family(item), item))
-        .map(|(family, item)| {
-            let family = family.expect("validation should catch items with no family");
-            (family, item.clone())
-        })
-        .collect();
+        let selections: BTreeMap<&Family, Item> = selections.iter()
+            .map(|item| (self.get_family(item), item))
+            .map(|(family, item)| {
+                let family = family.expect("validation should catch items with no family");
+                (family, item.clone())
+            })
+            .collect();
 
-    let selected_families: HashSet<&Family> = selections.keys().cloned().collect::<HashSet<_>>();
-    let items: Vec<Item> = closet.contents().iter()
-        .filter(|&(family, _)| !selected_families.contains(family))
-        .fold(selections.clone(), |mut outfit: BTreeMap<&Family, Item>, (family, family_items): (&Family, &Vec<Item>)| {
-            let outfit_items = &outfit.values().cloned().collect::<Vec<Item>>();
-            let excluded_items = closet.get_excluded_items(outfit_items);
-            let included_items = closet.get_included_items(outfit_items);
+        let selected_families: HashSet<&Family> = selections.keys().cloned().collect::<HashSet<_>>();
+        let items: Vec<Item> = self.contents().iter()
+            .filter(|&(family, _)| !selected_families.contains(family))
+            .fold(selections.clone(), |mut outfit: BTreeMap<&Family, Item>, (family, family_items): (&Family, &Vec<Item>)| {
+                let outfit_items = &outfit.values().cloned().collect::<Vec<Item>>();
+                let excluded_items = self.get_excluded_items(outfit_items);
+                let included_items = self.get_included_items(outfit_items);
 
-            let item = family_items.iter()
-                .filter(|&item| !excluded_items.contains(item))
-                .find(|&item| included_items.contains(item))
-                .or(family_items.iter().find(|&item| !excluded_items.contains(item)));
+                let item = family_items.iter()
+                    .filter(|&item| !excluded_items.contains(item))
+                    .find(|&item| included_items.contains(item))
+                    .or(family_items.iter().find(|&item| !excluded_items.contains(item)));
 
-            let item = match item {
-                Some(i) => i.clone(),
-                None => panic!("We only end up here during a conflict"),
-            };
-            outfit.entry(family).or_insert(item);
-            outfit
-        })
-        .iter()
-        .map(|(_family, item)| item.clone())
-        .collect();
+                let item = match item {
+                    Some(i) => i.clone(),
+                    None => panic!("We only end up here during a conflict"),
+                };
+                outfit.entry(family).or_insert(item);
+                outfit
+            })
+            .iter()
+            .map(|(_family, item)| item.clone())
+            .collect();
 
-    return Ok(Outfit::new(items));
+        return Ok(Outfit::new(items));
+    }
 }
 
 fn validate(closet: &Closet, selections: &Vec<Item>) -> Result<(), OutfitError> {

@@ -11,30 +11,32 @@ use core::ValidationError::MultipleItemsPerFamily;
 use core::ValidationError::UnknownItems;
 use std::collections::BTreeMap;
 
-pub fn complete_outfit(closet: &Closet, selections: Vec<Item>) -> Result<Outfit, OutfitError> {
-    validate(closet, &selections)?;
+impl Closet {
+    pub fn complete_outfit(&self, selections: Vec<Item>) -> Result<Outfit, OutfitError> {
+        validate(self, &selections)?;
 
-    let mut root: Node = selections.iter()
-        .fold(closet.root().clone(), |new_root, selection| Node::restrict(&new_root, selection, true));
+        let mut root: Node = selections.iter()
+            .fold(self.root().clone(), |new_root, selection| Node::restrict(&new_root, selection, true));
 
-    let mut outfit_items = selections;
-    loop {
-        match root {
-            Node::Branch(id, low, high) => {
-                let high = arena::get(high);
-                let low = arena::get(low);
+        let mut outfit_items = selections;
+        loop {
+            match root {
+                Node::Branch(id, low, high) => {
+                    let high = arena::get(high);
+                    let low = arena::get(low);
 
-                match high {
-                    Node::Leaf(false) => root = low,
-                    _ => {
-                        outfit_items.push(id);
-                        root = high;
+                    match high {
+                        Node::Leaf(false) => root = low,
+                        _ => {
+                            outfit_items.push(id);
+                            root = high;
+                        }
                     }
                 }
-            }
-            Node::Leaf(_val) => {
-                outfit_items.sort();
-                return Ok(Outfit::new(outfit_items));
+                Node::Leaf(_val) => {
+                    outfit_items.sort();
+                    return Ok(Outfit::new(outfit_items));
+                }
             }
         }
     }

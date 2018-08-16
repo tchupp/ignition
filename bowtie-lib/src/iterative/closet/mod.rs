@@ -4,6 +4,7 @@ use std::collections::BTreeMap;
 use std::collections::HashSet;
 
 mod categorize;
+mod complete_outfit;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Closet {

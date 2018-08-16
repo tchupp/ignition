@@ -2,7 +2,6 @@ extern crate bowtie_lib;
 
 #[cfg(test)]
 mod no_rules_tests {
-    use std::collections::BTreeMap;
     use bowtie_lib::core::Family;
     use bowtie_lib::core::Item;
     use bowtie_lib::core::Outfit;
@@ -10,7 +9,7 @@ mod no_rules_tests {
     use bowtie_lib::core::ValidationError::MultipleItemsPerFamily;
     use bowtie_lib::core::ValidationError::UnknownItems;
     use bowtie_lib::iterative::closet_builder::ClosetBuilder;
-    use bowtie_lib::iterative::outfits::complete_outfit;
+    use std::collections::BTreeMap;
 
     #[test]
     fn no_rules_no_selections() {
@@ -33,7 +32,7 @@ mod no_rules_tests {
         let expected = Ok(Outfit::new(vec![jeans, blue]));
         assert_eq!(
             expected,
-            complete_outfit(closet, vec![])
+            closet.complete_outfit(vec![])
         );
     }
 
@@ -58,7 +57,7 @@ mod no_rules_tests {
         let expected = Ok(Outfit::new(vec![jeans, red.clone()]));
         assert_eq!(
             expected,
-            complete_outfit(closet, vec![red])
+            closet.complete_outfit(vec![red])
         );
     }
 
@@ -83,7 +82,7 @@ mod no_rules_tests {
         let expected = Ok(Outfit::new(vec![slacks.clone(), blue.clone()]));
         assert_eq!(
             expected,
-            complete_outfit(closet, vec![slacks, blue])
+            closet.complete_outfit(vec![slacks, blue])
         );
     }
 
@@ -109,7 +108,7 @@ mod no_rules_tests {
         let expected = Err(Validation(UnknownItems(vec![black.clone()])));
         assert_eq!(
             expected,
-            complete_outfit(closet, vec![jeans, black])
+            closet.complete_outfit(vec![jeans, black])
         );
     }
 
@@ -140,7 +139,7 @@ mod no_rules_tests {
 
         assert_eq!(
             expected,
-            complete_outfit(closet, vec![jeans, blue, slacks])
+            closet.complete_outfit(vec![jeans, blue, slacks])
         );
     }
 }
@@ -153,7 +152,6 @@ mod exclusion_rules_tests {
     use bowtie_lib::core::OutfitError::Validation;
     use bowtie_lib::core::ValidationError::IncompatibleSelections;
     use bowtie_lib::iterative::closet_builder::ClosetBuilder;
-    use bowtie_lib::iterative::outfits::complete_outfit;
 
     #[test]
     fn exclusion_rule_with_one_selection() {
@@ -177,13 +175,13 @@ mod exclusion_rules_tests {
         let expected = Ok(Outfit::new(vec![slacks, blue.clone()]));
         assert_eq!(
             expected,
-            complete_outfit(closet.clone(), vec![blue])
+            closet.complete_outfit(vec![blue])
         );
 
         let expected = Ok(Outfit::new(vec![jeans.clone(), red]));
         assert_eq!(
             expected,
-            complete_outfit(closet.clone(), vec![jeans])
+            closet.complete_outfit(vec![jeans])
         );
     }
 
@@ -209,7 +207,7 @@ mod exclusion_rules_tests {
         let expected = Err(Validation(IncompatibleSelections(vec![jeans.clone(), blue.clone()])));
         assert_eq!(
             expected,
-            complete_outfit(closet, vec![blue, jeans])
+            closet.complete_outfit(vec![blue, jeans])
         );
     }
 
@@ -237,7 +235,7 @@ mod exclusion_rules_tests {
         let expected = Ok(Outfit::new(vec![blue.clone()]));
         assert_eq!(
             expected,
-            complete_outfit(closet.clone(), vec![blue])
+            closet.complete_outfit(vec![blue])
         );
     }
 }
@@ -248,7 +246,6 @@ mod inclusion_rules_tests {
     use bowtie_lib::core::Item;
     use bowtie_lib::core::Outfit;
     use bowtie_lib::iterative::closet_builder::ClosetBuilder;
-    use bowtie_lib::iterative::outfits::complete_outfit;
 
     #[test]
     fn inclusion_rule_with_one_selection() {
@@ -271,7 +268,7 @@ mod inclusion_rules_tests {
         let expected = Ok(Outfit::new(vec![jeans.clone(), blue.clone()]));
         assert_eq!(
             expected,
-            complete_outfit(closet.clone(), vec![])
+            closet.complete_outfit(vec![])
         );
 
 
@@ -286,7 +283,7 @@ mod inclusion_rules_tests {
         let expected = Ok(Outfit::new(vec![jeans, red]));
         assert_eq!(
             expected,
-            complete_outfit(closet.clone(), vec![])
+            closet.complete_outfit(vec![])
         );
     }
 
@@ -312,7 +309,7 @@ mod inclusion_rules_tests {
         let expected = Ok(Outfit::new(vec![slacks.clone(), blue]));
         assert_eq!(
             expected,
-            complete_outfit(closet.clone(), vec![slacks])
+            closet.complete_outfit(vec![slacks])
         );
     }
 }

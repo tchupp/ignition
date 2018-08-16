@@ -1,9 +1,8 @@
-use criterion::Criterion;
 use bowtie_lib::core::Family;
 use bowtie_lib::core::Item;
 use bowtie_lib::iterative::closet::Closet;
 use bowtie_lib::iterative::closet_builder::ClosetBuilder;
-use bowtie_lib::iterative::outfits::complete_outfit;
+use criterion::Criterion;
 
 fn families_2_items_4_no_selections() -> Closet {
     let shirt1 = Item::new("shirts:1");
@@ -118,19 +117,19 @@ pub fn iterative_closet_bench(c: &mut Criterion) {
     c.bench_function("iterative complete_outfit(2 families, 4 items)",
                      move |b| b.iter_with_setup(
                          || families_2_items_4_no_selections(),
-                         |closet| complete_outfit(closet.clone(), vec![]),
+                         |closet| closet.complete_outfit(vec![]),
                      ),
     );
     c.bench_function("iterative complete_outfit(2 families, 16 items)",
                      move |b| b.iter_with_setup(
                          || families_2_items_16_no_selections(),
-                         |closet| complete_outfit(closet.clone(), vec![]),
+                         |closet| closet.complete_outfit(vec![]),
                      ),
     );
     c.bench_function("iterative complete_outfit(4 families, 16 items)",
                      move |b| b.iter_with_setup(
                          || families_4_items_16_no_selections(),
-                         |closet| complete_outfit(closet.clone(), vec![]),
+                         |closet| closet.complete_outfit(vec![]),
                      ),
     );
 }

@@ -1,9 +1,6 @@
-use bdd::closet::complete_outfit::complete_outfit;
 use bdd::node::Node;
 use core::Family;
 use core::Item;
-use core::Outfit;
-use core::OutfitError;
 use std::collections::BTreeMap;
 
 mod categorize;
@@ -57,9 +54,5 @@ impl Closet {
             item_index: self.item_index.clone(),
             root: new_root,
         }
-    }
-
-    pub fn complete_outfit(&self, selections: Vec<Item>) -> Result<Outfit, OutfitError> {
-        complete_outfit(self, selections)
     }
 }
