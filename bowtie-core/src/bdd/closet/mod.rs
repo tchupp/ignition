@@ -21,12 +21,16 @@ impl Closet {
         Closet { item_index, root }
     }
 
-    pub fn get_family(&self, item: &Item) -> Option<&Family> {
-        self.item_index.get(item).map(|family| family)
-    }
-
     pub fn root(&self) -> &Node {
         &self.root
+    }
+
+    pub fn item_index(&self) -> &BTreeMap<Item, Family> {
+        &self.item_index
+    }
+
+    pub fn get_family(&self, item: &Item) -> Option<&Family> {
+        self.item_index.get(item).map(|family| family)
     }
 
     pub fn select_item(&self, item: &Item) -> Closet {
