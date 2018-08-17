@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 lazy_static! {
-    static ref ARENA: Mutex<Arena> = {
+    pub static ref ARENA: Mutex<Arena> = {
         let mut a = Arena::new();
         a.add(Node::FALSE_LEAF);
         a.add(Node::TRUE_LEAF);
@@ -20,11 +20,11 @@ pub struct Arena {
 }
 
 impl Arena {
-    fn new() -> Arena {
+    pub fn new() -> Arena {
         Arena::default()
     }
 
-    fn add(&mut self, node: Node) -> NodeId {
+    pub fn add(&mut self, node: Node) -> NodeId {
         let index = match self.node_index.entry(node.clone()) {
             Occupied(entry) => *entry.get(),
             Vacant(entry) => {
@@ -38,12 +38,12 @@ impl Arena {
         return index;
     }
 
-    fn get(&self, index: NodeId) -> Option<&Node> {
+    pub fn get(&self, index: NodeId) -> Option<&Node> {
         self.nodes.get(index.0)
     }
 
     #[allow(dead_code)]
-    fn count(&self) -> usize {
+    pub fn count(&self) -> usize {
         self.nodes.len()
     }
 }
