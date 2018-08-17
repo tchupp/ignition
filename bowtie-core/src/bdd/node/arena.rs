@@ -7,8 +7,8 @@ use std::sync::Mutex;
 lazy_static! {
     static ref ARENA: Mutex<Arena> = {
         let mut a = Arena::new();
-        a.add(Node::TRUE_LEAF);
         a.add(Node::FALSE_LEAF);
+        a.add(Node::TRUE_LEAF);
         Mutex::new(a)
     };
 }
