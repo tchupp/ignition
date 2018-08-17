@@ -1,7 +1,7 @@
 use bowtie_core::core::Family;
 use bowtie_core::core::Item;
-use bowtie_core::iterative::closet::Closet;
-use bowtie_core::iterative::closet_builder::ClosetBuilder;
+use bowtie_core::iterative::Closet;
+use bowtie_core::iterative::ClosetBuilder;
 use criterion::Criterion;
 
 fn families_2_items_4_no_selections() -> Closet {

@@ -5,7 +5,7 @@ mod tests {
     use bowtie_core::closet_builder::ClosetBuilderError;
     use bowtie_core::core::Family;
     use bowtie_core::core::Item;
-    use bowtie_core::iterative::closet_builder::ClosetBuilder;
+    use bowtie_core::iterative::ClosetBuilder;
 
     #[test]
     fn adding_item_to_two_families_returns_error() {

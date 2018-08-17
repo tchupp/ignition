@@ -1,8 +1,8 @@
 use criterion::Criterion;
 use bowtie_core::core::Family;
 use bowtie_core::core::Item;
-use bowtie_core::bdd::closet::Closet;
-use bowtie_core::bdd::closet_builder::ClosetBuilder;
+use bowtie_core::bdd::Closet;
+use bowtie_core::bdd::ClosetBuilder;
 
 fn families_2_items_4_no_selections() -> Closet {
     let shirt1 = Item::new("shirts:1");

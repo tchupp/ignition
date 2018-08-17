@@ -960,7 +960,7 @@
 <text text-anchor="" x="125.91" y="303.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet::Closet::complete_outfit::h5780f941138fcaa5 (982 samples, 0.10%)</title><rect x="275.0" y="597" width="1.1" height="15.0" fill="rgb(216,111,48)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::Closet::complete_outfit::h5780f941138fcaa5 (982 samples, 0.10%)</title><rect x="275.0" y="597" width="1.1" height="15.0" fill="rgb(216,111,48)" rx="2" ry="2" />
 <text text-anchor="" x="277.99" y="607.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -2276,7 +2276,7 @@
 <text text-anchor="" x="23.46" y="495.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::add_item::hd78777db45605c76 (127 samples, 0.01%)</title><rect x="284.6" y="581" width="0.2" height="15.0" fill="rgb(214,191,0)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::add_item::hd78777db45605c76 (127 samples, 0.01%)</title><rect x="284.6" y="581" width="0.2" height="15.0" fill="rgb(214,191,0)" rx="2" ry="2" />
 <text text-anchor="" x="287.60" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -2788,8 +2788,8 @@
 <text text-anchor="" x="689.90" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::build::h589d6b02685a608b (509,294 samples, 50.64%)</title><rect x="284.8" y="565" width="597.6" height="15.0" fill="rgb(219,109,28)" rx="2" ry="2" />
-<text text-anchor="" x="287.80" y="575.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::build::h589d6b02685a6..</text>
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::build::h589d6b02685a608b (509,294 samples, 50.64%)</title><rect x="284.8" y="565" width="597.6" height="15.0" fill="rgb(219,109,28)" rx="2" ry="2" />
+<text text-anchor="" x="287.80" y="575.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >bowtie_bench`bowtie_core::bdd::ClosetBuilder::build::h589d6b02685a6..</text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
 <title>bowtie_bench`__rde_alloc (94 samples, 0.01%)</title><rect x="519.0" y="261" width="0.1" height="15.0" fill="rgb(253,212,45)" rx="2" ry="2" />
@@ -3512,7 +3512,7 @@
 <text text-anchor="" x="13.69" y="607.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::must_build::h1e8176c07df572c0 (5,242 samples, 0.52%)</title><rect x="277.2" y="581" width="6.1" height="15.0" fill="rgb(252,160,52)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::must_build::h1e8176c07df572c0 (5,242 samples, 0.52%)</title><rect x="277.2" y="581" width="6.1" height="15.0" fill="rgb(252,160,52)" rx="2" ry="2" />
 <text text-anchor="" x="280.20" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -4644,7 +4644,7 @@
 <text text-anchor="" x="1051.75" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet::Closet::complete_outfit::h5780f941138fcaa5 (20,210 samples, 2.01%)</title><rect x="221.3" y="597" width="23.7" height="15.0" fill="rgb(244,34,31)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::Closet::complete_outfit::h5780f941138fcaa5 (20,210 samples, 2.01%)</title><rect x="221.3" y="597" width="23.7" height="15.0" fill="rgb(244,34,31)" rx="2" ry="2" />
 <text text-anchor="" x="224.27" y="607.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >b..</text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -5656,7 +5656,7 @@
 <text text-anchor="" x="826.05" y="319.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >b..</text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::build::h589d6b02685a608b (158,623 samples, 15.77%)</title><rect x="35.1" y="565" width="186.2" height="15.0" fill="rgb(252,88,18)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::build::h589d6b02685a608b (158,623 samples, 15.77%)</title><rect x="35.1" y="565" width="186.2" height="15.0" fill="rgb(252,88,18)" rx="2" ry="2" />
 <text text-anchor="" x="38.13" y="575.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >bowtie_bench`bowtie_core:..</text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -8500,7 +8500,7 @@
 <text text-anchor="" x="370.84" y="367.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >bo..</text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::build::h589d6b02685a608b (6,190 samples, 0.62%)</title><rect x="1043.0" y="565" width="7.3" height="15.0" fill="rgb(244,161,41)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::build::h589d6b02685a608b (6,190 samples, 0.62%)</title><rect x="1043.0" y="565" width="7.3" height="15.0" fill="rgb(244,161,41)" rx="2" ry="2" />
 <text text-anchor="" x="1046.02" y="575.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -9400,7 +9400,7 @@
 <text text-anchor="" x="27.58" y="607.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet::Closet::complete_outfit::h5780f941138fcaa5 (1,220 samples, 0.12%)</title><rect x="1050.3" y="597" width="1.4" height="15.0" fill="rgb(227,229,5)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::Closet::complete_outfit::h5780f941138fcaa5 (1,220 samples, 0.12%)</title><rect x="1050.3" y="597" width="1.4" height="15.0" fill="rgb(227,229,5)" rx="2" ry="2" />
 <text text-anchor="" x="1053.28" y="607.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -10264,7 +10264,7 @@
 <text text-anchor="" x="32.80" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::must_build::h1e8176c07df572c0 (7,825 samples, 0.78%)</title><rect x="265.7" y="581" width="9.2" height="15.0" fill="rgb(247,64,27)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::must_build::h1e8176c07df572c0 (7,825 samples, 0.78%)</title><rect x="265.7" y="581" width="9.2" height="15.0" fill="rgb(247,64,27)" rx="2" ry="2" />
 <text text-anchor="" x="268.67" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -10704,7 +10704,7 @@
 <text text-anchor="" x="58.70" y="303.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::must_build::h1e8176c07df572c0 (158,646 samples, 15.78%)</title><rect x="35.1" y="581" width="186.2" height="15.0" fill="rgb(251,74,13)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::must_build::h1e8176c07df572c0 (158,646 samples, 15.78%)</title><rect x="35.1" y="581" width="186.2" height="15.0" fill="rgb(251,74,13)" rx="2" ry="2" />
 <text text-anchor="" x="38.11" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >bowtie_bench`bowtie_core:..</text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -12896,7 +12896,7 @@
 <text text-anchor="" x="288.05" y="527.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::add_item::hd78777db45605c76 (572 samples, 0.06%)</title><rect x="265.0" y="581" width="0.7" height="15.0" fill="rgb(217,200,5)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::add_item::hd78777db45605c76 (572 samples, 0.06%)</title><rect x="265.0" y="581" width="0.7" height="15.0" fill="rgb(217,200,5)" rx="2" ry="2" />
 <text text-anchor="" x="268.00" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -13176,7 +13176,7 @@
 <text text-anchor="" x="53.67" y="463.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet::Closet::complete_outfit::h5780f941138fcaa5 (718 samples, 0.07%)</title><rect x="283.4" y="597" width="0.9" height="15.0" fill="rgb(229,207,37)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::Closet::complete_outfit::h5780f941138fcaa5 (718 samples, 0.07%)</title><rect x="283.4" y="597" width="0.9" height="15.0" fill="rgb(229,207,37)" rx="2" ry="2" />
 <text text-anchor="" x="286.44" y="607.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -14564,7 +14564,7 @@
 <text text-anchor="" x="222.16" y="495.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::build::h589d6b02685a608b (5,055 samples, 0.50%)</title><rect x="277.4" y="565" width="5.9" height="15.0" fill="rgb(222,160,15)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::build::h589d6b02685a608b (5,055 samples, 0.50%)</title><rect x="277.4" y="565" width="5.9" height="15.0" fill="rgb(222,160,15)" rx="2" ry="2" />
 <text text-anchor="" x="280.42" y="575.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -14592,8 +14592,8 @@
 <text text-anchor="" x="224.48" y="351.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::must_build::h1e8176c07df572c0 (509,335 samples, 50.65%)</title><rect x="284.8" y="581" width="597.6" height="15.0" fill="rgb(236,217,11)" rx="2" ry="2" />
-<text text-anchor="" x="287.75" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::must_build::h1e8176c0..</text>
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::must_build::h1e8176c07df572c0 (509,335 samples, 50.65%)</title><rect x="284.8" y="581" width="597.6" height="15.0" fill="rgb(236,217,11)" rx="2" ry="2" />
+<text text-anchor="" x="287.75" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >bowtie_bench`bowtie_core::bdd::ClosetBuilder::must_build::h1e8176c0..</text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
 <title>bowtie_bench`_$LT$alloc..boxed..Box$LT$T$GT$$u20$as$u20$core..clone..Clone$GT$::clone::h41d21eb0ae74ceec  (301 samples, 0.03%)</title><rect x="254.0" y="389" width="0.4" height="15.0" fill="rgb(241,134,50)" rx="2" ry="2" />
@@ -14960,7 +14960,7 @@
 <text text-anchor="" x="283.00" y="543.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::add_item::hd78777db45605c76 (387 samples, 0.04%)</title><rect x="276.7" y="581" width="0.5" height="15.0" fill="rgb(222,206,9)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::add_item::hd78777db45605c76 (387 samples, 0.04%)</title><rect x="276.7" y="581" width="0.5" height="15.0" fill="rgb(222,206,9)" rx="2" ry="2" />
 <text text-anchor="" x="279.74" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -15952,7 +15952,7 @@
 <text text-anchor="" x="288.06" y="431.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::build::h589d6b02685a608b (7,527 samples, 0.75%)</title><rect x="266.0" y="565" width="8.9" height="15.0" fill="rgb(210,104,20)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::build::h589d6b02685a608b (7,527 samples, 0.75%)</title><rect x="266.0" y="565" width="8.9" height="15.0" fill="rgb(210,104,20)" rx="2" ry="2" />
 <text text-anchor="" x="269.02" y="575.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -16228,7 +16228,7 @@
 <text text-anchor="" x="38.38" y="383.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::new::h08518db4d6f88a08 (92 samples, 0.01%)</title><rect x="882.4" y="581" width="0.1" height="15.0" fill="rgb(212,161,54)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::new::h08518db4d6f88a08 (92 samples, 0.01%)</title><rect x="882.4" y="581" width="0.1" height="15.0" fill="rgb(212,161,54)" rx="2" ry="2" />
 <text text-anchor="" x="885.40" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -16344,7 +16344,7 @@
 <text text-anchor="" x="1051.36" y="303.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet::Closet::complete_outfit::h5780f941138fcaa5 (1,031 samples, 0.10%)</title><rect x="263.0" y="597" width="1.2" height="15.0" fill="rgb(251,160,54)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::Closet::complete_outfit::h5780f941138fcaa5 (1,031 samples, 0.10%)</title><rect x="263.0" y="597" width="1.2" height="15.0" fill="rgb(251,160,54)" rx="2" ry="2" />
 <text text-anchor="" x="266.03" y="607.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -16508,7 +16508,7 @@
 <text text-anchor="" x="281.66" y="543.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet::Closet::complete_outfit::h5780f941138fcaa5 (100,961 samples, 10.04%)</title><rect x="882.5" y="597" width="118.5" height="15.0" fill="rgb(252,159,51)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::Closet::complete_outfit::h5780f941138fcaa5 (100,961 samples, 10.04%)</title><rect x="882.5" y="597" width="118.5" height="15.0" fill="rgb(252,159,51)" rx="2" ry="2" />
 <text text-anchor="" x="885.51" y="607.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  >bowtie_bench`b..</text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -16516,7 +16516,7 @@
 <text text-anchor="" x="287.89" y="559.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::must_build::h1e8176c07df572c0 (6,190 samples, 0.62%)</title><rect x="1043.0" y="581" width="7.3" height="15.0" fill="rgb(242,50,43)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::must_build::h1e8176c07df572c0 (6,190 samples, 0.62%)</title><rect x="1043.0" y="581" width="7.3" height="15.0" fill="rgb(242,50,43)" rx="2" ry="2" />
 <text text-anchor="" x="1046.02" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -16976,7 +16976,7 @@
 <text text-anchor="" x="614.71" y="271.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::build::h589d6b02685a608b (8,022 samples, 0.80%)</title><rect x="253.6" y="565" width="9.4" height="15.0" fill="rgb(208,27,1)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::build::h589d6b02685a608b (8,022 samples, 0.80%)</title><rect x="253.6" y="565" width="9.4" height="15.0" fill="rgb(208,27,1)" rx="2" ry="2" />
 <text text-anchor="" x="256.61" y="575.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
@@ -17024,7 +17024,7 @@
 <text text-anchor="" x="693.77" y="287.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">
-<title>bowtie_bench`bowtie_core::bdd::closet_builder::ClosetBuilder::must_build::h1e8176c07df572c0 (8,023 samples, 0.80%)</title><rect x="253.6" y="581" width="9.4" height="15.0" fill="rgb(217,37,43)" rx="2" ry="2" />
+<title>bowtie_bench`bowtie_core::bdd::ClosetBuilder::must_build::h1e8176c07df572c0 (8,023 samples, 0.80%)</title><rect x="253.6" y="581" width="9.4" height="15.0" fill="rgb(217,37,43)" rx="2" ry="2" />
 <text text-anchor="" x="256.61" y="591.5" font-size="12" font-family="Verdana" fill="rgb(0,0,0)"  ></text>
 </g>
 <g class="func_g" onmouseover="s(this)" onmouseout="c()" onclick="zoom(this)">

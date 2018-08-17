@@ -8,7 +8,7 @@ mod no_rules_tests {
     use bowtie_core::core::OutfitError::Validation;
     use bowtie_core::core::ValidationError::MultipleItemsPerFamily;
     use bowtie_core::core::ValidationError::UnknownItems;
-    use bowtie_core::iterative::closet_builder::ClosetBuilder;
+    use bowtie_core::iterative::ClosetBuilder;
     use std::collections::BTreeMap;
 
     #[test]
@@ -151,7 +151,7 @@ mod exclusion_rules_tests {
     use bowtie_core::core::Outfit;
     use bowtie_core::core::OutfitError::Validation;
     use bowtie_core::core::ValidationError::IncompatibleSelections;
-    use bowtie_core::iterative::closet_builder::ClosetBuilder;
+    use bowtie_core::iterative::ClosetBuilder;
 
     #[test]
     fn exclusion_rule_with_one_selection() {
@@ -245,7 +245,7 @@ mod inclusion_rules_tests {
     use bowtie_core::core::Family;
     use bowtie_core::core::Item;
     use bowtie_core::core::Outfit;
-    use bowtie_core::iterative::closet_builder::ClosetBuilder;
+    use bowtie_core::iterative::ClosetBuilder;
 
     #[test]
     fn inclusion_rule_with_one_selection() {

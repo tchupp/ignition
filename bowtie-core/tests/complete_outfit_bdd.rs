@@ -2,7 +2,7 @@ extern crate bowtie_core;
 
 #[cfg(test)]
 mod no_rules_tests {
-    use bowtie_core::bdd::closet_builder::ClosetBuilder;
+    use bowtie_core::bdd::ClosetBuilder;
     use bowtie_core::core::Family;
     use bowtie_core::core::Item;
     use bowtie_core::core::Outfit;
@@ -146,7 +146,7 @@ mod no_rules_tests {
 
 #[cfg(test)]
 mod exclusion_rules_tests {
-    use bowtie_core::bdd::closet_builder::ClosetBuilder;
+    use bowtie_core::bdd::ClosetBuilder;
     use bowtie_core::core::Family;
     use bowtie_core::core::Item;
     use bowtie_core::core::Outfit;
@@ -241,7 +241,7 @@ mod exclusion_rules_tests {
 
 #[cfg(test)]
 mod inclusion_rules_tests {
-    use bowtie_core::bdd::closet_builder::ClosetBuilder;
+    use bowtie_core::bdd::ClosetBuilder;
     use bowtie_core::core::Family;
     use bowtie_core::core::Item;
     use bowtie_core::core::Outfit;
