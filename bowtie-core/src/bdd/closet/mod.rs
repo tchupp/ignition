@@ -7,7 +7,7 @@ mod categorize;
 mod complete_outfit;
 mod node_count;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Closet {
     item_index: BTreeMap<Item, Family>,
     root: Node,

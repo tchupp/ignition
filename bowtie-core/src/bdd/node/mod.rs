@@ -11,13 +11,13 @@ mod reduce;
 mod restrict;
 mod operations;
 
-#[derive(Eq, PartialEq, Clone, Hash, Ord, PartialOrd)]
+#[derive(Eq, PartialEq, Clone, Hash, Ord, PartialOrd, Serialize, Deserialize)]
 pub enum Node {
     Branch(Item, NodeId, NodeId),
     Leaf(bool),
 }
 
-#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
+#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct NodeId(usize);
 
 impl fmt::Debug for Node {
