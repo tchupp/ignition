@@ -25,7 +25,7 @@ impl Arena {
     }
 
     pub fn add(&mut self, node: Node) -> NodeId {
-        let index = match self.node_index.entry(node.clone()) {
+        match self.node_index.entry(node.clone()) {
             Occupied(entry) => *entry.get(),
             Vacant(entry) => {
                 let index = NodeId(self.nodes.len());
@@ -33,9 +33,7 @@ impl Arena {
                 self.nodes.push(node);
                 *entry.insert(index)
             }
-        };
-
-        return index;
+        }
     }
 
     pub fn get(&self, index: NodeId) -> Option<&Node> {
@@ -57,7 +55,7 @@ pub fn get(index: NodeId) -> Node {
     let arena = ARENA.lock().unwrap();
 
     arena.get(index)
-        .expect(&format!("Expected node to exist for: {:?}", index))
+        .unwrap_or_else(|| panic!("Expected node to exist for: {:?}", index))
         .clone()
 }
 

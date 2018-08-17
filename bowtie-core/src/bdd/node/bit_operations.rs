@@ -35,11 +35,11 @@ impl Not for Node {
     type Output = Self;
 
     fn not(self) -> Self {
-        return match &self {
+        match &self {
             Node::Leaf(true) => Node::FALSE_LEAF,
             Node::Leaf(false) => Node::TRUE_LEAF,
             Node::Branch(id, low, high) => Node::branch(id, *high, *low)
-        };
+        }
     }
 }
 

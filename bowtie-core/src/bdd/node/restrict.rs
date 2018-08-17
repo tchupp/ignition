@@ -4,7 +4,7 @@ use core::Item;
 
 impl Node {
     pub fn restrict(node: &Node, item: &Item, selected: bool) -> Node {
-        return match node {
+        match node {
             Node::Leaf(true) => Node::TRUE_LEAF,
             Node::Leaf(false) => Node::FALSE_LEAF,
             Node::Branch(id, low, high) => {
@@ -26,9 +26,9 @@ impl Node {
                     return restricted_low;
                 }
 
-                return Node::branch(id, restricted_low, restricted_high);
+                Node::branch(id, restricted_low, restricted_high)
             }
-        };
+        }
     }
 }
 

@@ -3,7 +3,7 @@ use bdd::node::Node;
 
 impl Node {
     pub fn reduce(node: &Node) -> Node {
-        return match node {
+        match node {
             Node::Leaf(true) => Node::TRUE_LEAF,
             Node::Leaf(false) => Node::FALSE_LEAF,
             Node::Branch(id, low, high) => {
@@ -17,9 +17,9 @@ impl Node {
                     return reduced_low;
                 }
 
-                return Node::branch(id, reduced_low, reduced_high);
+                Node::branch(id, reduced_low, reduced_high)
             },
-        };
+        }
     }
 }
 

@@ -30,7 +30,7 @@ impl Closet {
     }
 
     pub fn get_family(&self, item: &Item) -> Option<&Family> {
-        self.item_index.get(item).map(|family| family)
+        self.item_index.get(item)
     }
 
     pub fn select_item(&self, item: &Item) -> Closet {

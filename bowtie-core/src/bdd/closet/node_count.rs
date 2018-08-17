@@ -5,41 +5,43 @@ use std::cmp::Ordering;
 
 impl Closet {
     pub fn node_count(&self) -> u64 {
-        return Closet::node_count_internal(self.root());
+        Closet::node_count_internal(self.root())
     }
 
     fn node_count_internal(node: &Node) -> u64 {
-        return 1 + match node {
-            Node::Leaf(_val) => 0,
-            Node::Branch(_id, low, high) => {
-                let low = node::get(*low);
-                let high = node::get(*high);
-                Closet::node_count_internal(&low) + Closet::node_count_internal(&high)
-            }
-        };
-    }
-
-    pub fn leaf_count(&self) -> u64 {
-        return Closet::leaf_count_internal(self.root());
-    }
-
-    fn leaf_count_internal(node: &Node) -> u64 {
-        return match node {
+        match node {
             Node::Leaf(_val) => 1,
             Node::Branch(_id, low, high) => {
                 let low = node::get(*low);
                 let high = node::get(*high);
+
+                1 + Closet::node_count_internal(&low) + Closet::node_count_internal(&high)
+            }
+        }
+    }
+
+    pub fn leaf_count(&self) -> u64 {
+        Closet::leaf_count_internal(self.root())
+    }
+
+    fn leaf_count_internal(node: &Node) -> u64 {
+        match node {
+            Node::Leaf(_val) => 1,
+            Node::Branch(_id, low, high) => {
+                let low = node::get(*low);
+                let high = node::get(*high);
+
                 Closet::leaf_count_internal(&low) + Closet::leaf_count_internal(&high)
             }
-        };
+        }
     }
 
     pub fn depth(&self) -> u64 {
-        return Closet::depth_internal(self.root());
+        Closet::depth_internal(self.root())
     }
 
     fn depth_internal(node: &Node) -> u64 {
-        return match node {
+        match node {
             Node::Leaf(_val) => 1,
             Node::Branch(_id, low, high) => {
                 let low = node::get(*low);
@@ -47,13 +49,13 @@ impl Closet {
                 let low_depth = Closet::depth_internal(&low);
                 let high_depth = Closet::depth_internal(&high);
 
-                return match low_depth.cmp(&high_depth) {
+                match low_depth.cmp(&high_depth) {
                     Ordering::Less => 1 + high_depth,
                     Ordering::Equal => 1 + low_depth,
                     Ordering::Greater => 1 + low_depth,
-                };
+                }
             }
-        };
+        }
     }
 }
 

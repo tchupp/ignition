@@ -28,7 +28,7 @@ impl fmt::Debug for Node {
 
 impl Node {
     fn fmt_inner(&self, indent: usize) -> String {
-        return match self {
+        match self {
             Node::Leaf(val) => format!("| {}", val),
             Node::Branch(id, low, high) =>
                 format!(
@@ -39,7 +39,7 @@ impl Node {
                     "| ".repeat(indent),
                     arena::get(*high).fmt_inner(indent + 1)
                 ),
-        };
+        }
     }
 }
 

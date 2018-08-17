@@ -4,16 +4,16 @@ use core::Item;
 use std::collections::HashMap;
 
 impl Closet {
-    pub fn categorize(&self, items: Vec<&Item>) -> HashMap<Family, Vec<Item>> {
+    pub fn categorize(&self, items: &[&Item]) -> HashMap<Family, Vec<Item>> {
         let unknown_family = Family::new("UNKNOWN");
 
-        return items.iter()
+        items.iter()
             .map(|&item| (self.get_family(item).unwrap_or(&unknown_family), item))
             .map(|(family, item)| (family.clone(), item.clone()))
             .fold(HashMap::new(), |mut categories, (family, item): (Family, Item)| {
-                categories.entry(family).or_insert(vec![]).push(item);
+                categories.entry(family).or_insert_with(|| vec![]).push(item);
                 categories
-            });
+            })
     }
 }
 
@@ -50,6 +50,6 @@ mod tests {
             expected
         };
 
-        assert_eq!(expected, closet.categorize(vec![&shirt1, &shirt2, &pants1, &pants2]));
+        assert_eq!(expected, closet.categorize(&[&shirt1, &shirt2, &pants1, &pants2]));
     }
 }

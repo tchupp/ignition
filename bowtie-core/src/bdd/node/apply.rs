@@ -9,7 +9,7 @@ fn get_node(id: &Item, low: &Node, high: &Node) -> Node {
         return low.clone();
     }
 
-    return Node::branch(id, low, high);
+    Node::branch(id, low, high)
 }
 
 fn get_first_id(f1: &Node, f2: &Node) -> Option<Item> {
@@ -65,7 +65,7 @@ pub fn apply(f1: &Node, f2: &Node, op: &Operation) -> Node {
 
     let low = apply(&f1_l, &f2_l, op);
     let high = apply(&f1_h, &f2_h, op);
-    return get_node(&first_id, &low, &high);
+    get_node(&first_id, &low, &high)
 }
 
 #[cfg(test)]

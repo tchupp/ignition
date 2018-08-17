@@ -38,7 +38,7 @@ impl Closet {
                 let item = family_items.iter()
                     .filter(|&item| !excluded_items.contains(item))
                     .find(|&item| included_items.contains(item))
-                    .or(family_items.iter().find(|&item| !excluded_items.contains(item)));
+                    .or_else(|| family_items.iter().find(|&item| !excluded_items.contains(item)));
 
                 let item = match item {
                     Some(i) => i.clone(),
@@ -51,11 +51,11 @@ impl Closet {
             .map(|(_family, item)| item.clone())
             .collect();
 
-        return Ok(Outfit::new(items));
+        Ok(Outfit::new(items))
     }
 }
 
-fn validate(closet: &Closet, selections: &Vec<Item>) -> Result<(), OutfitError> {
+fn validate(closet: &Closet, selections: &[Item]) -> Result<(), OutfitError> {
     if let Some(items) = find_unknown_items(&closet, &selections) {
         return Err(Validation(UnknownItems(items)));
     }
@@ -66,12 +66,12 @@ fn validate(closet: &Closet, selections: &Vec<Item>) -> Result<(), OutfitError> 
         return Err(Validation(IncompatibleSelections(items)));
     }
 
-    return Ok(());
+    Ok(())
 }
 
-fn find_unknown_items(closet: &Closet, selections: &Vec<Item>) -> Option<Vec<Item>> {
+fn find_unknown_items(closet: &Closet, selections: &[Item]) -> Option<Vec<Item>> {
     let unknown_items = selections.iter()
-        .filter(|ref item| !(closet.get_family(item).is_some()))
+        .filter(|ref item| closet.get_family(item).is_none())
         .cloned()
         .collect::<Vec<Item>>();
 
@@ -82,12 +82,12 @@ fn find_unknown_items(closet: &Closet, selections: &Vec<Item>) -> Option<Vec<Ite
     }
 }
 
-fn find_duplicate_items(closet: &Closet, selections: &Vec<Item>) -> Option<BTreeMap<Family, Vec<Item>>> {
+fn find_duplicate_items(closet: &Closet, selections: &[Item]) -> Option<BTreeMap<Family, Vec<Item>>> {
     let duplicates: BTreeMap<Family, Vec<Item>> = selections.iter()
         .map(|item| (closet.get_family(item), item))
         .map(|(family, item): (Option<&Family>, &Item)| (family.unwrap(), item))
         .fold(BTreeMap::new(), |mut duplicates: BTreeMap<Family, Vec<Item>>, (family, item): (&Family, &Item)| {
-            duplicates.entry(family.clone()).or_insert(vec![]).push(item.clone());
+            duplicates.entry(family.clone()).or_insert_with(|| vec![]).push(item.clone());
             duplicates
         })
         .iter()
@@ -102,11 +102,11 @@ fn find_duplicate_items(closet: &Closet, selections: &Vec<Item>) -> Option<BTree
     }
 }
 
-fn find_conflicting_items(closet: &Closet, selections: &Vec<Item>) -> Option<Vec<Item>> {
+fn find_conflicting_items(closet: &Closet, selections: &[Item]) -> Option<Vec<Item>> {
     let selections_set: HashSet<Item> = selections.iter().cloned().collect();
 
-    return selections.iter()
-        .map(|selection| (closet.get_excluded_items(&vec![selection.clone()]), selection.clone()))
+    selections.iter()
+        .map(|selection| (closet.get_excluded_items(&[selection.clone()]), selection.clone()))
         .map(|(excluded_items, selection)| {
             let illegal_selections = excluded_items
                 .intersection(&selections_set)
@@ -121,5 +121,5 @@ fn find_conflicting_items(closet: &Closet, selections: &Vec<Item>) -> Option<Vec
                 .chain(vec![selection])
                 .collect::<Vec<Item>>()
         )
-        .find(|illegal_selections| !illegal_selections.is_empty());
+        .find(|illegal_selections| !illegal_selections.is_empty())
 }

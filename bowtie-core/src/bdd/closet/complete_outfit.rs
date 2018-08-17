@@ -42,7 +42,7 @@ impl Closet {
     }
 }
 
-fn validate(closet: &Closet, selections: &Vec<Item>) -> Result<(), OutfitError> {
+fn validate(closet: &Closet, selections: &[Item]) -> Result<(), OutfitError> {
     if let Some(items) = find_unknown_items(&closet, &selections) {
         return Err(Validation(UnknownItems(items)));
     }
@@ -53,12 +53,12 @@ fn validate(closet: &Closet, selections: &Vec<Item>) -> Result<(), OutfitError> 
         return Err(Validation(IncompatibleSelections(items)));
     }
 
-    return Ok(());
+    Ok(())
 }
 
-fn find_unknown_items(closet: &Closet, selections: &Vec<Item>) -> Option<Vec<Item>> {
+fn find_unknown_items(closet: &Closet, selections: &[Item]) -> Option<Vec<Item>> {
     let unknown_items = selections.iter()
-        .filter(|ref item| !(closet.get_family(item).is_some()))
+        .filter(|ref item| closet.get_family(item).is_none())
         .cloned()
         .collect::<Vec<Item>>();
 
@@ -69,12 +69,12 @@ fn find_unknown_items(closet: &Closet, selections: &Vec<Item>) -> Option<Vec<Ite
     }
 }
 
-fn find_duplicate_items(closet: &Closet, selections: &Vec<Item>) -> Option<BTreeMap<Family, Vec<Item>>> {
+fn find_duplicate_items(closet: &Closet, selections: &[Item]) -> Option<BTreeMap<Family, Vec<Item>>> {
     let duplicates: BTreeMap<Family, Vec<Item>> = selections.iter()
         .map(|item| (closet.get_family(item), item))
         .map(|(family, item): (Option<&Family>, &Item)| (family.unwrap(), item))
         .fold(BTreeMap::new(), |mut duplicates: BTreeMap<Family, Vec<Item>>, (family, item): (&Family, &Item)| {
-            duplicates.entry(family.clone()).or_insert(vec![]).push(item.clone());
+            duplicates.entry(family.clone()).or_insert_with(|| vec![]).push(item.clone());
             duplicates
         })
         .iter()
@@ -89,21 +89,17 @@ fn find_duplicate_items(closet: &Closet, selections: &Vec<Item>) -> Option<BTree
     }
 }
 
-fn find_conflicting_items(closet: &Closet, selections: &Vec<Item>) -> Option<Vec<Item>> {
+fn find_conflicting_items(closet: &Closet, selections: &[Item]) -> Option<Vec<Item>> {
     let root: Node = selections.iter()
         .fold(closet.root().clone(), |new_root, selection| Node::restrict(&new_root, selection, true));
 
-    let mut outfit_items = selections.clone();
-    loop {
-        match root {
-            Node::Leaf(false) => {
-                outfit_items.sort();
-                return Some(outfit_items);
-            }
-            _ => {
-                return None;
-            }
+    let mut outfit_items = selections.to_owned();
+    match root {
+        Node::Leaf(false) => {
+            outfit_items.sort();
+            Some(outfit_items)
         }
+        _ => None,
     }
 }
 

@@ -24,7 +24,7 @@ impl Closet {
         Closet { contents, item_index, exclusions, inclusions }
     }
 
-    pub fn get_excluded_items(&self, items: &Vec<Item>) -> HashSet<Item> {
+    pub fn get_excluded_items(&self, items: &[Item]) -> HashSet<Item> {
         let exclusions = &self.exclusions;
 
         items.iter()
@@ -35,7 +35,7 @@ impl Closet {
             .collect()
     }
 
-    pub fn get_included_items(&self, items: &Vec<Item>) -> HashSet<Item> {
+    pub fn get_included_items(&self, items: &[Item]) -> HashSet<Item> {
         let inclusions = &self.inclusions;
 
         items.iter()
@@ -47,7 +47,7 @@ impl Closet {
     }
 
     pub fn get_family(&self, item: &Item) -> Option<&Family> {
-        self.item_index.get(item).map(|family| family)
+        self.item_index.get(item)
     }
 
     pub fn contents(&self) -> &BTreeMap<Family, Vec<Item>> {

@@ -9,7 +9,7 @@ use core::Item;
 use std::collections::BTreeMap;
 use std::collections::HashSet;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct ClosetBuilder {
     contents: BTreeMap<Family, Vec<Item>>,
     item_index: BTreeMap<Item, Family>,
@@ -28,27 +28,27 @@ impl ClosetBuilder {
     }
 
     pub fn add_item(mut self, family: &Family, item: &Item) -> ClosetBuilder {
-        &self.contents.entry(family.clone())
-            .or_insert(vec![])
+        self.contents.entry(family.clone())
+            .or_insert_with(|| vec![])
             .push(item.clone());
 
-        &self.item_index.entry(item.clone())
-            .or_insert(family.clone());
+        self.item_index.entry(item.clone())
+            .or_insert_with(|| family.clone());
 
         self
     }
 
     pub fn add_exclusion_rule(mut self, selection: &Item, exclusion: &Item) -> ClosetBuilder {
-        &self.exclusions.entry(selection.clone())
-            .or_insert(vec![])
+        self.exclusions.entry(selection.clone())
+            .or_insert_with(|| vec![])
             .push(exclusion.clone());
 
         self
     }
 
     pub fn add_inclusion_rule(mut self, selection: &Item, inclusion: &Item) -> ClosetBuilder {
-        &self.inclusions.entry(selection.clone())
-            .or_insert(vec![])
+        self.inclusions.entry(selection.clone())
+            .or_insert_with(|| vec![])
             .push(inclusion.clone());
 
         self
@@ -97,7 +97,7 @@ impl ClosetBuilder {
             return Err(ExclusionError(conflicts));
         }
 
-        return Ok(());
+        Ok(())
     }
 
     fn find_conflicting_families(&self) -> Vec<(Item, Vec<Family>)> {
@@ -107,7 +107,7 @@ impl ClosetBuilder {
                     .map(|item| {
                         let item_family = self.item_index
                             .get(item)
-                            .expect(&format!("item `{:?}` does not have family", item));
+                            .unwrap_or_else(|| panic!("item `{:?}` does not have family", item));
 
                         if item_family != family {
                             Some((item.clone(), vec![item_family.clone(), family.clone()]))
@@ -135,13 +135,13 @@ impl ClosetBuilder {
             .flat_map(|(selection, items)| {
                 let selection_family = item_index
                     .get(selection)
-                    .expect(&format!("item `{:?}` does not have family", selection));
+                    .unwrap_or_else(|| panic!("item `{:?}` does not have family", selection));
 
                 items.iter()
                     .map(|item| {
                         let item_family = item_index
                             .get(item)
-                            .expect(&format!("item `{:?}` does not have family", item));
+                            .unwrap_or_else(|| panic!("item `{:?}` does not have family", item));
 
                         if selection_family == item_family {
                             let mut items = vec![selection.clone(), item.clone()];
