@@ -7,6 +7,10 @@ impl Family {
     pub fn new<S>(id: S) -> Family where S: Into<String> {
         Family(id.into())
     }
+
+    pub fn value(&self) -> &String {
+        &self.0
+    }
 }
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
@@ -15,6 +19,10 @@ pub struct Item(String);
 impl Item {
     pub fn new<S>(id: S) -> Item where S: Into<String> {
         Item(id.into())
+    }
+
+    pub fn value(&self) -> &String {
+        &self.0
     }
 }
 
