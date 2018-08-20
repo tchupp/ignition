@@ -2,10 +2,9 @@ use core::Family;
 use core::Item;
 use core::Outfit;
 use core::OutfitError;
-use core::OutfitError::Validation;
-use core::ValidationError::IncompatibleSelections;
-use core::ValidationError::MultipleItemsPerFamily;
-use core::ValidationError::UnknownItems;
+use core::OutfitError::IncompatibleSelections;
+use core::OutfitError::MultipleItemsPerFamily;
+use core::OutfitError::UnknownItems;
 use iterative::closet::Closet;
 use std::collections::BTreeMap;
 use std::collections::HashSet;
@@ -57,13 +56,13 @@ impl Closet {
 
 fn validate(closet: &Closet, selections: &[Item]) -> Result<(), OutfitError> {
     if let Some(items) = find_unknown_items(&closet, &selections) {
-        return Err(Validation(UnknownItems(items)));
+        return Err(UnknownItems(items));
     }
     if let Some(items) = find_duplicate_items(&closet, &selections) {
-        return Err(Validation(MultipleItemsPerFamily(items)));
+        return Err(MultipleItemsPerFamily(items));
     }
     if let Some(items) = find_conflicting_items(&closet, &selections) {
-        return Err(Validation(IncompatibleSelections(items)));
+        return Err(IncompatibleSelections(items));
     }
 
     Ok(())

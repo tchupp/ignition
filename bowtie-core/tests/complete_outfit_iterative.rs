@@ -5,9 +5,8 @@ mod no_rules_tests {
     use bowtie_core::core::Family;
     use bowtie_core::core::Item;
     use bowtie_core::core::Outfit;
-    use bowtie_core::core::OutfitError::Validation;
-    use bowtie_core::core::ValidationError::MultipleItemsPerFamily;
-    use bowtie_core::core::ValidationError::UnknownItems;
+    use bowtie_core::core::OutfitError::MultipleItemsPerFamily;
+    use bowtie_core::core::OutfitError::UnknownItems;
     use bowtie_core::iterative::ClosetBuilder;
     use std::collections::BTreeMap;
 
@@ -105,7 +104,7 @@ mod no_rules_tests {
             .add_item(&pants, &slacks);
         let closet = closet_builder.must_build();
 
-        let expected = Err(Validation(UnknownItems(vec![black.clone()])));
+        let expected = Err(UnknownItems(vec![black.clone()]));
         assert_eq!(
             expected,
             closet.complete_outfit(vec![jeans, black])
@@ -134,7 +133,7 @@ mod no_rules_tests {
             let mut duplicates = BTreeMap::new();
             duplicates.insert(pants, vec![jeans.clone(), slacks.clone()]);
 
-            Err(Validation(MultipleItemsPerFamily(duplicates)))
+            Err(MultipleItemsPerFamily(duplicates))
         };
 
         assert_eq!(
@@ -149,8 +148,7 @@ mod exclusion_rules_tests {
     use bowtie_core::core::Family;
     use bowtie_core::core::Item;
     use bowtie_core::core::Outfit;
-    use bowtie_core::core::OutfitError::Validation;
-    use bowtie_core::core::ValidationError::IncompatibleSelections;
+    use bowtie_core::core::OutfitError::IncompatibleSelections;
     use bowtie_core::iterative::ClosetBuilder;
 
     #[test]
@@ -204,7 +202,7 @@ mod exclusion_rules_tests {
             .add_exclusion_rule(&blue, &jeans);
         let closet = closet_builder.must_build();
 
-        let expected = Err(Validation(IncompatibleSelections(vec![jeans.clone(), blue.clone()])));
+        let expected = Err(IncompatibleSelections(vec![jeans.clone(), blue.clone()]));
         assert_eq!(
             expected,
             closet.complete_outfit(vec![blue, jeans])

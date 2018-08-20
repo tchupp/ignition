@@ -43,11 +43,6 @@ impl Outfit {
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum OutfitError {
-    Validation(ValidationError),
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub enum ValidationError {
     UnknownItems(Vec<Item>),
     IncompatibleSelections(Vec<Item>),
     MultipleItemsPerFamily(BTreeMap<Family, Vec<Item>>),
