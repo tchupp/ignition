@@ -14,6 +14,7 @@ mod no_rules_tests {
     fn no_rules_no_selections() {
         let blue = Item::new("shirts:blue");
         let red = Item::new("shirts:red");
+        let grey = Item::new("shirts:grey");
 
         let jeans = Item::new("pants:jeans");
         let slacks = Item::new("pants:slacks");
@@ -24,6 +25,7 @@ mod no_rules_tests {
         let closet_builder = ClosetBuilder::new()
             .add_item(&shirts, &blue)
             .add_item(&shirts, &red)
+            .add_item(&shirts, &grey)
             .add_item(&pants, &jeans)
             .add_item(&pants, &slacks);
         let closet = closet_builder.must_build();
@@ -307,6 +309,49 @@ mod inclusion_rules_tests {
         assert_eq!(
             expected,
             closet.complete_outfit(vec![slacks])
+        );
+    }
+}
+
+#[cfg(test)]
+mod all_rules_tests {
+    use bowtie_core::core::Family;
+    use bowtie_core::core::Item;
+    use bowtie_core::core::Outfit;
+    use bowtie_core::bdd::ClosetBuilder;
+
+    #[test]
+    fn three_families_eight_items() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+        let grey = Item::new("shirts:grey");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let sneakers = Item::new("shoes:sneakers");
+        let birkenstocks = Item::new("shoes:birkenstocks");
+        let topsiders = Item::new("shoes:topsiders");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+        let shoes = Family::new("shoes");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &grey)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks)
+            .add_item(&shoes, &birkenstocks)
+            .add_item(&shoes, &sneakers)
+            .add_item(&shoes, &topsiders);
+        let closet = closet_builder.must_build();
+
+        let expected = Ok(Outfit::new(vec![jeans.clone(), blue.clone(), birkenstocks.clone()]));
+        assert_eq!(
+            expected,
+            closet.complete_outfit(vec![])
         );
     }
 }

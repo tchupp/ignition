@@ -27,7 +27,7 @@ impl BitXor for Node {
     type Output = Self;
 
     fn bitxor(self, rhs: Self) -> Self {
-        (self.clone() & !(rhs.clone())) | (!self.clone() & (rhs.clone()))
+        ((self.clone() & !rhs.clone()) | (!self.clone() & rhs.clone()))
     }
 }
 

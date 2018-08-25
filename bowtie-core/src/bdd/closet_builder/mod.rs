@@ -62,23 +62,39 @@ impl ClosetBuilder {
         self.validate()?;
 
         let root = self.contents.iter()
-            .map(|(_, items)| items.iter().fold(Node::FALSE_LEAF, |other, item| Node::positive_branch(item) ^ other))
+            .map(|(_, items)| ClosetBuilder::sibling_relationship(items))
             .fold(Node::TRUE_LEAF, |other, family_node| other & family_node);
 
         let root = self.exclusions.iter()
             .flat_map(|(selection, exclusions)| exclusions.iter().map(|exclusion| (selection.clone(), exclusion.clone())).collect::<Vec<_>>())
-            .map(|(selection, exclusion)| (Node::positive_branch(&selection), Node::positive_branch(&exclusion)))
-            .map(|(selection, exclusion)| !exclusion | !selection)
+            .map(|(selection, exclusion)| ClosetBuilder::exclusion_relationship(selection, exclusion))
             .fold(root, |new_root, exclusion| new_root & exclusion);
 
         let root = self.inclusions.iter()
             .flat_map(|(selection, inclusions)| inclusions.iter().map(|exclusion| (selection.clone(), exclusion.clone())).collect::<Vec<_>>())
-            .map(|(selection, inclusion)| (Node::positive_branch(&selection), Node::positive_branch(&inclusion)))
-            .map(|(selection, inclusion)| !selection | inclusion)
+            .map(|(selection, inclusion)| ClosetBuilder::inclusion_relationship(selection, inclusion))
             .fold(root, |new_root, inclusion| new_root & inclusion);
 
         let item_index = self.item_index.clone();
         Ok(Closet::new(item_index, root))
+    }
+
+    fn sibling_relationship(items: &Vec<Item>) -> Node {
+        let exclusive_all = items.iter().fold(Node::FALSE_LEAF, |other, item| Node::negative_branch(item) | other);
+        let exclusive_each = items.iter().fold(Node::FALSE_LEAF, |other, item| Node::positive_branch(item) ^ other);
+
+        match items.len() {
+            1 => exclusive_each,
+            _ => exclusive_all & exclusive_each
+        }
+    }
+
+    fn exclusion_relationship(selection: Item, exclusion: Item) -> Node {
+        Node::negative_branch(&selection) | Node::negative_branch(&exclusion)
+    }
+
+    fn inclusion_relationship(selection: Item, exclusion: Item) -> Node {
+        Node::negative_branch(&selection) | Node::positive_branch(&exclusion)
     }
 
     fn validate(&self) -> Result<(), ClosetBuilderError> {
@@ -356,6 +372,35 @@ mod no_rules_tests {
         assert_eq!(
             &Node::FALSE_LEAF,
             both_selected.root()
+        );
+    }
+
+    #[test]
+    fn one_families_with_three_items() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+        let black = Item::new("shirts:black");
+
+        let shirts = Family::new("shirts");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &black);
+
+        let closet = closet_builder.must_build();
+
+        let blue_low_branch = Node::positive_branch(&red);
+        let blue_high_branch = Node::negative_branch(&red);
+        let black_low_branch = Node::branch(&blue, blue_low_branch, &blue_high_branch);
+        let black_high_branch = Node::branch(&blue, blue_high_branch, Node::FALSE_LEAF);
+
+        let black_branch = Node::branch(&black, black_low_branch, black_high_branch);
+
+        let expected_sibling_node = black_branch;
+        assert_eq!(
+            &expected_sibling_node,
+            closet.root()
         );
     }
 }
