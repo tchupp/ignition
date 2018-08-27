@@ -157,8 +157,8 @@ mod tests {
 
         let closet = closet_builder.must_build();
 
-        assert_eq!(65791, closet.node_count());
-        assert_eq!(32896, closet.leaf_count());
+        assert_eq!(649, closet.node_count());
+        assert_eq!(325, closet.leaf_count());
         assert_eq!(17, closet.depth());
     }
 
@@ -209,8 +209,8 @@ mod tests {
 
         let closet = closet_builder.must_build();
 
-        assert_eq!(17551, closet.node_count());
-        assert_eq!(8776, closet.leaf_count());
+        assert_eq!(1701, closet.node_count());
+        assert_eq!(851, closet.leaf_count());
         assert_eq!(17, closet.depth());
     }
 }
