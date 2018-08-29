@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 mod categorize;
 mod complete_outfit;
 mod node_count;
+mod select;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Closet {
@@ -32,15 +33,5 @@ impl Closet {
 
     pub fn get_family(&self, item: &Item) -> Option<&Family> {
         self.item_index.get(item)
-    }
-
-    pub fn select_item(&self, item: &Item) -> Closet {
-        let new_root = Node::restrict(&self.root, item, true);
-
-        Closet {
-            item_index: self.item_index.clone(),
-            selections: self.selections.clone(),
-            root: new_root,
-        }
     }
 }
