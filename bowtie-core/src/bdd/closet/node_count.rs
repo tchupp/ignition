@@ -36,6 +36,22 @@ impl Closet {
         }
     }
 
+    pub fn outfit_count(&self) -> u64 {
+        Closet::outfit_count_internal(self.root())
+    }
+
+    fn outfit_count_internal(node: &Node) -> u64 {
+        match node {
+            Node::Leaf(val) => if *val { 1 } else { 0 },
+            Node::Branch(_id, low, high) => {
+                let low = node::get(*low);
+                let high = node::get(*high);
+
+                Closet::outfit_count_internal(&low) + Closet::outfit_count_internal(&high)
+            }
+        }
+    }
+
     pub fn depth(&self) -> u64 {
         Closet::depth_internal(self.root())
     }
@@ -86,6 +102,7 @@ mod tests {
 
         assert_eq!(19, closet.node_count());
         assert_eq!(10, closet.leaf_count());
+        assert_eq!(4, closet.outfit_count());
         assert_eq!(5, closet.depth());
     }
 
@@ -111,6 +128,7 @@ mod tests {
 
         assert_eq!(17, closet.node_count());
         assert_eq!(9, closet.leaf_count());
+        assert_eq!(3, closet.outfit_count());
         assert_eq!(5, closet.depth());
     }
 
@@ -159,6 +177,7 @@ mod tests {
 
         assert_eq!(649, closet.node_count());
         assert_eq!(325, closet.leaf_count());
+        assert_eq!(64, closet.outfit_count());
         assert_eq!(17, closet.depth());
     }
 
@@ -211,6 +230,7 @@ mod tests {
 
         assert_eq!(1701, closet.node_count());
         assert_eq!(851, closet.leaf_count());
+        assert_eq!(256, closet.outfit_count());
         assert_eq!(17, closet.depth());
     }
 }
