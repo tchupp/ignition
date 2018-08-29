@@ -21,7 +21,6 @@ The output of the binary operation is a boolean, telling us whether the combinat
 A and B are items in the same family  
 A and B may not be selected at the same time, but one of them **must** be selected
 
-Equation: `A ^ B`  
 Equation (DNF): `(A * ~B) + (~A * B)`  
 
 Truth table:
@@ -32,6 +31,27 @@ Truth table:
 | 0 | 1 | 1 |
 | 1 | 0 | 1 |
 | 1 | 1 | 0 |
+
+While this equation looks similar to an XOR, it doesn't scale in the same way  
+Where a 3-input XOR function allows all three inputs to be `T` at the same time, our sibling relationship does not  
+Lets look at the truth table for *three* items in the same family  
+
+Equation (DNF): `(A * ~B * ~C) + (~A * B * ~C) + (~A * ~B * C)`  
+
+Truth table:
+
+| A | B | C | V |
+|:-:|:-:|:-:|:-:|
+| 0 | 0 | 0 | 0 |
+| 0 | 0 | 1 | 1 |
+| 0 | 1 | 0 | 1 |
+| 0 | 1 | 1 | 0 |
+| 1 | 0 | 0 | 1 |
+| 1 | 0 | 1 | 0 |
+| 1 | 1 | 0 | 0 |
+| 1 | 1 | 1 | 0 |
+
+The relationship holds true for three items, and the equation will scale quadratically for each item added
 
 ## Exclusion
 A and B are items in different families  
