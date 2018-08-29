@@ -10,6 +10,7 @@ mod node_count;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Closet {
     item_index: BTreeMap<Item, Family>,
+    selections: Vec<Item>,
     root: Node,
 }
 
@@ -18,7 +19,7 @@ impl Closet {
         item_index: BTreeMap<Item, Family>,
         root: Node,
     ) -> Closet {
-        Closet { item_index, root }
+        Closet { item_index, selections: Vec::new(), root }
     }
 
     pub fn root(&self) -> &Node {
@@ -38,24 +39,7 @@ impl Closet {
 
         Closet {
             item_index: self.item_index.clone(),
-            root: new_root,
-        }
-    }
-
-    pub fn exclude_item(&self, item: &Item) -> Closet {
-        let new_root = Node::restrict(&self.root, item, false);
-
-        Closet {
-            item_index: self.item_index.clone(),
-            root: new_root,
-        }
-    }
-
-    pub fn reduce(&self) -> Closet {
-        let new_root = Node::reduce(&self.root);
-
-        Closet {
-            item_index: self.item_index.clone(),
+            selections: self.selections.clone(),
             root: new_root,
         }
     }
