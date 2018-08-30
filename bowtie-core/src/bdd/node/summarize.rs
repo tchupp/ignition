@@ -1,34 +1,39 @@
 use bdd::node;
 use bdd::node::Node;
-use core::Item;
+use core::ItemStatus;
 use itertools::Itertools;
-use std::collections::HashSet;
+use std::collections::BinaryHeap;
+use std::collections::HashMap;
 
 impl Node {
-    pub fn summarize(node: &Node) -> Vec<Item> {
-        Node::summarize_internal(node, HashSet::new())
-            .into_iter()
-            .sorted()
-    }
+    pub fn summarize(node: &Node) -> Vec<ItemStatus> {
+        let mut queue = vec![node.clone()];
+        let mut nodes = HashMap::new();
 
-    fn summarize_internal(node: &Node, summary: HashSet<Item>) -> HashSet<Item> {
-        match node {
-            Node::Leaf(_val) => summary,
-            Node::Branch(id, low, high) => {
-                let mut summary = summary.clone();
-                summary.insert(id.clone());
+        while let Some(node) = queue.pop() {
+            if let Node::Branch(item, low, high) = node {
+                let low = node::get(low);
+                let high = node::get(high);
 
-                let high = node::get(*high);
-                let high_summary = Node::summarize_internal(&high, summary.clone());
-                summary.extend(high_summary);
+                let item_status = match high {
+                    Node::Leaf(false) => ItemStatus::Excluded(item.clone()),
+                    _ => ItemStatus::Available(item.clone())
+                };
+                nodes.entry(item.clone())
+                    .or_insert_with(|| BinaryHeap::new())
+                    .push(item_status);
 
-                let low = node::get(*low);
-                let low_summary = Node::summarize_internal(&low, summary.clone());
-                summary.extend(low_summary);
-
-                summary
-            }
+                queue.push(low);
+                queue.push(high);
+            };
         }
+
+        nodes.values()
+            .map(|s| s.peek())
+            .filter(|s| s.is_some())
+            .map(|s| s.unwrap())
+            .cloned()
+            .sorted()
     }
 }
 
@@ -36,37 +41,47 @@ impl Node {
 mod summarize_tests {
     use bdd::node::Node;
     use core::Item;
+    use core::ItemStatus;
 
     #[test]
     fn summarize_returns_empty_for_leaves() {
         let summary = Node::summarize(&Node::TRUE_LEAF);
-        let expected: Vec<Item> = vec![];
+        let expected: Vec<ItemStatus> = vec![];
         assert_eq!(expected, summary);
 
         let summary = Node::summarize(&Node::FALSE_LEAF);
-        let expected: Vec<Item> = vec![];
+        let expected: Vec<ItemStatus> = vec![];
         assert_eq!(expected, summary);
     }
 
     #[test]
-    fn summarize_returns_items_for_depth_1() {
+    fn summarize_returns_available_items_for_depth_1() {
         let red = Item::new("shirts:red");
-        let expected: Vec<Item> = vec![red.clone()];
 
         let red_branch = Node::positive_branch(&red);
         let summary = Node::summarize(&red_branch);
-        assert_eq!(expected, summary);
-
-        let red_branch = Node::negative_branch(&red);
-        let summary = Node::summarize(&red_branch);
+        let expected: Vec<ItemStatus> = vec![ItemStatus::Available(red.clone())];
         assert_eq!(expected, summary);
     }
 
     #[test]
-    fn summarize_returns_items_for_depth_2() {
+    fn summarize_returns_excluded_items_for_depth_1() {
+        let red = Item::new("shirts:red");
+
+        let red_branch = Node::negative_branch(&red);
+        let summary = Node::summarize(&red_branch);
+        let expected: Vec<ItemStatus> = vec![ItemStatus::Excluded(red.clone())];
+        assert_eq!(expected, summary);
+    }
+
+    #[test]
+    fn summarize_returns_available_items_for_depth_2() {
         let red = Item::new("shirts:red");
         let blue = Item::new("shirts:blue");
-        let expected: Vec<Item> = vec![blue.clone(), red.clone()];
+        let expected: Vec<ItemStatus> = vec![
+            ItemStatus::Available(blue.clone()),
+            ItemStatus::Available(red.clone())
+        ];
 
         let red_branch = Node::positive_branch(&red) ^ Node::positive_branch(&blue);
         let summary = Node::summarize(&red_branch);

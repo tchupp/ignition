@@ -26,6 +26,39 @@ impl Item {
     }
 }
 
+#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
+pub enum ItemStatus {
+    Excluded(Item),
+    Available(Item),
+    Selected(Item),
+}
+
+impl ItemStatus {
+    pub fn is_excluded(&self) -> bool {
+        match self {
+            ItemStatus::Excluded(_) => true,
+            ItemStatus::Available(_) => false,
+            ItemStatus::Selected(_) => false,
+        }
+    }
+
+    pub fn is_available(&self) -> bool {
+        match self {
+            ItemStatus::Excluded(_) => false,
+            ItemStatus::Available(_) => true,
+            ItemStatus::Selected(_) => false,
+        }
+    }
+
+    pub fn is_selected(&self) -> bool {
+        match self {
+            ItemStatus::Excluded(_) => false,
+            ItemStatus::Available(_) => false,
+            ItemStatus::Selected(_) => true,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Outfit {
     items: Vec<Item>
