@@ -10,6 +10,7 @@ mod bit_operations;
 mod reduce;
 mod restrict;
 mod operations;
+mod summarize;
 
 #[derive(Eq, PartialEq, Clone, Hash, Ord, PartialOrd, Serialize, Deserialize)]
 pub enum Node {

@@ -12,11 +12,7 @@ impl Node {
                 let high = node::get(*high);
 
                 if id == item {
-                    if !selected {
-                        return low;
-                    } else {
-                        return high;
-                    }
+                    return if !selected { low } else { high };
                 }
 
                 let restricted_low = Node::restrict(&low, item, selected);
