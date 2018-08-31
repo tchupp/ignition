@@ -20,7 +20,7 @@ impl Node {
                     _ => ItemStatus::Available(item.clone())
                 };
                 nodes.entry(item.clone())
-                    .or_insert_with(|| BinaryHeap::new())
+                    .or_insert_with(BinaryHeap::new)
                     .push(item_status);
 
                 queue.push(low);

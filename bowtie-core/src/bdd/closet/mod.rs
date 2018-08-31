@@ -1,8 +1,8 @@
 use bdd::node::Node;
 use core::Family;
 use core::Item;
-use std::collections::BTreeMap;
 use core::ItemStatus;
+use std::collections::BTreeMap;
 
 mod categorize;
 mod complete_outfit;
@@ -21,7 +21,11 @@ impl Closet {
         item_index: BTreeMap<Item, Family>,
         root: Node,
     ) -> Closet {
-        Closet { item_index, summary: Vec::new(), root }
+        Closet {
+            item_index,
+            summary: Node::summarize(&root),
+            root,
+        }
     }
 
     pub fn root(&self) -> &Node {

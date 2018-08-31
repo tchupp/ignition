@@ -7,7 +7,7 @@ impl Closet {
     pub fn categorize(&self, items: &[&Item]) -> HashMap<Family, Vec<Item>> {
         let unknown_family = Family::new("UNKNOWN");
 
-        items.iter()
+        items.into_iter()
             .map(|&item| (self.get_family(item).unwrap_or(&unknown_family), item))
             .map(|(family, item)| (family.clone(), item.clone()))
             .fold(HashMap::new(), |mut categories, (family, item): (Family, Item)| {
