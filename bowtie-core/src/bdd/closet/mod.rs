@@ -2,6 +2,7 @@ use bdd::node::Node;
 use core::Family;
 use core::Item;
 use std::collections::BTreeMap;
+use core::ItemStatus;
 
 mod categorize;
 mod complete_outfit;
@@ -11,7 +12,7 @@ mod select;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Closet {
     item_index: BTreeMap<Item, Family>,
-    selections: Vec<Item>,
+    summary: Vec<ItemStatus>,
     root: Node,
 }
 
@@ -20,7 +21,7 @@ impl Closet {
         item_index: BTreeMap<Item, Family>,
         root: Node,
     ) -> Closet {
-        Closet { item_index, selections: Vec::new(), root }
+        Closet { item_index, summary: Vec::new(), root }
     }
 
     pub fn root(&self) -> &Node {

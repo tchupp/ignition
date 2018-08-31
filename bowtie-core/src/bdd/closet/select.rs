@@ -1,16 +1,23 @@
 use bdd::closet::Closet;
 use bdd::node::Node;
 use core::Item;
+use core::ItemStatus;
+use itertools::Itertools;
 
 impl Closet {
     pub fn select_item(&self, item: &Item) -> Closet {
         let item_index = self.item_index.clone();
-
         let root = Node::restrict(&self.root, item, true);
-        let mut selections = self.selections.clone();
-        selections.push(item.clone());
+        let summary = Node::summarize(&root);
 
-        Closet { item_index, selections, root }
+        let summary = self.summary.iter()
+            .filter(|s| s.is_selected())
+            .cloned()
+            .chain(vec![ItemStatus::Selected(item.clone())])
+            .chain(summary)
+            .sorted();
+
+        Closet { item_index, summary, root }
     }
 }
 
@@ -22,6 +29,7 @@ mod tests {
     use bdd::node::Node;
     use core::Family;
     use core::Item;
+    use core::ItemStatus;
     use std::collections::BTreeMap;
 
     #[test]
@@ -58,10 +66,17 @@ mod tests {
 
                 Node::branch(&jeans, jeans_low_branch, jeans_high_branch)
             };
+            let summary = vec![
+                ItemStatus::Excluded(red),
+                ItemStatus::Available(jeans),
+                ItemStatus::Available(slacks),
+                ItemStatus::Selected(blue)
+            ];
+
 
             Closet {
                 item_index,
-                selections: vec![blue],
+                summary,
                 root,
             }
         };
@@ -70,7 +85,7 @@ mod tests {
     }
 
     #[test]
-    fn one_selection_families_2_items_4_one_exclusion() {
+    fn one_selection_families_2_items_4_one_exclusion_rule() {
         let blue = Item::new("shirts:blue");
         let red = Item::new("shirts:red");
 
@@ -98,14 +113,22 @@ mod tests {
             item_index.insert(slacks.clone(), pants.clone());
 
             let root = {
-                let jeans_low_branch = Node::positive_branch(&slacks) & Node::negative_branch(&blue);
-
-                Node::branch(&jeans, jeans_low_branch, Node::FALSE_LEAF)
+                Node::branch(
+                    &jeans,
+                    Node::positive_branch(&slacks) & Node::negative_branch(&blue),
+                    Node::FALSE_LEAF,
+                )
             };
+            let summary = vec![
+                ItemStatus::Excluded(jeans),
+                ItemStatus::Excluded(blue),
+                ItemStatus::Available(slacks),
+                ItemStatus::Selected(red)
+            ];
 
             Closet {
                 item_index,
-                selections: vec![red],
+                summary,
                 root,
             }
         };
