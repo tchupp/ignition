@@ -4,23 +4,35 @@ use bdd::node::operations::Operation;
 use core::Item;
 use std::cmp::Ordering;
 
-fn get_node(id: &Item, low: &Node, high: &Node) -> Node {
+pub fn apply(node1: &Node, node2: &Node, op: &Operation) -> Node {
+    if let Some(result) = op.eval(node1, node2) {
+        return result;
+    }
+
+    let first_id = get_first_id(node1, node2).expect("BLAH");
+
+    let (node1_low, node1_high) = split_branch(node1, &first_id);
+    let (node2_low, node2_high) = split_branch(node2, &first_id);
+
+    let low = apply(&node1_low, &node2_low, op);
+    let high = apply(&node1_high, &node2_high, op);
+
     if low == high {
         return low.clone();
     }
 
-    Node::branch(id, low, high)
+    Node::branch(&first_id, low, high)
 }
 
-fn get_first_id(f1: &Node, f2: &Node) -> Option<Item> {
-    match f1 {
+fn get_first_id(node1: &Node, node2: &Node) -> Option<Item> {
+    match node1 {
         Node::Leaf(_) =>
-            match f2 {
+            match node2 {
                 Node::Leaf(_) => None,
                 Node::Branch(id_2, _low, _high) => Some(id_2.clone())
             },
         Node::Branch(id_1, _low, _high) =>
-            match f2 {
+            match node2 {
                 Node::Leaf(_) => Some(id_1.clone()),
                 Node::Branch(id_2, _low, _high) =>
                     match id_1.cmp(&id_2) {
@@ -32,40 +44,16 @@ fn get_first_id(f1: &Node, f2: &Node) -> Option<Item> {
     }
 }
 
-pub fn apply(f1: &Node, f2: &Node, op: &Operation) -> Node {
-    if let Some(result) = op.eval(f1, f2) {
-        return result;
-    }
-
-    let first_id = get_first_id(f1, f2).expect("BLAH");
-
-    let (f1_l, f1_h) = if let Node::Branch(id, low, high) = f1 {
-        if &first_id == id {
+fn split_branch(node: &Node, first_id: &Item) -> (Node, Node) {
+    if let Node::Branch(id, low, high) = node {
+        if first_id == id {
             let low = node::get(*low);
             let high = node::get(*high);
-            (low, high)
-        } else {
-            (f1.clone(), f1.clone())
+            return (low, high);
         }
-    } else {
-        (f1.clone(), f1.clone())
     };
 
-    let (f2_l, f2_h) = if let Node::Branch(id, low, high) = f2 {
-        if &first_id == id {
-            let low = node::get(*low);
-            let high = node::get(*high);
-            (low, high)
-        } else {
-            (f2.clone(), f2.clone())
-        }
-    } else {
-        (f2.clone(), f2.clone())
-    };
-
-    let low = apply(&f1_l, &f2_l, op);
-    let high = apply(&f1_h, &f2_h, op);
-    get_node(&first_id, &low, &high)
+    (node.clone(), node.clone())
 }
 
 #[cfg(test)]
