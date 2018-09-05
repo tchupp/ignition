@@ -7,6 +7,7 @@ use std::fmt;
 mod apply;
 mod arena;
 mod bit_operations;
+mod hash_structure;
 mod reduce;
 mod restrict;
 mod operations;
