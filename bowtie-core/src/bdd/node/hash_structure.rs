@@ -1,4 +1,3 @@
-use bdd::node;
 use bdd::node::Node;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
@@ -15,8 +14,8 @@ impl Node {
             Node::Branch(_id, low, high) => {
                 let mut hasher = DefaultHasher::new();
 
-                let low = node::get(*low);
-                let high = node::get(*high);
+                let low = Node::from(low);
+                let high = Node::from(high);
 
                 Node::hash_structure(&low).hash(&mut hasher);
                 Node::hash_structure(&high).hash(&mut hasher);

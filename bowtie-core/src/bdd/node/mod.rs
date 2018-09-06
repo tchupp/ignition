@@ -1,6 +1,3 @@
-use bdd::node;
-pub use bdd::node::arena::add;
-pub use bdd::node::arena::get;
 use core::Item;
 use std::fmt;
 
@@ -37,9 +34,9 @@ impl Node {
                     "| {:?}:\n{}{}\n{}{}",
                     id,
                     "| ".repeat(indent),
-                    arena::get(*low).fmt_inner(indent + 1),
+                    Node::from(low).fmt_inner(indent + 1),
                     "| ".repeat(indent),
-                    arena::get(*high).fmt_inner(indent + 1)
+                    Node::from(high).fmt_inner(indent + 1)
                 ),
         }
     }
@@ -64,13 +61,25 @@ impl Node {
 
 impl<'a> From<Node> for NodeId {
     fn from(node: Node) -> Self {
-        node::add(node)
+        arena::add(node)
     }
 }
 
 impl<'a> From<&'a Node> for NodeId {
     fn from(node: &Node) -> Self {
-        node::add(node.clone())
+        arena::add(node.clone())
+    }
+}
+
+impl From<NodeId> for Node {
+    fn from(node_id: NodeId) -> Self {
+        arena::get(node_id)
+    }
+}
+
+impl<'a> From<&'a NodeId> for Node {
+    fn from(node_id: &NodeId) -> Self {
+        arena::get(*node_id)
     }
 }
 

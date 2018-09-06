@@ -1,4 +1,3 @@
-use bdd::node;
 use bdd::node::Node;
 use bdd::node::operations::Operation;
 use core::Item;
@@ -47,8 +46,8 @@ fn get_first_id(node1: &Node, node2: &Node) -> Option<Item> {
 fn split_branch(node: &Node, first_id: &Item) -> (Node, Node) {
     if let Node::Branch(id, low, high) = node {
         if first_id == id {
-            let low = node::get(*low);
-            let high = node::get(*high);
+            let low = Node::from(low);
+            let high = Node::from(high);
             return (low, high);
         }
     };

@@ -1,4 +1,3 @@
-use bdd::node;
 use bdd::node::Node;
 use core::ItemStatus;
 use itertools::Itertools;
@@ -12,8 +11,8 @@ impl Node {
 
         while let Some(node) = queue.pop() {
             if let Node::Branch(item, low, high) = node {
-                let low = node::get(low);
-                let high = node::get(high);
+                let low = Node::from(low);
+                let high = Node::from(high);
 
                 let item_status = match high {
                     Node::Leaf(false) => ItemStatus::Excluded(item.clone()),
