@@ -5,12 +5,14 @@ mod apply;
 mod arena;
 mod bit_operations;
 mod hash_structure;
+mod operations;
 mod reduce;
 mod restrict;
-mod operations;
+mod serialize;
 mod summarize;
+mod structure;
 
-#[derive(Eq, PartialEq, Clone, Hash, Ord, PartialOrd, Serialize, Deserialize)]
+#[derive(Eq, PartialEq, Clone, Hash, Ord, PartialOrd)]
 pub enum Node {
     Branch(Item, NodeId, NodeId),
     Leaf(bool),
