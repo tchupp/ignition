@@ -17,6 +17,8 @@ impl Serialize for Node {
     }
 }
 
+const FIELDS: &[&str] = &["structure", "content"];
+
 impl<'de> Deserialize<'de> for Node {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         #[derive(Deserialize)]
@@ -66,8 +68,6 @@ impl<'de> Deserialize<'de> for Node {
                 Ok(Node::from((structure, content)))
             }
         }
-
-        const FIELDS: &'static [&'static str] = &["structure", "content"];
 
         deserializer.deserialize_struct("Node", FIELDS, NodeVisitor)
     }

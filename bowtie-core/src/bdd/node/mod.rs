@@ -5,7 +5,6 @@ mod apply;
 mod arena;
 mod bit_operations;
 mod hash_structure;
-mod operations;
 mod reduce;
 mod restrict;
 mod serialize;

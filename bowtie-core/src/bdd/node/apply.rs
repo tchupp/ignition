@@ -1,5 +1,5 @@
 use bdd::node::Node;
-use bdd::node::operations::Operation;
+use bdd::node::bit_operations::Operation;
 use core::Item;
 use std::cmp::Ordering;
 
@@ -58,7 +58,7 @@ fn split_branch(node: &Node, first_id: &Item) -> (Node, Node) {
 #[cfg(test)]
 mod tests {
     use bdd::node::Node;
-    use bdd::node::operations::AndOperation;
+    use bdd::node::bit_operations::AndOperation;
     use core::Item;
     use super::apply;
 

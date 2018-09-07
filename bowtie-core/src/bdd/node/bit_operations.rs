@@ -1,11 +1,68 @@
 use bdd::node::apply::apply;
 use bdd::node::Node;
-use bdd::node::operations::AndOperation;
-use bdd::node::operations::OrOperation;
 use std::ops::BitAnd;
 use std::ops::BitOr;
 use std::ops::BitXor;
 use std::ops::Not;
+
+pub trait Operation {
+    fn eval(&self, f1: &Node, f2: &Node) -> Option<Node>;
+}
+
+pub struct AndOperation;
+
+impl AndOperation {
+    pub fn new() -> AndOperation {
+        AndOperation {}
+    }
+}
+
+impl Operation for AndOperation {
+    fn eval(&self, f1: &Node, f2: &Node) -> Option<Node> {
+        if &Node::TRUE_LEAF == f1 {
+            return Some(f2.clone());
+        }
+        if &Node::TRUE_LEAF == f2 {
+            return Some(f1.clone());
+        }
+
+        if let Node::Leaf(val_1) = f1 {
+            if let Node::Leaf(val_2) = f2 {
+                return Some(Node::Leaf(val_1 & val_2));
+            }
+        }
+
+        None
+    }
+}
+
+pub struct OrOperation;
+
+impl OrOperation {
+    pub fn new() -> OrOperation {
+        OrOperation {}
+    }
+}
+
+impl Operation for OrOperation {
+    fn eval(&self, f1: &Node, f2: &Node) -> Option<Node> {
+        if &Node::FALSE_LEAF == f1 {
+            return Some(f2.clone());
+        }
+        if &Node::FALSE_LEAF == f2 {
+            return Some(f1.clone());
+        }
+
+        if let Node::Leaf(val_1) = f1 {
+            if let Node::Leaf(val_2) = f2 {
+                return Some(Node::Leaf(val_1 | val_2));
+            }
+        }
+
+        None
+    }
+}
+
 
 impl BitOr for Node {
     type Output = Self;
