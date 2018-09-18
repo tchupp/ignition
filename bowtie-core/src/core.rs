@@ -7,9 +7,11 @@ impl Family {
     pub fn new<S>(id: S) -> Family where S: Into<String> {
         Family(id.into())
     }
+}
 
-    pub fn value(&self) -> &String {
-        &self.0
+impl From<Item> for String {
+    fn from(item: Item) -> Self {
+        item.0
     }
 }
 
@@ -20,9 +22,11 @@ impl Item {
     pub fn new<S>(id: S) -> Item where S: Into<String> {
         Item(id.into())
     }
+}
 
-    pub fn value(&self) -> &String {
-        &self.0
+impl From<Family> for String {
+    fn from(family: Family) -> Self {
+        family.0
     }
 }
 

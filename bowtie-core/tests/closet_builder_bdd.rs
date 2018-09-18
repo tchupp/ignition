@@ -2,10 +2,10 @@ extern crate bowtie_core;
 
 #[cfg(test)]
 mod tests {
-    use bowtie_core::core::Family;
-    use bowtie_core::core::Item;
     use bowtie_core::bdd::ClosetBuilder;
     use bowtie_core::closet_builder::ClosetBuilderError;
+    use bowtie_core::core::Family;
+    use bowtie_core::core::Item;
 
     #[test]
     fn adding_item_to_two_families_returns_error() {
@@ -22,7 +22,7 @@ mod tests {
         let error = closet.expect_err("expected ConflictingFamiliesError, but was");
 
         assert_eq!(
-            ClosetBuilderError::ConflictingFamilies(vec![(blue, vec![shirts, pants])]),
+            ClosetBuilderError::ConflictingFamilies(blue, vec![shirts, pants]),
             error
         );
     }
@@ -49,7 +49,35 @@ mod tests {
         let error = closet.expect_err("expected InclusionError, but was");
 
         assert_eq!(
-            ClosetBuilderError::InclusionError(vec![(shirts, vec![blue, red])]),
+            ClosetBuilderError::InclusionError(shirts, vec![blue, red]),
+            error
+        );
+    }
+
+    #[test]
+    fn include_rule_on_unknown_item_returns_error() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+        let green = Item::new("shirts:green");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks)
+            .add_inclusion_rule(&green, &jeans);
+
+        let closet = closet_builder.build();
+        let error = closet.expect_err("expected InclusionError, but was");
+
+        assert_eq!(
+            ClosetBuilderError::MissingFamily(green),
             error
         );
     }
@@ -76,7 +104,37 @@ mod tests {
         let error = closet.expect_err("expected ExclusionError, but was");
 
         assert_eq!(
-            ClosetBuilderError::ExclusionError(vec![(shirts, vec![blue, red])]),
+            ClosetBuilderError::ExclusionError(shirts, vec![blue, red]),
+            error
+        );
+    }
+
+    #[test]
+    fn exclude_rule_on_unknown_item_returns_error() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+        let green = Item::new("shirts:green");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &blue)
+            .add_item(&shirts, &red)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks)
+            .add_exclusion_rule(&green, &jeans)
+            .add_exclusion_rule(&slacks, &green)
+        ;
+
+        let closet = closet_builder.build();
+        let error = closet.expect_err("expected ExclusionError, but was");
+
+        assert_eq!(
+            ClosetBuilderError::MissingFamily(green),
             error
         );
     }

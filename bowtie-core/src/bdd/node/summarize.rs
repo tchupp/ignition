@@ -28,9 +28,7 @@ impl Node {
         }
 
         nodes.values()
-            .map(|s| s.peek())
-            .filter(|s| s.is_some())
-            .map(|s| s.unwrap())
+            .filter_map(|s| s.peek())
             .cloned()
             .sorted()
     }
