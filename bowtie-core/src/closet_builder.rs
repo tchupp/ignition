@@ -22,8 +22,8 @@ pub fn validate_closet(
     let conflicts =
         vec![
             find_conflicting_families(contents, item_index),
-            find_illegal_rules(exclusions, item_index, |family, items| ExclusionError(family, items)),
-            find_illegal_rules(inclusions, item_index, |family, items| InclusionError(family, items))
+            find_illegal_rules(exclusions, item_index, ExclusionError),
+            find_illegal_rules(inclusions, item_index, InclusionError)
         ]
             .iter()
             .flat_map(|conflicts| conflicts)
@@ -31,11 +31,11 @@ pub fn validate_closet(
             .cloned()
             .collect::<Vec<_>>();
 
-    return match conflicts.len() {
+    match conflicts.len() {
         0 => Ok(()),
         1 => Err(conflicts.first().unwrap().clone()),
         _ => Err(CompoundError(conflicts)),
-    };
+    }
 }
 
 fn find_conflicting_families(contents: &BTreeMap<Family, Vec<Item>>, item_index: &BTreeMap<Item, Family>) -> Vec<ClosetBuilderError> {
@@ -59,10 +59,10 @@ fn find_conflicting_families(contents: &BTreeMap<Family, Vec<Item>>, item_index:
         .collect::<Vec<ClosetBuilderError>>()
 }
 
-fn find_illegal_rules<F: Fn(Family, Vec<Item>) -> ClosetBuilderError>(
+fn find_illegal_rules(
     rules: &BTreeMap<Item, Vec<Item>>,
     item_index: &BTreeMap<Item, Family>,
-    rule_error: F,
+    rule_error: fn(Family, Vec<Item>) -> ClosetBuilderError,
 ) -> Vec<ClosetBuilderError> {
     let find_selections_and_items_without_families = |(selection, items): (&Item, &Vec<Item>)| {
         let selection_family = match item_index.get(selection) {

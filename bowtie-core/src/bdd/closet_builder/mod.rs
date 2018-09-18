@@ -35,6 +35,11 @@ impl ClosetBuilder {
         self
     }
 
+    pub fn add_items(self, family: &Family, items: &[Item]) -> ClosetBuilder {
+        items.into_iter()
+            .fold(self, |closet_builder, item| closet_builder.add_item(family, item))
+    }
+
     pub fn add_exclusion_rule(mut self, selection: &Item, exclusion: &Item) -> ClosetBuilder {
         self.exclusions.entry(selection.clone())
             .or_insert_with(|| vec![])
@@ -43,12 +48,22 @@ impl ClosetBuilder {
         self
     }
 
+    pub fn add_exclusion_rules(self, selection: &Item, exclusions: &[Item]) -> ClosetBuilder {
+        exclusions.into_iter()
+            .fold(self, |closet_builder, item| closet_builder.add_exclusion_rule(selection, item))
+    }
+
     pub fn add_inclusion_rule(mut self, selection: &Item, inclusion: &Item) -> ClosetBuilder {
         self.inclusions.entry(selection.clone())
             .or_insert_with(|| vec![])
             .push(inclusion.clone());
 
         self
+    }
+
+    pub fn add_inclusion_rules(self, selection: &Item, inclusions: &[Item]) -> ClosetBuilder {
+        inclusions.into_iter()
+            .fold(self, |closet_builder, item| closet_builder.add_inclusion_rule(selection, item))
     }
 
     pub fn must_build(self) -> Closet {

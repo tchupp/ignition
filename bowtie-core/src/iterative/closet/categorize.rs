@@ -36,8 +36,7 @@ mod tests {
         let pants = Family::new("pants");
 
         let closet_builder = ClosetBuilder::new()
-            .add_item(&shirts, &shirt1)
-            .add_item(&shirts, &shirt2)
+            .add_items(&shirts, &[shirt1.clone(), shirt2.clone()])
             .add_item(&pants, &pants1)
             .add_item(&pants, &pants2);
 
