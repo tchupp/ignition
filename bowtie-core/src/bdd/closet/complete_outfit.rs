@@ -14,7 +14,9 @@ impl Closet {
         validate(self, &selections)?;
 
         let mut root: Node = selections.iter()
-            .fold(self.root().clone(), |new_root, selection| Node::restrict(&new_root, selection, true));
+            .fold(
+                self.root().clone(),
+                |new_root, selection| Node::restrict(&new_root, selection, true));
 
         let mut outfit_items = selections;
         loop {

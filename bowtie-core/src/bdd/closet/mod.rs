@@ -36,6 +36,8 @@ impl Closet {
         &self.item_index
     }
 
+    pub fn summary(&self) -> &Vec<ItemStatus> { &self.summary}
+
     pub fn get_family(&self, item: &Item) -> Option<&Family> {
         self.item_index.get(item)
     }

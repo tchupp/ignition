@@ -24,13 +24,10 @@ impl Closet {
 
 #[cfg(test)]
 mod tests {
-    use bdd::closet::Closet;
     use bdd::closet_builder::ClosetBuilder;
-    use bdd::node::Node;
     use core::Family;
     use core::Item;
     use core::ItemStatus;
-    use std::collections::BTreeMap;
 
     #[test]
     fn one_selection_families_2_items_4() {
@@ -52,36 +49,13 @@ mod tests {
         let closet = closet_builder.must_build();
         let closet = closet.select_item(&blue);
 
-        let expected = {
-            let mut item_index = BTreeMap::new();
-            item_index.insert(blue.clone(), shirts.clone());
-            item_index.insert(red.clone(), shirts.clone());
-            item_index.insert(jeans.clone(), pants.clone());
-            item_index.insert(slacks.clone(), pants.clone());
-
-            let root = {
-                let red_branch = Node::negative_branch(&red);
-                let jeans_low_branch = Node::positive_branch(&slacks) & red_branch.clone();
-                let jeans_high_branch = Node::negative_branch(&slacks) & red_branch.clone();
-
-                Node::branch(&jeans, jeans_low_branch, jeans_high_branch)
-            };
-            let summary = vec![
-                ItemStatus::Excluded(red),
-                ItemStatus::Available(jeans),
-                ItemStatus::Available(slacks),
-                ItemStatus::Selected(blue)
-            ];
-
-
-            Closet {
-                item_index,
-                summary,
-                root,
-            }
-        };
-
-        assert_eq!(expected, closet);
+        let expected = vec![
+            ItemStatus::Excluded(red),
+            ItemStatus::Available(jeans),
+            ItemStatus::Available(slacks),
+            ItemStatus::Selected(blue)
+        ];
+        assert_eq!(&expected, closet.summary());
     }
 
     #[test]
@@ -105,34 +79,12 @@ mod tests {
         let closet = closet_builder.must_build();
         let closet = closet.select_item(&red);
 
-        let expected = {
-            let mut item_index = BTreeMap::new();
-            item_index.insert(blue.clone(), shirts.clone());
-            item_index.insert(red.clone(), shirts.clone());
-            item_index.insert(jeans.clone(), pants.clone());
-            item_index.insert(slacks.clone(), pants.clone());
-
-            let root = {
-                Node::branch(
-                    &jeans,
-                    Node::positive_branch(&slacks) & Node::negative_branch(&blue),
-                    Node::FALSE_LEAF,
-                )
-            };
-            let summary = vec![
-                ItemStatus::Excluded(jeans),
-                ItemStatus::Excluded(blue),
-                ItemStatus::Available(slacks),
-                ItemStatus::Selected(red)
-            ];
-
-            Closet {
-                item_index,
-                summary,
-                root,
-            }
-        };
-
-        assert_eq!(expected, closet);
+        let expected = vec![
+            ItemStatus::Excluded(jeans),
+            ItemStatus::Excluded(blue),
+            ItemStatus::Available(slacks),
+            ItemStatus::Selected(red)
+        ];
+        assert_eq!(&expected, closet.summary());
     }
 }
