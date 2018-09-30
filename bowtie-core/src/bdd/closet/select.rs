@@ -2,10 +2,13 @@ use bdd::closet::Closet;
 use bdd::node::Node;
 use core::Item;
 use core::ItemStatus;
+use core::SelectItemError;
 use itertools::Itertools;
 
 impl Closet {
-    pub fn select_item(&self, item: &Item) -> Closet {
+    pub fn select_item(&self, item: &Item) -> Result<Closet, SelectItemError> {
+        validate_selection_not_excluded(&self.summary, item)?;
+
         let item_index = self.item_index.clone();
         let root = Node::restrict(&self.root, item, true);
         let summary = Node::summarize(&root);
@@ -15,12 +18,23 @@ impl Closet {
             .cloned()
             .chain(vec![ItemStatus::Selected(item.clone())])
             .chain(summary)
+            .unique()
             .sorted();
 
-        Closet { item_index, summary, root }
+        Ok(Closet { item_index, summary, root })
+    }
+
+    pub(crate) fn must_select_item(&self, item: &Item) -> Closet {
+        self.select_item(item).unwrap()
     }
 }
 
+fn validate_selection_not_excluded(summary: &Vec<ItemStatus>, item: &Item) -> Result<(), SelectItemError> {
+    summary.into_iter()
+        .filter(|s| s.is_excluded())
+        .find(|status| status.is(item))
+        .map_or_else(|| Ok(()), |_| Err(SelectItemError::ExcludedItem { excluded: item.clone() }))
+}
 
 #[cfg(test)]
 mod tests {
@@ -28,6 +42,7 @@ mod tests {
     use core::Family;
     use core::Item;
     use core::ItemStatus;
+    use core::SelectItemError;
 
     #[test]
     fn one_selection_families_2_items_4() {
@@ -47,7 +62,37 @@ mod tests {
             .add_item(&pants, &slacks);
 
         let closet = closet_builder.must_build();
-        let closet = closet.select_item(&blue);
+        let closet = closet.select_item(&blue).expect("expected Closet, but was ");
+
+        let expected = vec![
+            ItemStatus::Excluded(red),
+            ItemStatus::Available(jeans),
+            ItemStatus::Available(slacks),
+            ItemStatus::Selected(blue)
+        ];
+        assert_eq!(&expected, closet.summary());
+    }
+
+    #[test]
+    fn one_selection_families_2_items_4_selecting_two_same_item() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &blue)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks);
+
+        let closet = closet_builder.must_build();
+        let closet = closet.select_item(&blue).expect("expected Closet, but was ");
+        let closet = closet.select_item(&blue).expect("expected Closet, but was ");
 
         let expected = vec![
             ItemStatus::Excluded(red),
@@ -77,7 +122,7 @@ mod tests {
             .add_exclusion_rule(&red, &jeans);
 
         let closet = closet_builder.must_build();
-        let closet = closet.select_item(&red);
+        let closet = closet.select_item(&red).expect("expected Closet, but was ");
 
         let expected = vec![
             ItemStatus::Excluded(jeans),
@@ -86,5 +131,63 @@ mod tests {
             ItemStatus::Selected(red)
         ];
         assert_eq!(&expected, closet.summary());
+    }
+
+    #[test]
+    fn one_selection_families_2_items_4_one_inclusion_rule() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &blue)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks)
+            .add_inclusion_rule(&red, &jeans);
+
+        let closet = closet_builder.must_build();
+        let closet = closet.select_item(&red).expect("expected Closet, but was ");
+
+        let expected = vec![
+            ItemStatus::Excluded(slacks),
+            ItemStatus::Excluded(blue),
+            ItemStatus::Available(jeans),
+            ItemStatus::Selected(red)
+        ];
+        assert_eq!(&expected, closet.summary());
+    }
+
+    #[test]
+    fn one_selection_families_2_items_4_selecting_two_same_family() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &blue)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks);
+
+        let closet = closet_builder.must_build();
+        let closet = closet.select_item(&red).expect("expected Closet, but was ");
+        let closet = closet.select_item(&blue);
+
+        let expected = Err(SelectItemError::ExcludedItem { excluded: blue });
+        assert_eq!(
+            expected,
+            closet
+        );
     }
 }

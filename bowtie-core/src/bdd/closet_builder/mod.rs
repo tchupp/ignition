@@ -151,8 +151,8 @@ mod no_rules_tests {
 
 
         let both_selected = {
-            let closet = closet.select_item(&jeans);
-            closet.select_item(&blue)
+            let closet = closet.must_select_item(&jeans);
+            closet.must_select_item(&blue)
         };
         assert_eq!(
             &Node::TRUE_LEAF,
@@ -160,7 +160,7 @@ mod no_rules_tests {
         );
 
         let expected = Node::positive_branch(&jeans);
-        let blue_selected = closet.select_item(&blue);
+        let blue_selected = closet.must_select_item(&blue);
         assert_eq!(
             &expected,
             blue_selected.root()
@@ -168,7 +168,7 @@ mod no_rules_tests {
 
 
         let expected = Node::positive_branch(&blue);
-        let jeans_selected = closet.select_item(&jeans);
+        let jeans_selected = closet.must_select_item(&jeans);
         assert_eq!(
             &expected,
             jeans_selected.root()
@@ -176,7 +176,7 @@ mod no_rules_tests {
     }
 
     #[test]
-    fn one_families_with_two_items() {
+    fn one_family_with_two_items() {
         let blue = Item::new("shirts:blue");
         let red = Item::new("shirts:red");
 
@@ -201,26 +201,17 @@ mod no_rules_tests {
         );
 
         let expected = Node::negative_branch(&blue);
-        let red_selected = closet.select_item(&red);
+        let red_selected = closet.must_select_item(&red);
         assert_eq!(
             &expected,
             red_selected.root()
         );
 
         let expected = Node::negative_branch(&red);
-        let blue_selected = closet.select_item(&blue);
+        let blue_selected = closet.must_select_item(&blue);
         assert_eq!(
             &expected,
             blue_selected.root()
-        );
-
-
-        let both_selected = closet
-            .select_item(&blue)
-            .select_item(&red);
-        assert_eq!(
-            &Node::FALSE_LEAF,
-            both_selected.root()
         );
     }
 
@@ -258,7 +249,7 @@ mod no_rules_tests {
         );
 
 
-        let red_selected = closet.select_item(&red);
+        let red_selected = closet.must_select_item(&red);
         let expected = {
             let jeans_low_branch = Node::positive_branch(&slacks) & Node::negative_branch(&blue);
             let jeans_high_branch = Node::negative_branch(&slacks) & Node::negative_branch(&blue);
@@ -271,7 +262,7 @@ mod no_rules_tests {
         );
 
 
-        let blue_selected = closet.select_item(&blue);
+        let blue_selected = closet.must_select_item(&blue);
         let expected = {
             let jeans_low_branch = Node::positive_branch(&slacks) & Node::negative_branch(&red);
             let jeans_high_branch = Node::negative_branch(&slacks) & Node::negative_branch(&red);
@@ -281,16 +272,6 @@ mod no_rules_tests {
         assert_eq!(
             &expected,
             blue_selected.root()
-        );
-
-
-        let both_selected = {
-            let closet = closet.select_item(&blue);
-            closet.select_item(&red)
-        };
-        assert_eq!(
-            &Node::FALSE_LEAF,
-            both_selected.root()
         );
     }
 
@@ -457,7 +438,7 @@ mod exclude_rules_tests {
         let closet = closet_builder.must_build();
 
         let red_and_jeans_selected = closet
-            .select_item(&red);
+            .must_select_item(&red);
 
         let expected = Node::negative_branch(&jeans) & Node::positive_branch(&slacks) & Node::negative_branch(&blue);
         assert_eq!(
@@ -487,7 +468,7 @@ mod exclude_rules_tests {
         let closet = closet_builder.must_build();
 
         let red_and_jeans_selected = closet
-            .select_item(&jeans);
+            .must_select_item(&jeans);
 
         let expected = Node::positive_branch(&blue) & Node::negative_branch(&red) & Node::negative_branch(&slacks);
         assert_eq!(
@@ -517,7 +498,7 @@ mod exclude_rules_tests {
         let closet = closet_builder.must_build();
 
         let red_and_jeans_selected = closet
-            .select_item(&blue);
+            .must_select_item(&blue);
 
         let expected = Node::positive_branch(&slacks) ^ Node::positive_branch(&jeans) & Node::negative_branch(&red);
         assert_eq!(
@@ -547,7 +528,7 @@ mod exclude_rules_tests {
         let closet = closet_builder.must_build();
 
         let red_and_jeans_selected = closet
-            .select_item(&slacks);
+            .must_select_item(&slacks);
 
         let expected = (Node::positive_branch(&blue) ^ Node::positive_branch(&red)) & Node::negative_branch(&jeans);
         assert_eq!(
@@ -620,7 +601,7 @@ mod include_rules_tests {
         let closet = closet_builder.must_build();
 
         let red_and_jeans_selected = closet
-            .select_item(&red);
+            .must_select_item(&red);
 
         let expected = Node::negative_branch(&slacks) & Node::positive_branch(&jeans) & Node::negative_branch(&blue);
         assert_eq!(
@@ -650,7 +631,7 @@ mod include_rules_tests {
         let closet = closet_builder.must_build();
 
         let red_and_jeans_selected = closet
-            .select_item(&blue);
+            .must_select_item(&blue);
 
         let expected = Node::positive_branch(&slacks) ^ Node::positive_branch(&jeans) & Node::negative_branch(&red);
         assert_eq!(
@@ -680,7 +661,7 @@ mod include_rules_tests {
         let closet = closet_builder.must_build();
 
         let red_and_jeans_selected = closet
-            .select_item(&jeans);
+            .must_select_item(&jeans);
 
         let expected = (Node::positive_branch(&blue) ^ Node::positive_branch(&red)) & Node::negative_branch(&slacks);
         assert_eq!(
@@ -710,7 +691,7 @@ mod include_rules_tests {
         let closet = closet_builder.must_build();
 
         let red_and_jeans_selected = closet
-            .select_item(&slacks);
+            .must_select_item(&slacks);
 
         let expected = Node::positive_branch(&blue) & Node::negative_branch(&red) & Node::negative_branch(&jeans);
         assert_eq!(

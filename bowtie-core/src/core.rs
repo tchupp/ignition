@@ -61,6 +61,14 @@ impl ItemStatus {
             ItemStatus::Selected(_) => true,
         }
     }
+
+    pub fn is(&self, other: &Item) -> bool {
+        match self {
+            ItemStatus::Excluded(inner) => inner == other,
+            ItemStatus::Available(inner) => inner == other,
+            ItemStatus::Selected(inner) => inner == other,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -83,4 +91,9 @@ pub enum OutfitError {
     UnknownItems(Vec<Item>),
     IncompatibleSelections(Vec<Item>),
     MultipleItemsPerFamily(BTreeMap<Family, Vec<Item>>),
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub enum SelectItemError {
+    ExcludedItem { excluded: Item }
 }
