@@ -7,6 +7,7 @@ use itertools::Itertools;
 
 impl Closet {
     pub fn select_item(&self, item: &Item) -> Result<Closet, SelectItemError> {
+        validate_selection_is_known(&self, item)?;
         validate_selection_not_excluded(&self.summary, item)?;
 
         let item_index = self.item_index.clone();
@@ -27,6 +28,11 @@ impl Closet {
     pub(crate) fn must_select_item(&self, item: &Item) -> Closet {
         self.select_item(item).unwrap()
     }
+}
+
+fn validate_selection_is_known(closet: &Closet, item: &Item) -> Result<(), SelectItemError> {
+    closet.get_family(item)
+        .map_or_else(|| Err(SelectItemError::UnknownItem(item.clone())), |_| Ok(()))
 }
 
 fn validate_selection_not_excluded(summary: &Vec<ItemStatus>, item: &Item) -> Result<(), SelectItemError> {
@@ -101,6 +107,33 @@ mod tests {
             ItemStatus::Selected(blue)
         ];
         assert_eq!(&expected, closet.summary());
+    }
+
+    #[test]
+    fn one_selection_families_2_items_4_selecting_unknown_item() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+        let black = Item::new("shirts:black");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &blue)
+            .add_item(&pants, &jeans)
+            .add_item(&pants, &slacks);
+
+        let closet = closet_builder.must_build();
+
+        let expected = Err(SelectItemError::UnknownItem(black.clone()));
+        assert_eq!(
+            expected,
+            closet.select_item(&black)
+        );
     }
 
     #[test]
@@ -182,12 +215,11 @@ mod tests {
 
         let closet = closet_builder.must_build();
         let closet = closet.select_item(&red).expect("expected Closet, but was ");
-        let closet = closet.select_item(&blue);
 
-        let expected = Err(SelectItemError::ExcludedItem { excluded: blue });
+        let expected = Err(SelectItemError::ExcludedItem { excluded: blue.clone() });
         assert_eq!(
             expected,
-            closet
+            closet.select_item(&blue)
         );
     }
 }

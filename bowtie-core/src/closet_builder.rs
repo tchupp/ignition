@@ -13,7 +13,7 @@ pub enum ClosetBuilderError {
     CompoundError(Vec<ClosetBuilderError>),
 }
 
-pub fn validate_closet(
+pub(crate) fn validate_closet(
     contents: &BTreeMap<Family, Vec<Item>>,
     item_index: &BTreeMap<Item, Family>,
     exclusions: &BTreeMap<Item, Vec<Item>>,

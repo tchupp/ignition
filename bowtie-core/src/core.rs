@@ -95,5 +95,6 @@ pub enum OutfitError {
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum SelectItemError {
-    ExcludedItem { excluded: Item }
+    ExcludedItem { excluded: Item },
+    UnknownItem(Item),
 }
