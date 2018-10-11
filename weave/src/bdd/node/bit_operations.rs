@@ -26,13 +26,10 @@ impl Operation for AndOperation {
             return Some(f1.clone());
         }
 
-        if let Node::Leaf(val_1) = f1 {
-            if let Node::Leaf(val_2) = f2 {
-                return Some(Node::Leaf(val_1 & val_2));
-            }
+        match (f1, f2) {
+            (Node::Leaf(val_1), Node::Leaf(val_2)) => Some(Node::Leaf(val_1 & val_2)),
+            _ => None
         }
-
-        None
     }
 }
 
@@ -53,13 +50,10 @@ impl Operation for OrOperation {
             return Some(f1.clone());
         }
 
-        if let Node::Leaf(val_1) = f1 {
-            if let Node::Leaf(val_2) = f2 {
-                return Some(Node::Leaf(val_1 | val_2));
-            }
+        match (f1, f2) {
+            (Node::Leaf(val_1), Node::Leaf(val_2)) => Some(Node::Leaf(val_1 | val_2)),
+            _ => None
         }
-
-        None
     }
 }
 
