@@ -7,3 +7,4 @@ extern crate serde_derive;
 
 pub mod core;
 pub mod bdd;
+pub mod zdd;
