@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use zdd::node::Node;
 use zdd::node::NodeId;
 use zdd::tree::Tree;
+use zdd::node::Priority;
 
 #[derive(Default, Debug, Clone, Eq, PartialEq)]
 pub struct Universe {
@@ -40,5 +41,9 @@ impl Universe {
             .fold(Node::TRUE, |next, id| NodeId::from(Node::required_branch(id, next)));
 
         Tree::from_root(self.clone(), root)
+    }
+
+    pub fn get_item(&self, p: Priority) -> Option<&Item> {
+        self.items.get(p.0)
     }
 }
