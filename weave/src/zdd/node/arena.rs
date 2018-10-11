@@ -42,7 +42,6 @@ impl NodeArena {
 
 #[cfg(test)]
 mod tests {
-    use zdd::node::Priority;
     use super::Node;
     use super::NodeArena;
 
@@ -72,8 +71,8 @@ mod tests {
 
     #[test]
     fn add_returns_unique_node_id_for_different_nodes() {
-        let node1 = Node::Branch(Priority(1), Node::FALSE, Node::TRUE);
-        let node2 = Node::Branch(Priority(2), Node::TRUE, Node::FALSE);
+        let node1 = Node::branch(1, Node::FALSE, Node::TRUE);
+        let node2 = Node::branch(2, Node::TRUE, Node::FALSE);
 
         let mut arena = NodeArena::new();
 
@@ -92,7 +91,7 @@ mod tests {
 
     #[test]
     fn add_returns_same_node_id_for_same_nodes() {
-        let node1 = Node::Branch(Priority(1), Node::FALSE, Node::TRUE);
+        let node1 = Node::branch(1, Node::FALSE, Node::TRUE);
 
         let mut arena = NodeArena::new();
 

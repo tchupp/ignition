@@ -1,51 +1,21 @@
 use core::Item;
-use itertools::Itertools;
-use std::collections::HashMap;
+pub use self::universe::*;
+use std::fmt;
 use zdd::node::Node;
 use zdd::node::NodeId;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Universe {
-    items: Vec<Item>
-}
+mod universe;
 
-impl From<Vec<Item>> for Universe {
-    fn from(items: Vec<Item>) -> Self {
-        Universe { items }
-    }
-}
-
-impl Universe {
-    pub fn empty_tree(&self) -> Tree {
-        Tree::empty(self.clone())
-    }
-
-    pub fn unit_tree(&self) -> Tree {
-        Tree::unit(self.clone())
-    }
-
-    pub fn tree(&self, items: Vec<Item>) -> Tree {
-        let item_map = self.items.iter()
-            .enumerate()
-            .map(|(a, b)| (b, a))
-            .collect::<HashMap<_, _>>();
-
-        let root = items.into_iter()
-            .filter_map(|item| item_map.get(&item))
-            .cloned()
-            .sorted()
-            .into_iter()
-            .rev()
-            .fold(Node::TRUE, |next, id| NodeId::from(Node::required_branch(id, next)));
-
-        Tree::from_root(self.clone(), root)
-    }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct Tree {
     root: NodeId,
     universe: Universe,
+}
+
+impl fmt::Debug for Tree {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self.root)
+    }
 }
 
 impl Tree {
@@ -79,7 +49,7 @@ mod tests {
 
     #[test]
     fn universe_can_create_empty_tree() {
-        let universe = Universe::from(vec![]);
+        let universe = Universe::default();
 
         assert_eq!(
             Node::FALSE,
@@ -93,7 +63,7 @@ mod tests {
 
     #[test]
     fn universe_can_create_unit_tree() {
-        let universe = Universe::from(vec![]);
+        let universe = Universe::default();
 
         assert_eq!(
             Node::TRUE,
@@ -106,7 +76,7 @@ mod tests {
 
     #[test]
     fn universe_can_create_tree_that_represents_a_set_of_none() {
-        let universe = Universe::from(vec![]);
+        let universe = Universe::default();
 
         assert_eq!(
             universe.unit_tree(),
@@ -147,7 +117,7 @@ mod tests {
         let item1 = Item::new("1");
         let item2 = Item::new("2");
 
-        let universe = Universe::from(vec![]);
+        let universe = Universe::default();
 
         assert_eq!(
             universe.unit_tree(),

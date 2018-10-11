@@ -1,9 +1,10 @@
 pub use self::arena::*;
+use std::fmt;
 use std::sync::RwLock;
 
 mod arena;
 
-#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct NodeId(usize);
 
 impl NodeId {
@@ -16,13 +17,42 @@ impl NodeId {
     }
 }
 
+impl fmt::Debug for NodeId {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", Node::from(self))
+    }
+}
+
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct Priority(pub usize);
 
-#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub enum Node {
     Branch(Priority, NodeId, NodeId),
     Leaf(bool),
+}
+
+impl fmt::Debug for Node {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "\n{}", self.fmt_inner(1))
+    }
+}
+
+impl Node {
+    fn fmt_inner(&self, indent: usize) -> String {
+        match self {
+            Node::Leaf(val) => format!("| {}", val),
+            Node::Branch(id, low, high) =>
+                format!(
+                    "| {:?}:\n{}{}\n{}{}",
+                    id,
+                    "| ".repeat(indent),
+                    Node::from(low).fmt_inner(indent + 1),
+                    "| ".repeat(indent),
+                    Node::from(high).fmt_inner(indent + 1)
+                ),
+        }
+    }
 }
 
 impl Node {
