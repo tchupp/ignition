@@ -35,7 +35,7 @@ fn validate_selection_is_known(closet: &Closet, item: &Item) -> Result<(), Selec
         .map_or_else(|| Err(SelectItemError::UnknownItem(item.clone())), |_| Ok(()))
 }
 
-fn validate_selection_not_excluded(summary: &Vec<ItemStatus>, item: &Item) -> Result<(), SelectItemError> {
+fn validate_selection_not_excluded(summary: &[ItemStatus], item: &Item) -> Result<(), SelectItemError> {
     summary.into_iter()
         .filter(|s| s.is_excluded())
         .find(|status| status.is(item))

@@ -1,5 +1,5 @@
-use bdd::node::Node;
 use bdd::node::bit_operations::Operation;
+use bdd::node::Node;
 use core::Item;
 use std::cmp::Ordering;
 
@@ -24,22 +24,16 @@ pub fn apply(node1: &Node, node2: &Node, op: &Operation) -> Node {
 }
 
 fn get_first_id(node1: &Node, node2: &Node) -> Option<Item> {
-    match node1 {
-        Node::Leaf(_) =>
-            match node2 {
-                Node::Leaf(_) => None,
-                Node::Branch(id_2, _low, _high) => Some(id_2.clone())
+    match (node1, node2) {
+        (Node::Leaf(_), Node::Leaf(_)) => None,
+        (Node::Branch(id, _, _), Node::Leaf(_)) => Some(id.clone()),
+        (Node::Leaf(_), Node::Branch(id, _, _)) => Some(id.clone()),
+        (Node::Branch(id_1, _, _), Node::Branch(id_2, _, _)) =>
+            match id_1.cmp(&id_2) {
+                Ordering::Less => Some(id_1.clone()),
+                Ordering::Equal => Some(id_1.clone()),
+                Ordering::Greater => Some(id_2.clone()),
             },
-        Node::Branch(id_1, _low, _high) =>
-            match node2 {
-                Node::Leaf(_) => Some(id_1.clone()),
-                Node::Branch(id_2, _low, _high) =>
-                    match id_1.cmp(&id_2) {
-                        Ordering::Less => Some(id_1.clone()),
-                        Ordering::Equal => Some(id_1.clone()),
-                        Ordering::Greater => Some(id_2.clone()),
-                    },
-            }
     }
 }
 
@@ -57,8 +51,8 @@ fn split_branch(node: &Node, first_id: &Item) -> (Node, Node) {
 
 #[cfg(test)]
 mod tests {
-    use bdd::node::Node;
     use bdd::node::bit_operations::AndOperation;
+    use bdd::node::Node;
     use core::Item;
     use super::apply;
 
