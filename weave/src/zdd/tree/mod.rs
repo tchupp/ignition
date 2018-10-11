@@ -1,9 +1,11 @@
 use core::Item;
 pub use self::universe::*;
+use std::collections::BTreeSet;
 use std::fmt;
 use zdd::node::Node;
 use zdd::node::NodeId;
 
+mod combinations;
 mod universe;
 
 #[derive(Clone, Eq, PartialEq)]
@@ -38,50 +40,58 @@ impl Tree {
     pub fn is_unit(&self) -> bool {
         self.root.is_unit()
     }
+
+    pub fn combinations(&self) -> BTreeSet<BTreeSet<Item>> {
+        combinations::combinations(self)
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use core::Item;
     use super::Universe;
-    use zdd::node::Node;
-    use zdd::node::NodeId;
 
     #[test]
     fn universe_can_create_empty_tree() {
         let universe = Universe::default();
-
-        assert_eq!(
-            Node::FALSE,
-            universe.empty_tree().root
-        );
+        let empty_tree = universe.empty_tree();
 
         assert!(
-            universe.empty_tree().is_empty()
+            empty_tree.is_empty()
+        );
+        assert_eq!(
+            btreeset!(),
+            empty_tree.combinations()
         );
     }
 
     #[test]
     fn universe_can_create_unit_tree() {
         let universe = Universe::default();
+        let unit_tree = universe.unit_tree();
 
-        assert_eq!(
-            Node::TRUE,
-            universe.unit_tree().root
-        );
         assert!(
-            universe.unit_tree().is_unit()
+            unit_tree.is_unit()
+        );
+        assert_eq!(
+            btreeset!(btreeset!()),
+            unit_tree.combinations()
         );
     }
 
     #[test]
     fn universe_can_create_tree_that_represents_a_set_of_none() {
         let universe = Universe::default();
+        let tree = universe.tree(vec![]);
 
         assert_eq!(
             universe.unit_tree(),
-            universe.tree(vec![])
-        )
+            tree
+        );
+        assert_eq!(
+            btreeset!(btreeset!()),
+            tree.combinations()
+        );
     }
 
     #[test]
@@ -91,9 +101,9 @@ mod tests {
         let universe = Universe::from(vec![item.clone()]);
 
         assert_eq!(
-            NodeId::from(Node::required_branch(0, Node::TRUE)),
-            universe.tree(vec![item]).root
-        )
+            btreeset!(btreeset!(item.clone())),
+            universe.tree(vec![item]).combinations()
+        );
     }
 
     #[test]
@@ -102,14 +112,12 @@ mod tests {
         let item2 = Item::new("2");
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
-        let expected = Node::required_branch(
-            0,
-            Node::required_branch(1, Node::TRUE));
+        let tree = universe.tree(vec![item1.clone(), item2.clone()]);
 
         assert_eq!(
-            NodeId::from(expected),
-            universe.tree(vec![item1, item2]).root
-        )
+            btreeset!(btreeset!(item1.clone(), item2.clone())),
+            tree.combinations()
+        );
     }
 
     #[test]
@@ -118,11 +126,16 @@ mod tests {
         let item2 = Item::new("2");
 
         let universe = Universe::default();
+        let tree = universe.tree(vec![item1, item2]);
 
         assert_eq!(
             universe.unit_tree(),
-            universe.tree(vec![item1, item2])
-        )
+            tree.clone()
+        );
+        assert_eq!(
+            btreeset!(btreeset!()),
+            tree.combinations()
+        );
     }
 
     #[test]
@@ -131,11 +144,11 @@ mod tests {
         let item2 = Item::new("2");
 
         let universe = Universe::from(vec![item1.clone()]);
-        let expected = Node::required_branch(0, Node::TRUE);
+        let tree = universe.tree(vec![item1.clone(), item2.clone()]);
 
         assert_eq!(
-            NodeId::from(expected),
-            universe.tree(vec![item1, item2]).root
+            btreeset!(btreeset!(item1.clone())),
+            tree.combinations()
         )
     }
 }
