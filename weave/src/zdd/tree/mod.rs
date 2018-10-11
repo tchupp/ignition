@@ -141,4 +141,31 @@ mod tests {
             universe.tree(vec![item1, item2]).root
         )
     }
+
+    #[test]
+    fn universe_can_create_tree_that_represents_an_empty_set_unknown_items_are_ignored() {
+        let item1 = Item::new("1");
+        let item2 = Item::new("2");
+
+        let universe = Universe::from(vec![]);
+
+        assert_eq!(
+            universe.unit_tree(),
+            universe.tree(vec![item1, item2])
+        )
+    }
+
+    #[test]
+    fn universe_can_create_tree_that_represents_a_set_unknown_items_are_ignored() {
+        let item1 = Item::new("1");
+        let item2 = Item::new("2");
+
+        let universe = Universe::from(vec![item1.clone()]);
+        let expected = Node::required_branch(0, Node::TRUE);
+
+        assert_eq!(
+            NodeId::from(expected),
+            universe.tree(vec![item1, item2]).root
+        )
+    }
 }
