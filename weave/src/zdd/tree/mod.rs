@@ -6,6 +6,7 @@ use zdd::node::Node;
 use zdd::node::NodeId;
 
 mod combinations;
+mod union;
 mod universe;
 
 #[derive(Clone, Eq, PartialEq)]
@@ -35,6 +36,14 @@ impl Tree {
 
     pub fn combinations(&self) -> BTreeSet<BTreeSet<Item>> {
         combinations::combinations(self)
+    }
+
+    pub fn union(&self, other: &Tree) -> Tree {
+        let root = union::union(
+            self.root.into(),
+            other.root.into());
+
+        Tree::from_root(self.universe.clone(), root)
     }
 }
 

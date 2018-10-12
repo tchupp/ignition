@@ -19,11 +19,11 @@ pub fn combinations(tree: &Tree) -> BTreeSet<BTreeSet<Item>> {
 fn combinations_inner(root: NodeId, path: &[Priority]) -> Option<Vec<Vec<Priority>>> {
     match Node::from(root) {
         Node::Branch(id, low, high) => {
+            let low = combinations_inner(low, &path);
+
             let mut path = path.to_vec();
             path.push(id);
-
             let high = combinations_inner(high, &path);
-            let low = combinations_inner(low, &path);
 
             let vec = vec![low, high]
                 .into_iter()
