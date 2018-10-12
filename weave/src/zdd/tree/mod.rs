@@ -33,14 +33,6 @@ impl Tree {
         Tree { root: root.into(), universe }
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.root.is_empty()
-    }
-
-    pub fn is_unit(&self) -> bool {
-        self.root.is_unit()
-    }
-
     pub fn combinations(&self) -> BTreeSet<BTreeSet<Item>> {
         combinations::combinations(self)
     }
@@ -56,9 +48,6 @@ mod tests {
         let universe = Universe::default();
         let empty_tree = universe.empty_tree();
 
-        assert!(
-            empty_tree.is_empty()
-        );
         assert_eq!(
             btreeset!(),
             empty_tree.combinations()
@@ -70,9 +59,6 @@ mod tests {
         let universe = Universe::default();
         let unit_tree = universe.unit_tree();
 
-        assert!(
-            unit_tree.is_unit()
-        );
         assert_eq!(
             btreeset!(btreeset!()),
             unit_tree.combinations()

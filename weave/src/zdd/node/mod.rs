@@ -7,24 +7,13 @@ mod arena;
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct NodeId(usize);
 
-impl NodeId {
-    pub fn is_empty(self) -> bool {
-        self.0 == Node::FALSE.0
-    }
-
-    pub fn is_unit(self) -> bool {
-        self.0 == Node::TRUE.0
-    }
-}
-
 impl fmt::Debug for NodeId {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}", Node::from(self))
     }
 }
 
-#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
-pub struct Priority(pub usize);
+pub type Priority = usize;
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub enum Node {
@@ -59,11 +48,11 @@ impl Node {
     pub const FALSE: NodeId = NodeId(0);
     pub const TRUE: NodeId = NodeId(1);
 
-    pub fn branch<L, H>(priority: usize, low: L, high: H) -> Node where L: Into<NodeId>, H: Into<NodeId> {
-        Node::Branch(Priority(priority), low.into(), high.into())
+    pub fn branch<L, H>(priority: Priority, low: L, high: H) -> Node where L: Into<NodeId>, H: Into<NodeId> {
+        Node::Branch(priority, low.into(), high.into())
     }
 
-    pub fn required_branch<H>(priority: usize, high: H) -> Node where H: Into<NodeId> {
+    pub fn required_branch<H>(priority: Priority, high: H) -> Node where H: Into<NodeId> {
         Node::branch(priority, Node::FALSE, high.into())
     }
 }

@@ -44,6 +44,6 @@ impl Universe {
     }
 
     pub fn get_item(&self, p: Priority) -> Option<&Item> {
-        self.items.get(p.0)
+        self.items.get(p)
     }
 }
