@@ -1,60 +1,21 @@
-use bdd::node::apply::apply;
 use bdd::node::Node;
+use core::Item;
+use std::cmp::Ordering;
 use std::ops::BitAnd;
 use std::ops::BitOr;
 use std::ops::BitXor;
 use std::ops::Not;
 
-pub trait Operation {
-    fn eval(&self, f1: &Node, f2: &Node) -> Option<Node>;
-}
-
-pub struct AndOperation;
-
-impl AndOperation {
-    pub fn new() -> AndOperation {
-        AndOperation {}
-    }
-}
-
-impl Operation for AndOperation {
-    fn eval(&self, f1: &Node, f2: &Node) -> Option<Node> {
-        if &Node::TRUE_LEAF == f1 {
-            return Some(f2.clone());
+fn split_branch(node: &Node, first_id: &Item) -> (Node, Node) {
+    if let Node::Branch(id, low, high) = node {
+        if first_id == id {
+            let low = Node::from(low);
+            let high = Node::from(high);
+            return (low, high);
         }
-        if &Node::TRUE_LEAF == f2 {
-            return Some(f1.clone());
-        }
+    };
 
-        match (f1, f2) {
-            (Node::Leaf(val_1), Node::Leaf(val_2)) => Some(Node::Leaf(val_1 & val_2)),
-            _ => None
-        }
-    }
-}
-
-pub struct OrOperation;
-
-impl OrOperation {
-    pub fn new() -> OrOperation {
-        OrOperation {}
-    }
-}
-
-impl Operation for OrOperation {
-    fn eval(&self, f1: &Node, f2: &Node) -> Option<Node> {
-        if &Node::FALSE_LEAF == f1 {
-            return Some(f2.clone());
-        }
-        if &Node::FALSE_LEAF == f2 {
-            return Some(f1.clone());
-        }
-
-        match (f1, f2) {
-            (Node::Leaf(val_1), Node::Leaf(val_2)) => Some(Node::Leaf(val_1 | val_2)),
-            _ => None
-        }
-    }
+    (node.clone(), node.clone())
 }
 
 
@@ -62,7 +23,38 @@ impl BitOr for Node {
     type Output = Self;
 
     fn bitor(self, rhs: Self) -> Self {
-        apply(&self, &rhs, &OrOperation::new())
+        let node1 = &self;
+        let node2 = &rhs;
+
+        let first_id = match (node1, node2) {
+            (_, Node::Leaf(false)) => return node1.clone(),
+            (Node::Leaf(false), _) => return node2.clone(),
+            (Node::Leaf(val_1), Node::Leaf(val_2)) => return Node::Leaf(val_1 | val_2),
+
+            (Node::Branch(id, _, _), Node::Leaf(_)) => {
+                (id)
+            }
+            (Node::Leaf(_), Node::Branch(id, _, _)) => {
+                (id)
+            }
+            (Node::Branch(id_1, _, _), Node::Branch(id_2, _, _)) =>
+                match id_1.cmp(&id_2) {
+                    Ordering::Less | Ordering::Equal => (id_1),
+                    Ordering::Greater => (id_2),
+                },
+        };
+
+        let (node1_low, node1_high) = split_branch(node1, first_id);
+        let (node2_low, node2_high) = split_branch(node2, first_id);
+
+        let low = node1_low | node2_low;
+        let high = node1_high | node2_high;
+
+        if low == high {
+            return low.clone();
+        }
+
+        Node::branch(&first_id, low, high)
     }
 }
 
@@ -70,7 +62,34 @@ impl BitAnd for Node {
     type Output = Self;
 
     fn bitand(self, rhs: Self) -> Self {
-        apply(&self, &rhs, &AndOperation::new())
+        let node1 = &self;
+        let node2 = &rhs;
+
+        let first_id = match (node1, node2) {
+            (_, Node::Leaf(true)) => return node1.clone(),
+            (Node::Leaf(true), _) => return node2.clone(),
+            (Node::Leaf(val_1), Node::Leaf(val_2)) => return Node::Leaf(val_1 & val_2),
+
+            (Node::Branch(id, _, _), Node::Leaf(_)) => id,
+            (Node::Leaf(_), Node::Branch(id, _, _)) => id,
+            (Node::Branch(id_1, _, _), Node::Branch(id_2, _, _)) =>
+                match id_1.cmp(&id_2) {
+                    Ordering::Less | Ordering::Equal => id_1,
+                    Ordering::Greater => id_2,
+                },
+        };
+
+        let (node1_low, node1_high) = split_branch(node1, &first_id);
+        let (node2_low, node2_high) = split_branch(node2, &first_id);
+
+        let low = node1_low & node2_low;
+        let high = node1_high & node2_high;
+
+        if low == high {
+            return low.clone();
+        }
+
+        Node::branch(&first_id, low, high)
     }
 }
 
