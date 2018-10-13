@@ -63,8 +63,8 @@ mod tests {
         let item2 = Item::new("2");
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
-        let tree1 = universe.tree(vec![item1.clone()]);
-        let tree2 = universe.tree(vec![item2.clone()]);
+        let tree1 = universe.tree(&[item1.clone()]);
+        let tree2 = universe.tree(&[item2.clone()]);
 
         let tree = Tree::union(&tree1, &tree2);
         assert_eq!(
@@ -76,6 +76,12 @@ mod tests {
         assert_eq!(
             btreeset!(btreeset!(item1.clone()), btreeset!(item2.clone())),
             tree.combinations()
+        );
+
+        let expected = universe.hyper_tree(&[vec![item1.clone()], vec![item2.clone()]]);
+        assert_eq!(
+            expected,
+            tree
         );
     }
 
@@ -85,8 +91,8 @@ mod tests {
         let item2 = Item::new("2");
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
-        let tree1 = universe.tree(vec![item1.clone()]);
-        let tree2 = universe.tree(vec![item1.clone()]);
+        let tree1 = universe.tree(&[item1.clone()]);
+        let tree2 = universe.tree(&[item1.clone()]);
 
         let tree = Tree::union(&tree1, &tree2);
         assert_eq!(
@@ -98,6 +104,12 @@ mod tests {
         assert_eq!(
             btreeset!(btreeset!(item1.clone())),
             tree.combinations()
+        );
+
+        let expected = universe.hyper_tree(&[vec![item1.clone()]]);
+        assert_eq!(
+            expected,
+            tree
         );
     }
 
@@ -108,7 +120,7 @@ mod tests {
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
         let tree1 = universe.empty_tree();
-        let tree2 = universe.tree(vec![item1.clone()]);
+        let tree2 = universe.tree(&[item1.clone()]);
 
         let tree = Tree::union(&tree1, &tree2);
         assert_eq!(
@@ -120,6 +132,12 @@ mod tests {
         assert_eq!(
             btreeset!(btreeset!(item1.clone())),
             tree.combinations()
+        );
+
+        let expected = universe.hyper_tree(&[vec![item1.clone()]]);
+        assert_eq!(
+            expected,
+            tree
         );
     }
 
@@ -130,7 +148,7 @@ mod tests {
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
         let tree1 = universe.unit_tree();
-        let tree2 = universe.tree(vec![item1.clone()]);
+        let tree2 = universe.tree(&[item1.clone()]);
 
         let tree = Tree::union(&tree1, &tree2);
         assert_eq!(
@@ -142,6 +160,12 @@ mod tests {
         assert_eq!(
             btreeset!(btreeset!(item1.clone()), btreeset!()),
             tree.combinations()
+        );
+
+        let expected = universe.hyper_tree(&[vec![item1.clone()], vec![]]);
+        assert_eq!(
+            expected,
+            tree
         );
     }
 
@@ -156,6 +180,12 @@ mod tests {
             btreeset!(btreeset!()),
             tree.combinations()
         );
+
+        let expected = universe.hyper_tree(&[vec![]]);
+        assert_eq!(
+            expected,
+            tree
+        );
     }
 
     #[test]
@@ -168,6 +198,12 @@ mod tests {
         assert_eq!(
             btreeset!(),
             tree.combinations()
+        );
+
+        let expected = universe.hyper_tree(&[]);
+        assert_eq!(
+            expected,
+            tree
         );
     }
 }

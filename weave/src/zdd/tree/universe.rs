@@ -27,13 +27,13 @@ impl Universe {
         Tree::unit(self.clone())
     }
 
-    pub fn tree(&self, items: Vec<Item>) -> Tree {
+    pub fn tree(&self, combination: &[Item]) -> Tree {
         let item_map = self.items.iter()
             .enumerate()
             .map(|(a, b)| (b, a))
             .collect::<HashMap<_, _>>();
 
-        let root = items.into_iter()
+        let root = combination.into_iter()
             .filter_map(|item| item_map.get(&item))
             .cloned()
             .sorted()
@@ -42,6 +42,12 @@ impl Universe {
             .fold(Node::TRUE, |next, id| NodeId::from(Node::required_branch(id, next)));
 
         Tree::from_root(self.clone(), root)
+    }
+
+    pub fn hyper_tree(&self, combinations: &[Vec<Item>]) -> Tree {
+        combinations.into_iter()
+            .map(|cb| self.tree(cb))
+            .fold(self.empty_tree(), |root, next| root.union(&next))
     }
 
     pub fn get_items(&self, p: &[Priority]) -> BTreeSet<Item> {

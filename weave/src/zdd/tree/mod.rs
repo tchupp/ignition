@@ -89,7 +89,7 @@ mod tests {
     #[test]
     fn universe_can_create_tree_that_represents_a_set_of_none() {
         let universe = Universe::default();
-        let tree = universe.tree(vec![]);
+        let tree = universe.tree(&[]);
 
         assert_eq!(
             universe.unit_tree(),
@@ -109,7 +109,7 @@ mod tests {
 
         assert_eq!(
             btreeset!(btreeset!(item.clone())),
-            universe.tree(vec![item]).combinations()
+            universe.tree(&[item]).combinations()
         );
     }
 
@@ -119,7 +119,7 @@ mod tests {
         let item2 = Item::new("2");
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
-        let tree = universe.tree(vec![item1.clone(), item2.clone()]);
+        let tree = universe.tree(&[item1.clone(), item2.clone()]);
 
         assert_eq!(
             btreeset!(btreeset!(item1.clone(), item2.clone())),
@@ -133,7 +133,7 @@ mod tests {
         let item2 = Item::new("2");
 
         let universe = Universe::default();
-        let tree = universe.tree(vec![item1, item2]);
+        let tree = universe.tree(&[item1, item2]);
 
         assert_eq!(
             universe.unit_tree(),
@@ -151,7 +151,7 @@ mod tests {
         let item2 = Item::new("2");
 
         let universe = Universe::from(vec![item1.clone()]);
-        let tree = universe.tree(vec![item1.clone(), item2.clone()]);
+        let tree = universe.tree(&[item1.clone(), item2.clone()]);
 
         assert_eq!(
             btreeset!(btreeset!(item1.clone())),
