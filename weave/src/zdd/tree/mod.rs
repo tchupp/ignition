@@ -36,7 +36,10 @@ impl Tree {
     }
 
     pub fn combinations(&self) -> BTreeSet<BTreeSet<Item>> {
-        combinations::combinations(self)
+        combinations::combinations(self.root)
+            .into_iter()
+            .map(|set| self.universe.get_items(&set))
+            .collect::<BTreeSet<_>>()
     }
 
     pub fn union(&self, other: &Tree) -> Tree {

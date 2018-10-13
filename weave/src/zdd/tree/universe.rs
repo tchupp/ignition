@@ -1,10 +1,11 @@
 use core::Item;
 use itertools::Itertools;
+use std::collections::BTreeSet;
 use std::collections::HashMap;
 use zdd::node::Node;
 use zdd::node::NodeId;
-use zdd::tree::Tree;
 use zdd::node::Priority;
+use zdd::tree::Tree;
 
 #[derive(Default, Debug, Clone, Eq, PartialEq)]
 pub struct Universe {
@@ -43,7 +44,10 @@ impl Universe {
         Tree::from_root(self.clone(), root)
     }
 
-    pub fn get_item(&self, p: Priority) -> Option<&Item> {
-        self.items.get(p)
+    pub fn get_items(&self, p: &[Priority]) -> BTreeSet<Item> {
+        p.into_iter()
+            .filter_map(|p| self.items.get(*p))
+            .cloned()
+            .collect()
     }
 }

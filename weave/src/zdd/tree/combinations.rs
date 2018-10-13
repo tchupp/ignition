@@ -1,19 +1,10 @@
-use core::Item;
-use std::collections::BTreeSet;
 use zdd::node::Node;
 use zdd::node::NodeId;
 use zdd::node::Priority;
-use zdd::tree::Tree;
 
-pub fn combinations(tree: &Tree) -> BTreeSet<BTreeSet<Item>> {
-    combinations_inner(tree.root, &[])
+pub fn combinations(root: NodeId) -> Vec<Vec<Priority>> {
+    combinations_inner(root, &[])
         .unwrap_or_else(Vec::new)
-        .into_iter()
-        .map(|set| set.into_iter()
-            .filter_map(|p| tree.universe.get_item(p))
-            .cloned()
-            .collect::<BTreeSet<_>>())
-        .collect::<BTreeSet<_>>()
 }
 
 fn combinations_inner(root: NodeId, path: &[Priority]) -> Option<Vec<Vec<Priority>>> {
@@ -21,8 +12,12 @@ fn combinations_inner(root: NodeId, path: &[Priority]) -> Option<Vec<Vec<Priorit
         Node::Branch(id, low, high) => {
             let low = combinations_inner(low, &path);
 
-            let mut path = path.to_vec();
-            path.push(id);
+            let path = {
+                let mut path = path.to_vec();
+                path.push(id);
+                path
+            };
+
             let high = combinations_inner(high, &path);
 
             let vec = vec![low, high]
