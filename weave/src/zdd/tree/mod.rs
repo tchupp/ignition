@@ -6,6 +6,7 @@ use zdd::node::Node;
 use zdd::node::NodeId;
 
 mod combinations;
+mod intersect;
 mod union;
 mod universe;
 
@@ -40,6 +41,14 @@ impl Tree {
 
     pub fn union(&self, other: &Tree) -> Tree {
         let root = union::union(
+            self.root.into(),
+            other.root.into());
+
+        Tree::from_root(self.universe.clone(), root)
+    }
+
+    pub fn intersect(&self, other: &Tree) -> Tree {
+        let root = intersect::intersect(
             self.root.into(),
             other.root.into());
 
