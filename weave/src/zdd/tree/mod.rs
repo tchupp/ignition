@@ -42,6 +42,22 @@ impl Tree {
             .collect::<BTreeSet<_>>()
     }
 
+    pub fn onset(&self, inclusions: &BTreeSet<Item>) -> BTreeSet<BTreeSet<Item>> {
+        combinations::combinations(self.root)
+            .into_iter()
+            .map(|set| self.universe.get_items(&set))
+            .filter(|set| set.intersection(inclusions).cloned().collect::<BTreeSet<_>>() == *inclusions)
+            .collect::<BTreeSet<_>>()
+    }
+
+    pub fn offset(&self, exclusions: &BTreeSet<Item>) -> BTreeSet<BTreeSet<Item>> {
+        combinations::combinations(self.root)
+            .into_iter()
+            .map(|set| self.universe.get_items(&set))
+            .filter(|set| set.intersection(exclusions).collect::<BTreeSet<_>>().len() == 0)
+            .collect::<BTreeSet<_>>()
+    }
+
     pub fn union(&self, other: &Tree) -> Tree {
         let root = union::union(
             self.root.into(),
