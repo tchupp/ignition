@@ -171,7 +171,7 @@ mod tests {
 
     #[test]
     fn union_returns_unit_when_both_trees_are_unit() {
-        let universe = Universe::default();
+        let universe: Universe<Item> = Universe::default();
         let tree1 = universe.unit_tree();
         let tree2 = universe.unit_tree();
 
@@ -190,7 +190,7 @@ mod tests {
 
     #[test]
     fn union_returns_empty_when_both_trees_are_empty() {
-        let universe = Universe::default();
+        let universe: Universe<Item> = Universe::default();
         let tree1 = universe.empty_tree();
         let tree2 = universe.empty_tree();
 

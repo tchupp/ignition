@@ -1,7 +1,7 @@
-use core::Item;
 pub use self::universe::*;
 use std::collections::BTreeSet;
 use std::fmt;
+use std::hash::Hash;
 use zdd::node::Node;
 use zdd::node::NodeId;
 
@@ -11,38 +11,38 @@ mod union;
 mod universe;
 
 #[derive(Clone, Eq, PartialEq)]
-pub struct Tree {
+pub struct Tree<T> {
     root: NodeId,
-    universe: Universe,
+    universe: Universe<T>,
 }
 
-impl fmt::Debug for Tree {
+impl<T> fmt::Debug for Tree<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}", self.root)
     }
 }
 
-impl Tree {
-    fn empty(universe: Universe) -> Tree {
+impl<T: Clone + Ord + Hash> Tree<T> {
+    fn empty(universe: Universe<T>) -> Tree<T> {
         Tree { root: Node::FALSE, universe }
     }
 
-    fn unit(universe: Universe) -> Tree {
+    fn unit(universe: Universe<T>) -> Tree<T> {
         Tree { root: Node::TRUE, universe }
     }
 
-    fn from_root<R>(universe: Universe, root: R) -> Tree where R: Into<NodeId> {
+    fn from_root<R>(universe: Universe<T>, root: R) -> Tree<T> where R: Into<NodeId> {
         Tree { root: root.into(), universe }
     }
 
-    pub fn combinations(&self) -> BTreeSet<BTreeSet<Item>> {
+    pub fn combinations(&self) -> BTreeSet<BTreeSet<T>> {
         combinations::combinations(self.root)
             .into_iter()
             .map(|set| self.universe.get_items(&set))
             .collect::<BTreeSet<_>>()
     }
 
-    pub fn onset(&self, inclusions: &BTreeSet<Item>) -> BTreeSet<BTreeSet<Item>> {
+    pub fn onset(&self, inclusions: &BTreeSet<T>) -> BTreeSet<BTreeSet<T>> {
         combinations::combinations(self.root)
             .into_iter()
             .map(|set| self.universe.get_items(&set))
@@ -50,7 +50,7 @@ impl Tree {
             .collect::<BTreeSet<_>>()
     }
 
-    pub fn offset(&self, exclusions: &BTreeSet<Item>) -> BTreeSet<BTreeSet<Item>> {
+    pub fn offset(&self, exclusions: &BTreeSet<T>) -> BTreeSet<BTreeSet<T>> {
         combinations::combinations(self.root)
             .into_iter()
             .map(|set| self.universe.get_items(&set))
@@ -58,7 +58,7 @@ impl Tree {
             .collect::<BTreeSet<_>>()
     }
 
-    pub fn union(&self, other: &Tree) -> Tree {
+    pub fn union(&self, other: &Tree<T>) -> Tree<T> {
         let root = union::union(
             self.root.into(),
             other.root.into());
@@ -66,7 +66,7 @@ impl Tree {
         Tree::from_root(self.universe.clone(), root)
     }
 
-    pub fn intersect(&self, other: &Tree) -> Tree {
+    pub fn intersect(&self, other: &Tree<T>) -> Tree<T> {
         let root = intersect::intersect(
             self.root.into(),
             other.root.into());
@@ -82,7 +82,7 @@ mod tests {
 
     #[test]
     fn universe_can_create_empty_tree() {
-        let universe = Universe::default();
+        let universe: Universe<Item> = Universe::default();
         let empty_tree = universe.empty_tree();
 
         assert_eq!(
@@ -93,7 +93,7 @@ mod tests {
 
     #[test]
     fn universe_can_create_unit_tree() {
-        let universe = Universe::default();
+        let universe: Universe<Item> = Universe::default();
         let unit_tree = universe.unit_tree();
 
         assert_eq!(
@@ -104,7 +104,7 @@ mod tests {
 
     #[test]
     fn universe_can_create_tree_that_represents_a_set_of_none() {
-        let universe = Universe::default();
+        let universe: Universe<Item> = Universe::default();
         let tree = universe.tree(&[]);
 
         assert_eq!(
@@ -148,7 +148,7 @@ mod tests {
         let item1 = Item::new("1");
         let item2 = Item::new("2");
 
-        let universe = Universe::default();
+        let universe: Universe<Item> = Universe::default();
         let tree = universe.tree(&[item1, item2]);
 
         assert_eq!(

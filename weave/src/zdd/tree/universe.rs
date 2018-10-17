@@ -1,33 +1,39 @@
-use core::Item;
 use itertools::Itertools;
 use std::collections::BTreeSet;
 use std::collections::HashMap;
+use std::hash::Hash;
 use zdd::node::Node;
 use zdd::node::NodeId;
 use zdd::node::Priority;
 use zdd::tree::Tree;
 
-#[derive(Default, Debug, Clone, Eq, PartialEq)]
-pub struct Universe {
-    items: Vec<Item>
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct Universe<T> {
+    items: Vec<T>
 }
 
-impl From<Vec<Item>> for Universe {
-    fn from(items: Vec<Item>) -> Self {
+impl<T> From<Vec<T>> for Universe<T> {
+    fn from(items: Vec<T>) -> Self {
         Universe { items }
     }
 }
 
-impl Universe {
-    pub fn empty_tree(&self) -> Tree {
+impl<T> Default for Universe<T> {
+    fn default() -> Self {
+        Universe { items: Vec::new() }
+    }
+}
+
+impl<T: Clone + Ord + Hash> Universe<T> {
+    pub fn empty_tree(&self) -> Tree<T> {
         Tree::empty(self.clone())
     }
 
-    pub fn unit_tree(&self) -> Tree {
+    pub fn unit_tree(&self) -> Tree<T> {
         Tree::unit(self.clone())
     }
 
-    pub fn tree(&self, combination: &[Item]) -> Tree {
+    pub fn tree(&self, combination: &[T]) -> Tree<T> {
         let item_map = self.items.iter()
             .enumerate()
             .map(|(a, b)| (b, a))
@@ -44,13 +50,13 @@ impl Universe {
         Tree::from_root(self.clone(), root)
     }
 
-    pub fn hyper_tree(&self, combinations: &[Vec<Item>]) -> Tree {
+    pub fn hyper_tree(&self, combinations: &[Vec<T>]) -> Tree<T> {
         combinations.into_iter()
             .map(|cb| self.tree(cb))
             .fold(self.empty_tree(), |root, next| root.union(&next))
     }
 
-    pub fn get_items(&self, p: &[Priority]) -> BTreeSet<Item> {
+    pub fn get_items(&self, p: &[Priority]) -> BTreeSet<T> {
         p.into_iter()
             .filter_map(|p| self.items.get(*p))
             .cloned()

@@ -16,11 +16,11 @@ criterion_group!(
 criterion_main!(benches);
 
 
-fn combinations_recursive(tree: &Tree) -> BTreeSet<BTreeSet<Item>> {
+fn combinations_recursive(tree: &Tree<Item>) -> BTreeSet<BTreeSet<Item>> {
     tree.combinations()
 }
 
-fn setup_tree() -> Tree {
+fn setup_tree() -> Tree<Item> {
     let item0 = Item::new("0");
     let item1 = Item::new("1");
     let item2 = Item::new("2");
