@@ -12,13 +12,11 @@ fn combinations_inner(root: NodeId, path: &[Priority]) -> Option<Vec<Vec<Priorit
         Node::Branch(id, low, high) => {
             let low = combinations_inner(low, &path);
 
-            let path = {
+            let high = {
                 let mut path = path.to_vec();
                 path.push(id);
-                path
+                combinations_inner(high, &path)
             };
-
-            let high = combinations_inner(high, &path);
 
             let vec = vec![low, high]
                 .into_iter()
@@ -31,6 +29,30 @@ fn combinations_inner(root: NodeId, path: &[Priority]) -> Option<Vec<Vec<Priorit
         Node::Leaf(true) => Some(vec![path.to_vec()]),
         Node::Leaf(false) => None,
     }
+}
+
+pub fn combinations_iter(root: NodeId) -> Vec<Vec<Priority>> {
+    let mut combinations = vec![];
+
+    let mut queue: Vec<(Node, Vec<Priority>)> = vec![(Node::from(root), vec![])];
+    while let Some((node, path)) = queue.pop() {
+        match node {
+            Node::Branch(id, low, high) => {
+                let low = Node::from(low);
+                let high = Node::from(high);
+
+                queue.push((low, path.clone()));
+
+                let mut path = path.clone();
+                path.push(id);
+                queue.push((high, path));
+            }
+            Node::Leaf(true) => combinations.push(path),
+            Node::Leaf(false) => {}
+        };
+    }
+
+    combinations
 }
 
 #[cfg(test)]
@@ -53,6 +75,10 @@ mod tests {
         assert_eq!(
             btreeset!(btreeset!(item1.clone()), btreeset!(item2.clone())),
             tree.combinations()
+        );
+        assert_eq!(
+            btreeset!(btreeset!(item1.clone()), btreeset!(item2.clone())),
+            tree.combinations_iter()
         );
 
         assert_eq!(

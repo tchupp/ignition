@@ -42,6 +42,13 @@ impl<T: Clone + Ord + Hash> Tree<T> {
             .collect::<BTreeSet<_>>()
     }
 
+    pub fn combinations_iter(&self) -> BTreeSet<BTreeSet<T>> {
+        combinations::combinations_iter(self.root)
+            .into_iter()
+            .map(|set| self.universe.get_items(&set))
+            .collect::<BTreeSet<_>>()
+    }
+
     pub fn onset(&self, inclusions: &BTreeSet<T>) -> BTreeSet<BTreeSet<T>> {
         combinations::combinations(self.root)
             .into_iter()
@@ -54,7 +61,7 @@ impl<T: Clone + Ord + Hash> Tree<T> {
         combinations::combinations(self.root)
             .into_iter()
             .map(|set| self.universe.get_items(&set))
-            .filter(|set| set.intersection(exclusions).collect::<BTreeSet<_>>().len() == 0)
+            .filter(|set| set.intersection(exclusions).collect::<BTreeSet<_>>().is_empty())
             .collect::<BTreeSet<_>>()
     }
 
