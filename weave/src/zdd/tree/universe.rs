@@ -56,6 +56,10 @@ impl<T: Clone + Ord + Hash> Universe<T> {
             .fold(self.empty_tree(), |root, next| root.union(&next))
     }
 
+    pub fn get_item(&self, p: Priority) -> Option<T> {
+        self.items.get(p).cloned()
+    }
+
     pub fn get_items(&self, p: &[Priority]) -> BTreeSet<T> {
         p.into_iter()
             .filter_map(|p| self.items.get(*p))

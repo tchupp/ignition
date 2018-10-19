@@ -30,10 +30,10 @@ impl fmt::Debug for Node {
 impl Node {
     fn fmt_inner(&self, indent: usize) -> String {
         match self {
-            Node::Leaf(val) => format!("| {}", val),
+            Node::Leaf(val) => format!("{}", val),
             Node::Branch(id, low, high) =>
                 format!(
-                    "| {:?}:\n{}{}\n{}{}",
+                    "{:?}:\n{}{}\n{}{}",
                     id,
                     "| ".repeat(indent),
                     Node::from(low).fmt_inner(indent + 1),

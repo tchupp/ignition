@@ -1,11 +1,12 @@
 use bdd::node::Node;
+use core::Item;
 use core::ItemStatus;
 use itertools::Itertools;
 use std::collections::BinaryHeap;
 use std::collections::HashMap;
 
 impl Node {
-    pub fn summarize(node: &Node) -> Vec<ItemStatus> {
+    pub fn summarize(node: &Node) -> Vec<ItemStatus<Item>> {
         let mut queue = vec![node.clone()];
         let mut nodes = HashMap::new();
 
@@ -43,11 +44,11 @@ mod summarize_tests {
     #[test]
     fn summarize_returns_empty_for_leaves() {
         let summary = Node::summarize(&Node::TRUE_LEAF);
-        let expected: Vec<ItemStatus> = vec![];
+        let expected: Vec<ItemStatus<Item>> = vec![];
         assert_eq!(expected, summary);
 
         let summary = Node::summarize(&Node::FALSE_LEAF);
-        let expected: Vec<ItemStatus> = vec![];
+        let expected: Vec<ItemStatus<Item>> = vec![];
         assert_eq!(expected, summary);
     }
 
@@ -57,7 +58,7 @@ mod summarize_tests {
 
         let red_branch = Node::positive_branch(&red);
         let summary = Node::summarize(&red_branch);
-        let expected: Vec<ItemStatus> = vec![ItemStatus::Available(red.clone())];
+        let expected: Vec<ItemStatus<Item>> = vec![ItemStatus::Available(red.clone())];
         assert_eq!(expected, summary);
     }
 
@@ -67,7 +68,7 @@ mod summarize_tests {
 
         let red_branch = Node::negative_branch(&red);
         let summary = Node::summarize(&red_branch);
-        let expected: Vec<ItemStatus> = vec![ItemStatus::Excluded(red.clone())];
+        let expected: Vec<ItemStatus<Item>> = vec![ItemStatus::Excluded(red.clone())];
         assert_eq!(expected, summary);
     }
 
@@ -75,7 +76,7 @@ mod summarize_tests {
     fn summarize_returns_available_items_for_depth_2() {
         let red = Item::new("shirts:red");
         let blue = Item::new("shirts:blue");
-        let expected: Vec<ItemStatus> = vec![
+        let expected: Vec<ItemStatus<Item>> = vec![
             ItemStatus::Available(blue.clone()),
             ItemStatus::Available(red.clone())
         ];

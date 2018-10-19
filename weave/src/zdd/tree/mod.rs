@@ -1,3 +1,4 @@
+use core::ItemStatus;
 pub use self::universe::*;
 use std::collections::BTreeSet;
 use std::fmt;
@@ -7,6 +8,7 @@ use zdd::node::NodeId;
 
 mod combinations;
 mod intersect;
+mod summarize;
 mod union;
 mod universe;
 
@@ -33,6 +35,22 @@ impl<T: Clone + Ord + Hash> Tree<T> {
 
     fn from_root<R>(universe: Universe<T>, root: R) -> Tree<T> where R: Into<NodeId> {
         Tree { root: root.into(), universe }
+    }
+
+    pub fn summarize(&self) -> Vec<ItemStatus<(T, Vec<ItemStatus<T>>)>> {
+        summarize::summarize(self.root.into())
+            .into_iter()
+            .filter_map(|status| {
+                status.option_map(|(id, path)| {
+                    let path = path.into_iter()
+                        .filter_map(|status| status.option_map(|id| self.universe.get_item(id)))
+                        .collect::<Vec<_>>();
+
+                    self.universe.get_item(id)
+                        .map(|item| (item, path))
+                })
+            })
+            .collect::<Vec<_>>()
     }
 
     pub fn combinations(&self) -> BTreeSet<BTreeSet<T>> {
