@@ -12,7 +12,7 @@ mod summarize;
 mod union;
 mod universe;
 
-#[derive(Clone, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Tree<T> {
     root: NodeId,
     universe: Universe<T>,

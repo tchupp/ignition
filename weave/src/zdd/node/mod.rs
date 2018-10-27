@@ -3,8 +3,10 @@ use std::fmt;
 use std::sync::RwLock;
 
 mod arena;
+mod serialize;
+mod parser;
 
-#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct NodeId(usize);
 
 impl fmt::Debug for NodeId {
@@ -15,7 +17,7 @@ impl fmt::Debug for NodeId {
 
 pub type Priority = usize;
 
-#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub enum Node {
     Branch(Priority, NodeId, NodeId),
     Leaf(bool),

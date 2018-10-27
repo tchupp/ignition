@@ -7,7 +7,7 @@ use zdd::node::NodeId;
 use zdd::node::Priority;
 use zdd::tree::Tree;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Universe<T> {
     items: Vec<T>
 }
