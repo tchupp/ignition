@@ -10,12 +10,15 @@ lazy_static = "1.1.0"
 
 serde = "1.0"
 serde_derive = "1.0"
+
 maplit = "1.0"
 nom = "^4"
 
 [dev-dependencies]
 criterion = "0.2"
 serde_test = "1.0"
+serde_json = "1.0"
+bincode = "1.0"
 
 [[bench]]
 name = "weave_bench"
