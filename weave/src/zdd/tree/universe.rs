@@ -50,6 +50,12 @@ impl<T: Clone + Ord + Hash> Universe<T> {
         Tree::from_root(self.clone(), root)
     }
 
+    pub fn unique_tree(&self, items: &[T]) -> Tree<T> {
+        items.into_iter()
+            .map(|item| self.tree(&[item.clone()]))
+            .fold(self.empty_tree(), |root, next| root.union(&next))
+    }
+
     pub fn hyper_tree(&self, combinations: &[Vec<T>]) -> Tree<T> {
         combinations.into_iter()
             .map(|cb| self.tree(cb))

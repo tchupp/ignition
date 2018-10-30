@@ -61,7 +61,7 @@ mod tests {
     use zdd::Universe;
 
     #[test]
-    fn tree_with_two_sets_with_no_overlap() {
+    fn hyper_tree_with_two_sets_with_no_overlap() {
         let item1 = Item::new("1");
         let item2 = Item::new("2");
 
@@ -70,6 +70,38 @@ mod tests {
         let tree = universe.hyper_tree(&[
             vec![item1.clone()],
             vec![item2.clone()]
+        ]);
+
+        assert_eq!(
+            btreeset!(btreeset!(item1.clone()), btreeset!(item2.clone())),
+            tree.combinations()
+        );
+        assert_eq!(
+            btreeset!(btreeset!(item1.clone()), btreeset!(item2.clone())),
+            tree.combinations_iter()
+        );
+
+        assert_eq!(
+            btreeset!(btreeset!(item1.clone())),
+            tree.offset(&btreeset![item2])
+        );
+
+        assert_eq!(
+            btreeset!(btreeset!(item1.clone())),
+            tree.onset(&btreeset![item1])
+        );
+    }
+
+    #[test]
+    fn unique_tree_with_two_sets_with_no_overlap() {
+        let item1 = Item::new("1");
+        let item2 = Item::new("2");
+
+        let universe = Universe::from(vec![item1.clone(), item2.clone()]);
+
+        let tree = universe.unique_tree(&[
+            item1.clone(),
+            item2.clone()
         ]);
 
         assert_eq!(
