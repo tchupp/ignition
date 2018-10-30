@@ -2,14 +2,14 @@ use bdd::node::Node;
 use bdd::node::NodeId;
 use std::collections::hash_map::Entry::*;
 use std::collections::HashMap;
-use std::sync::Mutex;
+use std::sync::RwLock;
 
 lazy_static! {
-    pub static ref ARENA: Mutex<Arena> = {
+    pub static ref ARENA: RwLock<Arena> = {
         let mut a = Arena::new();
         a.add(Node::FALSE_LEAF);
         a.add(Node::TRUE_LEAF);
-        Mutex::new(a)
+        RwLock::new(a)
     };
 }
 
@@ -47,12 +47,12 @@ impl Arena {
 }
 
 pub fn add(node: Node) -> NodeId {
-    let mut arena = ARENA.lock().unwrap();
+    let mut arena = ARENA.write().unwrap();
     arena.add(node)
 }
 
 pub fn get(index: NodeId) -> Node {
-    let arena = ARENA.lock().unwrap();
+    let arena = ARENA.read().unwrap();
 
     arena.get(index)
         .unwrap_or_else(|| panic!("Expected node to exist for: {:?}", index))
@@ -61,7 +61,7 @@ pub fn get(index: NodeId) -> Node {
 
 #[allow(dead_code)]
 pub fn count() -> usize {
-    let arena = ARENA.lock().unwrap();
+    let arena = ARENA.read().unwrap();
     arena.count()
 }
 

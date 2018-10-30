@@ -1,7 +1,6 @@
 use core::Item;
 use std::fmt;
 
-mod apply;
 mod arena;
 mod bit_operations;
 mod hash_structure;
