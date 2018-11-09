@@ -24,10 +24,6 @@ impl Closet {
 
         Ok(Closet { item_index, summary, root })
     }
-
-    pub(crate) fn must_select_item(&self, item: &Item) -> Closet {
-        self.select_item(item).unwrap()
-    }
 }
 
 fn validate_selection_is_known(closet: &Closet, item: &Item) -> Result<(), SelectItemError> {

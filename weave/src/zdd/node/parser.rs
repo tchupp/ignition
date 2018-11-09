@@ -3,8 +3,8 @@ use nom::Err;
 use std::str;
 use zdd::node::Node;
 
-const TRUE_NODE: &'static str = "(T)";
-const FALSE_NODE: &'static str = "(F)";
+const TRUE_NODE: &str = "(T)";
+const FALSE_NODE: &str = "(F)";
 
 pub(crate) fn build_node_string(node: Node) -> String {
     match node {
@@ -34,18 +34,16 @@ named!(node_id<usize>,
 );
 
 named!(node<Node>,
-    dbg_dmp!(
-        alt!(
-            map!(tag!(TRUE_NODE), |_: &[u8]| Node::Leaf(true)) |
-            map!(tag!(FALSE_NODE), |_: &[u8]| Node::Leaf(false)) |
-            do_parse!(
-                tag!("(")        >>
-                id: ws!(node_id) >>
-                low: ws!(node)   >>
-                high: ws!(node)  >>
-                tag!(")")        >>
-                (Node::branch(id, low, high))
-            )
+    alt!(
+        map!(tag!(TRUE_NODE), |_: &[u8]| Node::Leaf(true)) |
+        map!(tag!(FALSE_NODE), |_: &[u8]| Node::Leaf(false)) |
+        do_parse!(
+            tag!("(")        >>
+            id: ws!(node_id) >>
+            low: ws!(node)   >>
+            high: ws!(node)  >>
+            tag!(")")        >>
+            (Node::branch(id, low, high))
         )
     )
 );

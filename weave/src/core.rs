@@ -71,10 +71,10 @@ impl<T: Clone + Ord + Hash + Eq> ItemStatus<T> {
 
     pub fn option_map<U, F: FnOnce(T) -> Option<U>>(self, f: F) -> Option<ItemStatus<U>> {
         match self {
-            ItemStatus::Required(x) => f(x).map(|x| ItemStatus::Required(x)),
-            ItemStatus::Excluded(x) => f(x).map(|x| ItemStatus::Excluded(x)),
-            ItemStatus::Available(x) => f(x).map(|x| ItemStatus::Available(x)),
-            ItemStatus::Selected(x) => f(x).map(|x| ItemStatus::Selected(x)),
+            ItemStatus::Required(x) => f(x).map(ItemStatus::Required),
+            ItemStatus::Excluded(x) => f(x).map(ItemStatus::Excluded),
+            ItemStatus::Available(x) => f(x).map(ItemStatus::Available),
+            ItemStatus::Selected(x) => f(x).map(ItemStatus::Selected),
         }
     }
 

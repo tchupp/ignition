@@ -51,7 +51,7 @@ impl<'de> Visitor<'de> for NodeStringVisitor {
 impl<'de> Deserialize<'de> for NodeId {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         deserializer.deserialize_newtype_struct("Node", NodeVisitor)
-            .map(|n| NodeId::from(n))
+            .map(NodeId::from)
     }
 }
 

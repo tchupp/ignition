@@ -101,6 +101,7 @@ mod tests {
 
         let tree = universe.unique_tree(&[
             item1.clone(),
+            item2.clone(),
             item2.clone()
         ]);
 
