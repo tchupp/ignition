@@ -2,9 +2,10 @@ use bincode;
 use criterion::Criterion;
 use criterion::Fun;
 use serde_json;
+
 use tree_building;
 use weave::core::Item;
-use weave::zdd::Tree;
+use weave::Tree;
 
 fn bincode_serialize(tree: &Tree<Item>) {
     bincode::serialize(tree).expect("expected Ok, but was");

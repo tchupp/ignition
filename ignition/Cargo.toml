@@ -1,0 +1,14 @@
+[package]
+name = "ignition"
+description = ""
+version = "0.1.0"
+authors = ["theochupp <tclchiam@gmail.com>"]
+
+[dependencies]
+itertools = "0.7"
+
+maplit = "1.0"
+
+weave = { path = "../weave" }
+
+[dev-dependencies]

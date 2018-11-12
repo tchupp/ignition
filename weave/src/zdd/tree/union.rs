@@ -9,7 +9,7 @@ pub fn union(node1: Node, node2: Node) -> Node {
         (_, Node::Leaf(false)) => return node1,
         (Node::Leaf(false), _) => return node2,
 
-        (Node::Leaf(true), Node::Leaf(true)) => return node1,
+        (Node::Leaf(true), Node::Leaf(true)) => return Node::Leaf(true),
 
         (Node::Branch(id, low, high), Node::Leaf(true)) => {
             let low = union(low.into(), node2);

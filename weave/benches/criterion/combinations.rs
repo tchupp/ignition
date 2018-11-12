@@ -1,8 +1,9 @@
 use criterion::Criterion;
 use criterion::Fun;
+
 use tree_building;
 use weave::core::Item;
-use weave::zdd::Tree;
+use weave::Tree;
 
 fn combinations_recursive(tree: &Tree<Item>) {
     tree.combinations();

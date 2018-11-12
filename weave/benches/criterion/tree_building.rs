@@ -1,6 +1,6 @@
 use weave::core::Item;
-use weave::zdd::Tree;
-use weave::zdd::Universe;
+use weave::Tree;
+use weave::Universe;
 
 pub fn setup_tree_20() -> Tree<Item> {
     let item0 = Item::new("0");
