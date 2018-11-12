@@ -1,11 +1,12 @@
-extern crate weave;
 extern crate serde_test;
+extern crate weave;
 
 #[cfg(test)]
 mod tests {
+    use serde_test::{assert_tokens, Token};
+
     use weave::bdd::Node;
     use weave::core::Item;
-    use serde_test::{assert_tokens, Token};
 
     #[test]
     fn tokenize_small_node() {

@@ -1,16 +1,19 @@
-use core::ItemStatus;
-pub use self::universe::*;
 use std::collections::BTreeSet;
 use std::fmt;
 use std::hash::Hash;
+
+use core::ItemStatus;
 use zdd::node::Node;
 use zdd::node::NodeId;
+
+pub use self::universe::*;
 
 mod combinations;
 mod intersect;
 mod summarize;
 mod union;
 mod universe;
+mod product;
 
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Tree<T> {
@@ -98,11 +101,20 @@ impl<T: Clone + Ord + Hash> Tree<T> {
 
         Tree::from_root(self.universe.clone(), root)
     }
+
+    pub fn product(&self, other: &Tree<T>) -> Tree<T> {
+        let root = product::product(
+            self.root.into(),
+            other.root.into());
+
+        Tree::from_root(self.universe.clone(), root)
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use core::Item;
+
     use super::Universe;
 
     #[test]

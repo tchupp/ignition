@@ -4,8 +4,9 @@ extern crate weave;
 #[cfg(test)]
 mod tests {
     use serde_test::{assert_tokens, Token};
+
     use weave::core::Item;
-    use weave::zdd::Universe;
+    use weave::Universe;
 
     #[test]
     fn tokenize_small_node() {
