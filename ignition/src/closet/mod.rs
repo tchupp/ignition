@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use core::Item;
 use weave::Tree;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Closet {
     tree: Tree<Item>,
 }
