@@ -16,4 +16,8 @@ impl Closet {
     pub fn outfits(&self) -> BTreeSet<BTreeSet<Item>> {
         self.tree.combinations()
     }
+
+    pub fn outfits_with(&self, selections: &[Item], exclusions: &[Item]) -> BTreeSet<BTreeSet<Item>> {
+        self.tree.combinations_with(selections, exclusions)
+    }
 }

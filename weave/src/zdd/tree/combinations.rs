@@ -2,7 +2,7 @@ use zdd::node::Node;
 use zdd::node::NodeId;
 use zdd::node::Priority;
 
-pub fn combinations(root: NodeId) -> Vec<Vec<Priority>> {
+pub fn combinations_recursive(root: NodeId) -> Vec<Vec<Priority>> {
     combinations_inner(root, &[])
         .unwrap_or_else(Vec::new)
 }
@@ -74,21 +74,21 @@ mod tests {
 
         assert_eq!(
             btreeset!(btreeset!(item1.clone()), btreeset!(item2.clone())),
-            tree.combinations()
+            tree.combinations_recursive()
         );
         assert_eq!(
             btreeset!(btreeset!(item1.clone()), btreeset!(item2.clone())),
-            tree.combinations_iter()
+            tree.combinations()
         );
 
         assert_eq!(
             btreeset!(btreeset!(item1.clone())),
-            tree.offset(&btreeset![item2])
+            tree.combinations_with(&[], &[item2])
         );
 
         assert_eq!(
             btreeset!(btreeset!(item1.clone())),
-            tree.onset(&btreeset![item1])
+            tree.combinations_with(&[item1], &[])
         );
     }
 
@@ -107,21 +107,21 @@ mod tests {
 
         assert_eq!(
             btreeset!(btreeset!(item1.clone()), btreeset!(item2.clone())),
-            tree.combinations()
+            tree.combinations_recursive()
         );
         assert_eq!(
             btreeset!(btreeset!(item1.clone()), btreeset!(item2.clone())),
-            tree.combinations_iter()
+            tree.combinations()
         );
 
         assert_eq!(
             btreeset!(btreeset!(item1.clone())),
-            tree.offset(&btreeset![item2])
+            tree.combinations_with(&[], &[item2])
         );
 
         assert_eq!(
             btreeset!(btreeset!(item1.clone())),
-            tree.onset(&btreeset![item1])
+            tree.combinations_with(&[item1], &[])
         );
     }
 
@@ -139,22 +139,25 @@ mod tests {
         ]);
 
         assert_eq!(
-            btreeset!(btreeset!(item1.clone(), item2.clone()), btreeset!(item2.clone(), item3.clone())),
+            btreeset!(
+                btreeset!(item1.clone(), item2.clone()),
+                btreeset!(item2.clone(), item3.clone())
+            ),
             tree.combinations()
         );
 
         assert_eq!(
             btreeset!(),
-            tree.offset(&btreeset![item2.clone()])
+            tree.combinations_with(&[], &[item2.clone()])
         );
         assert_eq!(
             btreeset!(btreeset!(item2.clone(), item3.clone())),
-            tree.offset(&btreeset![item1.clone()])
+            tree.combinations_with(&[], &[item1.clone()])
         );
 
         assert_eq!(
             btreeset!(btreeset!(item1.clone(), item2.clone())),
-            tree.onset(&btreeset![item1])
+            tree.combinations_with(&[item1], &[])
         );
     }
 }

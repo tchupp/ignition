@@ -56,33 +56,29 @@ impl<T: Clone + Ord + Hash> Tree<T> {
             .collect::<Vec<_>>()
     }
 
-    pub fn combinations(&self) -> BTreeSet<BTreeSet<T>> {
-        combinations::combinations(self.root)
+    pub fn combinations_recursive(&self) -> BTreeSet<BTreeSet<T>> {
+        combinations::combinations_recursive(self.root)
             .into_iter()
             .map(|set| self.universe.get_items(&set))
             .collect::<BTreeSet<_>>()
     }
 
-    pub fn combinations_iter(&self) -> BTreeSet<BTreeSet<T>> {
+    pub fn combinations(&self) -> BTreeSet<BTreeSet<T>> {
         combinations::combinations_iter(self.root)
             .into_iter()
             .map(|set| self.universe.get_items(&set))
             .collect::<BTreeSet<_>>()
     }
 
-    pub fn onset(&self, inclusions: &BTreeSet<T>) -> BTreeSet<BTreeSet<T>> {
-        combinations::combinations(self.root)
-            .into_iter()
-            .map(|set| self.universe.get_items(&set))
-            .filter(|set| set.intersection(inclusions).cloned().collect::<BTreeSet<_>>() == *inclusions)
-            .collect::<BTreeSet<_>>()
-    }
+    pub fn combinations_with(&self, inclusions: &[T], exclusions: &[T]) -> BTreeSet<BTreeSet<T>> {
+        let inclusions = inclusions.into_iter().cloned().collect::<BTreeSet<_>>();
+        let exclusions = exclusions.into_iter().cloned().collect::<BTreeSet<_>>();
 
-    pub fn offset(&self, exclusions: &BTreeSet<T>) -> BTreeSet<BTreeSet<T>> {
-        combinations::combinations(self.root)
+        combinations::combinations_iter(self.root)
             .into_iter()
             .map(|set| self.universe.get_items(&set))
-            .filter(|set| set.intersection(exclusions).collect::<BTreeSet<_>>().is_empty())
+            .filter(|set| set.intersection(&inclusions).cloned().collect::<BTreeSet<_>>() == inclusions)
+            .filter(|set| set.intersection(&exclusions).collect::<BTreeSet<_>>().is_empty())
             .collect::<BTreeSet<_>>()
     }
 

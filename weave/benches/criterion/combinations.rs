@@ -6,11 +6,11 @@ use weave::core::Item;
 use weave::Tree;
 
 fn combinations_recursive(tree: &Tree<Item>) {
-    tree.combinations();
+    tree.combinations_recursive();
 }
 
 fn combinations_iterative(tree: &Tree<Item>) {
-    tree.combinations_iter();
+    tree.combinations();
 }
 
 pub fn bench_combinations(c: &mut Criterion) {
