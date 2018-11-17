@@ -2,6 +2,8 @@ use std::collections::BTreeSet;
 use std::fmt;
 use std::hash::Hash;
 
+use itertools::Itertools;
+
 use core::ItemStatus;
 use zdd::node::Node;
 use zdd::node::NodeId;
@@ -10,6 +12,8 @@ pub use self::universe::*;
 
 mod combinations;
 mod intersect;
+#[cfg(test)]
+mod restrict;
 mod summarize;
 mod union;
 mod universe;
@@ -104,6 +108,15 @@ impl<T: Clone + Ord + Hash> Tree<T> {
             other.root.into());
 
         Tree::from_root(self.universe.clone(), root)
+    }
+
+    pub fn restrict(&self, inclusions: &[T], exclusions: &[T]) -> Tree<T> {
+        let combinations = self.combinations_with(inclusions, exclusions)
+            .into_iter()
+            .map(|s| s.into_iter().collect_vec())
+            .collect_vec();
+
+        self.universe.hyper_tree(&combinations)
     }
 }
 
