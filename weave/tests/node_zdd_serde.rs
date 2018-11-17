@@ -25,7 +25,7 @@ mod tests {
             Token::Str("(0 (F) (1 (F) (T)))"),
 
             Token::Str("universe"),
-            Token::Struct { name: "Universe", len: 1 },
+            Token::Struct { name: "Universe", len: 2 },
             Token::Str("items"),
 
             Token::Seq { len: Some(2) },
@@ -34,6 +34,17 @@ mod tests {
             Token::NewtypeStruct { name: "Item" },
             Token::Str("2"),
             Token::SeqEnd,
+
+            Token::Str("item_index"),
+
+            Token::Map { len: Some(2) },
+            Token::NewtypeStruct { name: "Item" },
+            Token::Str("2"),
+            Token::U64(1),
+            Token::NewtypeStruct { name: "Item" },
+            Token::Str("1"),
+            Token::U64(0),
+            Token::MapEnd,
 
             Token::StructEnd,
 

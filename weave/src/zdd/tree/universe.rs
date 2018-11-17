@@ -8,19 +8,25 @@ use zdd::node::Priority;
 use zdd::tree::Tree;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct Universe<T> {
-    items: Vec<T>
+pub struct Universe<T: Hash + Eq> {
+    items: Vec<T>,
+    item_index: HashMap<T, Priority>,
 }
 
-impl<T> From<Vec<T>> for Universe<T> {
+impl<T: Clone + Ord + Hash> From<Vec<T>> for Universe<T> {
     fn from(items: Vec<T>) -> Self {
-        Universe { items }
+        let item_index = items.iter()
+            .enumerate()
+            .map(|(a,  b)| (b.clone(), a))
+            .collect::<HashMap<_, _>>();
+
+        Universe { items, item_index }
     }
 }
 
-impl<T> Default for Universe<T> {
+impl<T: Clone + Ord + Hash> Default for Universe<T> {
     fn default() -> Self {
-        Universe { items: Vec::new() }
+        Universe { items: Vec::new(), item_index: HashMap::new() }
     }
 }
 
@@ -34,13 +40,8 @@ impl<T: Clone + Ord + Hash> Universe<T> {
     }
 
     pub fn tree(&self, combination: &[T]) -> Tree<T> {
-        let item_map = self.items.iter()
-            .enumerate()
-            .map(|(a, b)| (b, a))
-            .collect::<HashMap<_, _>>();
-
         let root = combination.into_iter()
-            .filter_map(|item| item_map.get(&item))
+            .filter_map(|item| self.item_index.get(&item))
             .cloned()
             .sorted()
             .into_iter()

@@ -1,6 +1,8 @@
-use core::ItemStatus;
-use itertools::Itertools;
 use std::collections::HashSet;
+
+use itertools::Itertools;
+
+use core::ItemStatus;
 use zdd::node::Node;
 use zdd::node::Priority;
 
@@ -62,7 +64,9 @@ mod summarize_tests {
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
 
-        let tree = universe.hyper_tree(&[vec![item1.clone(), item2.clone()]]);
+        let tree = universe.hyper_tree(&[
+            vec![item1.clone(), item2.clone()]
+        ]);
         assert_eq!(
             vec![
                 ItemStatus::Required((item1.clone(), vec![])),
