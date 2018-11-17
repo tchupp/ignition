@@ -1,23 +1,29 @@
-use itertools::Itertools;
-use std::collections::BTreeSet;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::hash::Hash;
-use zdd::node::Node;
-use zdd::node::NodeId;
-use zdd::node::Priority;
+
+use itertools::Itertools;
+use serde::{Serialize, Serializer};
+
+use zdd::node::{Node, NodeId, Priority};
 use zdd::tree::Tree;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct Universe<T: Hash + Eq> {
+pub struct Universe<T: Ord + Hash + Eq> {
     items: Vec<T>,
+    #[serde(serialize_with = "ordered_map")]
     item_index: HashMap<T, Priority>,
+}
+
+fn ordered_map<S: Serializer, T: Ord + Hash + Eq + Serialize>(value: &HashMap<T, Priority>, serializer: S) -> Result<S::Ok, S::Error> {
+    let ordered: BTreeMap<_, _> = value.iter().collect();
+    ordered.serialize(serializer)
 }
 
 impl<T: Clone + Ord + Hash> From<Vec<T>> for Universe<T> {
     fn from(items: Vec<T>) -> Self {
         let item_index = items.iter()
             .enumerate()
-            .map(|(a,  b)| (b.clone(), a))
+            .map(|(a, b)| (b.clone(), a))
             .collect::<HashMap<_, _>>();
 
         Universe { items, item_index }

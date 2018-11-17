@@ -16,12 +16,12 @@ mod universe;
 mod product;
 
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct Tree<T: Hash + Eq> {
+pub struct Tree<T: Ord + Hash + Eq> {
     root: NodeId,
     universe: Universe<T>,
 }
 
-impl<T: Hash + Eq> fmt::Debug for Tree<T> {
+impl<T: Ord + Hash + Eq> fmt::Debug for Tree<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}", self.root)
     }

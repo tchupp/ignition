@@ -39,11 +39,11 @@ mod tests {
 
             Token::Map { len: Some(2) },
             Token::NewtypeStruct { name: "Item" },
-            Token::Str("2"),
-            Token::U64(1),
-            Token::NewtypeStruct { name: "Item" },
             Token::Str("1"),
             Token::U64(0),
+            Token::NewtypeStruct { name: "Item" },
+            Token::Str("2"),
+            Token::U64(1),
             Token::MapEnd,
 
             Token::StructEnd,
