@@ -46,7 +46,7 @@ impl<T: Clone + Ord + Hash> Universe<T> {
     }
 
     pub fn tree(&self, combination: &[T]) -> Tree<T> {
-        let root = combination.into_iter()
+        let root = combination.iter()
             .filter_map(|item| self.item_index.get(&item))
             .cloned()
             .sorted()
@@ -58,13 +58,13 @@ impl<T: Clone + Ord + Hash> Universe<T> {
     }
 
     pub fn unique_tree(&self, items: &[T]) -> Tree<T> {
-        items.into_iter()
+        items.iter()
             .map(|item| self.tree(&[item.clone()]))
             .fold(self.empty_tree(), |root, next| root.union(&next))
     }
 
     pub fn hyper_tree(&self, combinations: &[Vec<T>]) -> Tree<T> {
-        combinations.into_iter()
+        combinations.iter()
             .map(|cb| self.tree(cb))
             .fold(self.empty_tree(), |root, next| root.union(&next))
     }
@@ -74,7 +74,7 @@ impl<T: Clone + Ord + Hash> Universe<T> {
     }
 
     pub fn get_items(&self, p: &[Priority]) -> BTreeSet<T> {
-        p.into_iter()
+        p.iter()
             .filter_map(|p| self.items.get(*p))
             .cloned()
             .collect()

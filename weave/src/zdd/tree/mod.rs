@@ -75,8 +75,8 @@ impl<T: Clone + Ord + Hash> Tree<T> {
     }
 
     pub fn combinations_with(&self, inclusions: &[T], exclusions: &[T]) -> BTreeSet<BTreeSet<T>> {
-        let inclusions = inclusions.into_iter().cloned().collect::<BTreeSet<_>>();
-        let exclusions = exclusions.into_iter().cloned().collect::<BTreeSet<_>>();
+        let inclusions = inclusions.iter().cloned().collect::<BTreeSet<_>>();
+        let exclusions = exclusions.iter().cloned().collect::<BTreeSet<_>>();
 
         combinations::combinations_iter(self.root)
             .into_iter()
