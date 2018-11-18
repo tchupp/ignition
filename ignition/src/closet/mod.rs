@@ -1,5 +1,7 @@
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
+use core::Family;
 use core::Item;
 use weave::core::ItemStatus;
 use weave::Tree;
@@ -7,11 +9,12 @@ use weave::Tree;
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Closet {
     tree: Tree<Item>,
+    item_index: BTreeMap<Item, Family>,
 }
 
 impl Closet {
-    pub fn new(tree: Tree<Item>) -> Closet {
-        Closet { tree }
+    pub fn new(tree: Tree<Item>, item_index: BTreeMap<Item, Family>) -> Closet {
+        Closet { tree, item_index }
     }
 
     pub fn outfits(&self) -> BTreeSet<BTreeSet<Item>> {
@@ -22,8 +25,14 @@ impl Closet {
         self.tree.combinations_with(selections, exclusions)
     }
 
-    pub fn options(&self, selections: &[Item], exclusions: &[Item]) -> Vec<ItemStatus<Item>> {
+    pub fn options(&self, selections: &[Item], exclusions: &[Item]) -> BTreeMap<Family, Vec<ItemStatus<Item>>> {
         self.tree.summarize(selections, exclusions)
+            .into_iter()
+            .map(|status| (self.item_index.get(status.item()).unwrap(), status))
+            .fold(BTreeMap::new(), |mut duplicates: BTreeMap<Family, Vec<ItemStatus<Item>>>, (family, status): (&Family, ItemStatus<Item>)| {
+                duplicates.entry(family.clone()).or_insert_with(|| vec![]).push(status);
+                duplicates
+            })
     }
 }
 
@@ -57,12 +66,16 @@ mod tests {
 
         let options = closet.options(&[], &[]);
         assert_eq!(
-            vec![
-                ItemStatus::Available(jeans),
-                ItemStatus::Available(slacks),
-                ItemStatus::Available(blue),
-                ItemStatus::Available(red),
-            ],
+            btreemap! {
+                shirts => vec![
+                    ItemStatus::Available(blue),
+                    ItemStatus::Available(red),
+                ],
+                pants => vec![
+                    ItemStatus::Available(jeans),
+                    ItemStatus::Available(slacks),
+                ]
+            },
             options
         );
     }
@@ -90,23 +103,31 @@ mod tests {
 
         let options = closet.options(&[red.clone()], &[]);
         assert_eq!(
-            vec![
-                ItemStatus::Required(slacks.clone()),
-                ItemStatus::Excluded(jeans.clone()),
-                ItemStatus::Excluded(blue.clone()),
-                ItemStatus::Selected(red.clone()),
-            ],
+            btreemap! {
+                shirts.clone() => vec![
+                    ItemStatus::Excluded(blue.clone()),
+                    ItemStatus::Selected(red.clone()),
+                ],
+                pants.clone() => vec![
+                    ItemStatus::Required(slacks.clone()),
+                    ItemStatus::Excluded(jeans.clone()),
+                ]
+            },
             options
         );
 
         let options = closet.options(&[blue.clone()], &[]);
         assert_eq!(
-            vec![
-                ItemStatus::Excluded(red.clone()),
-                ItemStatus::Available(jeans.clone()),
-                ItemStatus::Available(slacks.clone()),
-                ItemStatus::Selected(blue.clone()),
-            ],
+            btreemap! {
+                shirts.clone() => vec![
+                    ItemStatus::Excluded(red.clone()),
+                    ItemStatus::Selected(blue.clone()),
+                ],
+                pants.clone() => vec![
+                    ItemStatus::Available(jeans.clone()),
+                    ItemStatus::Available(slacks.clone()),
+                ]
+            },
             options
         );
     }
@@ -134,23 +155,31 @@ mod tests {
 
         let options = closet.options(&[], &[red.clone()]);
         assert_eq!(
-            vec![
-                ItemStatus::Required(blue.clone()),
-                ItemStatus::Excluded(red.clone()),
-                ItemStatus::Available(jeans.clone()),
-                ItemStatus::Available(slacks.clone()),
-            ],
+            btreemap! {
+                shirts.clone() => vec![
+                    ItemStatus::Required(blue.clone()),
+                    ItemStatus::Excluded(red.clone()),
+                ],
+                pants.clone() => vec![
+                    ItemStatus::Available(jeans.clone()),
+                    ItemStatus::Available(slacks.clone()),
+                ]
+            },
             options
         );
 
         let options = closet.options(&[], &[blue.clone()]);
         assert_eq!(
-            vec![
-                ItemStatus::Required(slacks.clone()),
-                ItemStatus::Required(red.clone()),
-                ItemStatus::Excluded(jeans.clone()),
-                ItemStatus::Excluded(blue.clone()),
-            ],
+            btreemap! {
+                shirts.clone() => vec![
+                    ItemStatus::Required(red.clone()),
+                    ItemStatus::Excluded(blue.clone()),
+                ],
+                pants.clone() => vec![
+                    ItemStatus::Required(slacks.clone()),
+                    ItemStatus::Excluded(jeans.clone()),
+                ]
+            },
             options
         );
     }

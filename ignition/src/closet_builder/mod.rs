@@ -106,7 +106,7 @@ impl ClosetBuilder {
 
         let tree = universe.hyper_tree(&outfits[..]);
 
-        Ok(Closet::new(tree))
+        Ok(Closet::new(tree, self.item_index.clone()))
     }
 }
 
