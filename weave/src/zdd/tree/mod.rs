@@ -1,4 +1,5 @@
 use std::collections::BTreeSet;
+use std::collections::HashMap;
 use std::fmt;
 use std::hash::Hash;
 
@@ -44,20 +45,36 @@ impl<T: Clone + Ord + Hash> Tree<T> {
         Tree { root: root.into(), universe }
     }
 
-    pub fn summarize(&self) -> Vec<ItemStatus<(T, Vec<ItemStatus<T>>)>> {
-        summarize::summarize(self.root.into())
-            .into_iter()
-            .filter_map(|status| {
-                status.option_map(|(id, path)| {
-                    let path = path.into_iter()
-                        .filter_map(|status| status.option_map(|id| self.universe.get_item(id)))
-                        .collect::<Vec<_>>();
+    pub fn summarize(&self) -> Vec<ItemStatus<T>> {
+        let (items, total) = {
+            let mut items = self.universe.items
+                .iter()
+                .cloned()
+                .map(|f| (f, 0))
+                .collect::<HashMap<_, _>>();
 
-                    self.universe.get_item(id)
-                        .map(|item| (item, path))
+            let combinations = self.combinations();
+            let total = combinations.len();
+
+            combinations.into_iter()
+                .flat_map(|f| f)
+                .for_each(|item| {
+                    *items.entry(item)
+                        .or_insert(0) += 1;
+                });
+
+            (items, total)
+        };
+        items.into_iter()
+            .map(|(item, count)|
+                if count == 0 {
+                    ItemStatus::Excluded(item)
+                } else if count == total {
+                    ItemStatus::Required(item)
+                } else {
+                    ItemStatus::Available(item)
                 })
-            })
-            .collect::<Vec<_>>()
+            .sorted()
     }
 
     pub fn combinations_recursive(&self) -> BTreeSet<BTreeSet<T>> {

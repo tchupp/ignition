@@ -24,6 +24,15 @@ pub enum ItemStatus<T> {
 }
 
 impl<T: Clone + Ord + Hash + Eq> ItemStatus<T> {
+    pub fn item(&self) -> T {
+        match self {
+            ItemStatus::Required(item) => item.clone(),
+            ItemStatus::Excluded(item) => item.clone(),
+            ItemStatus::Available(item) => item.clone(),
+            ItemStatus::Selected(item) => item.clone(),
+        }
+    }
+
     pub fn is_required(&self) -> bool {
         match self {
             ItemStatus::Required(_) => true,

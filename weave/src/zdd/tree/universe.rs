@@ -9,7 +9,7 @@ use zdd::tree::Tree;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Universe<T: Ord + Hash + Eq> {
-    items: Vec<T>,
+    pub(crate) items: Vec<T>,
     #[serde(serialize_with = "ordered_map")]
     item_index: HashMap<T, Priority>,
 }
