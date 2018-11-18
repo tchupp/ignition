@@ -46,26 +46,22 @@ impl<T: Clone + Ord + Hash> Tree<T> {
     }
 
     pub fn summarize(&self, inclusions: &[T], exclusions: &[T]) -> Vec<ItemStatus<T>> {
-        let (items, total) = {
-            let mut items = self.universe.items
-                .iter()
-                .cloned()
-                .map(|f| (f, 0))
-                .collect::<HashMap<_, _>>();
+        let combinations = self.combinations_with(inclusions, exclusions);
+        let total = combinations.len();
 
-            let combinations = self.combinations_with(inclusions, exclusions);
-            let total = combinations.len();
-
-            combinations.into_iter()
+        self.universe.items
+            .iter()
+            .cloned()
+            .map(|f| (f, 0))
+            .chain(combinations.into_iter()
                 .flat_map(|f| f)
-                .for_each(|item| {
-                    *items.entry(item)
-                        .or_insert(0) += 1;
-                });
-
-            (items, total)
-        };
-        items.into_iter()
+                .sorted()
+                .into_iter()
+                .group_by(|item| item.clone())
+                .into_iter()
+                .map(|(item, copies)| (item, copies.count())))
+            .collect::<HashMap<_, _>>()
+            .into_iter()
             .map(|(item, count)|
                 if count == 0 {
                     ItemStatus::Excluded(item)
