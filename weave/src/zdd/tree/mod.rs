@@ -45,7 +45,7 @@ impl<T: Clone + Ord + Hash> Tree<T> {
         Tree { root: root.into(), universe }
     }
 
-    pub fn summarize(&self) -> Vec<ItemStatus<T>> {
+    pub fn summarize(&self, inclusions: &[T], exclusions: &[T]) -> Vec<ItemStatus<T>> {
         let (items, total) = {
             let mut items = self.universe.items
                 .iter()
@@ -53,7 +53,7 @@ impl<T: Clone + Ord + Hash> Tree<T> {
                 .map(|f| (f, 0))
                 .collect::<HashMap<_, _>>();
 
-            let combinations = self.combinations();
+            let combinations = self.combinations_with(inclusions, exclusions);
             let total = combinations.len();
 
             combinations.into_iter()
@@ -69,6 +69,8 @@ impl<T: Clone + Ord + Hash> Tree<T> {
             .map(|(item, count)|
                 if count == 0 {
                     ItemStatus::Excluded(item)
+                } else if inclusions.contains(&item) {
+                    ItemStatus::Selected(item)
                 } else if count == total {
                     ItemStatus::Required(item)
                 } else {
