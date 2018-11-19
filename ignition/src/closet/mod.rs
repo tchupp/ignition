@@ -12,6 +12,11 @@ pub struct Closet {
     item_index: BTreeMap<Item, Family>,
 }
 
+#[derive(Debug, Eq, PartialEq)]
+pub enum ClosetError {
+    UnknownItems(Vec<Item>),
+}
+
 impl Closet {
     pub fn new(tree: Tree<Item>, item_index: BTreeMap<Item, Family>) -> Closet {
         Closet { tree, item_index }
@@ -25,19 +30,37 @@ impl Closet {
         self.tree.combinations_with(selections, exclusions)
     }
 
-    pub fn options(&self, selections: &[Item], exclusions: &[Item]) -> BTreeMap<Family, Vec<ItemStatus<Item>>> {
-        self.tree.summarize(selections, exclusions)
+    pub fn options(&self, selections: &[Item], exclusions: &[Item]) -> Result<BTreeMap<Family, Vec<ItemStatus<Item>>>, ClosetError> {
+        self.find_unknown_items(&[selections, exclusions])?;
+
+        let summary = self.tree.summarize(selections, exclusions)
             .into_iter()
             .map(|status| (self.item_index.get(status.item()).unwrap(), status))
             .fold(BTreeMap::new(), |mut duplicates: BTreeMap<Family, Vec<ItemStatus<Item>>>, (family, status): (&Family, ItemStatus<Item>)| {
                 duplicates.entry(family.clone()).or_insert_with(|| vec![]).push(status);
                 duplicates
-            })
+            });
+
+        Ok(summary)
+    }
+
+    fn find_unknown_items(&self, items: &[&[Item]]) -> Result<(), ClosetError> {
+        let unknown_items = items.iter()
+            .flat_map(|items| items.iter())
+            .filter(|item| self.item_index.get(item).is_none())
+            .cloned()
+            .collect::<Vec<_>>();
+
+        if !unknown_items.is_empty() {
+            return Err(ClosetError::UnknownItems(unknown_items));
+        }
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use closet::ClosetError;
     use closet_builder::ClosetBuilder;
     use core::Family;
     use core::Item;
@@ -64,7 +87,7 @@ mod tests {
         let closet = closet_builder.build()
             .expect("expected build to return Closet");
 
-        let options = closet.options(&[], &[]);
+        let options = closet.options(&[], &[]).unwrap();
         assert_eq!(
             btreemap! {
                 shirts => vec![
@@ -101,7 +124,7 @@ mod tests {
         let closet = closet_builder.build()
             .expect("expected build to return Closet");
 
-        let options = closet.options(&[red.clone()], &[]);
+        let options = closet.options(&[red.clone()], &[]).unwrap();
         assert_eq!(
             btreemap! {
                 shirts.clone() => vec![
@@ -116,7 +139,7 @@ mod tests {
             options
         );
 
-        let options = closet.options(&[blue.clone()], &[]);
+        let options = closet.options(&[blue.clone()], &[]).unwrap();
         assert_eq!(
             btreemap! {
                 shirts.clone() => vec![
@@ -153,7 +176,7 @@ mod tests {
         let closet = closet_builder.build()
             .expect("expected build to return Closet");
 
-        let options = closet.options(&[], &[red.clone()]);
+        let options = closet.options(&[], &[red.clone()]).unwrap();
         assert_eq!(
             btreemap! {
                 shirts.clone() => vec![
@@ -168,7 +191,7 @@ mod tests {
             options
         );
 
-        let options = closet.options(&[], &[blue.clone()]);
+        let options = closet.options(&[], &[blue.clone()]).unwrap();
         assert_eq!(
             btreemap! {
                 shirts.clone() => vec![
@@ -180,6 +203,64 @@ mod tests {
                     ItemStatus::Excluded(jeans.clone()),
                 ]
             },
+            options
+        );
+    }
+
+    #[test]
+    fn options_with_unknown_selection_returns_error() {
+        let black = Item::new("shirts:black");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &blue)
+            .add_item(&pants, &slacks)
+            .add_item(&pants, &jeans)
+            .add_exclusion_rule(&red, &jeans);
+
+        let closet = closet_builder.build()
+            .expect("expected build to return Closet");
+
+        let options = closet.options(&[black.clone()], &[]).unwrap_err();
+        assert_eq!(
+            ClosetError::UnknownItems(vec![black.clone()]),
+            options
+        );
+    }
+
+    #[test]
+    fn options_with_unknown_exclusion_returns_error() {
+        let black = Item::new("shirts:black");
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &blue)
+            .add_item(&pants, &slacks)
+            .add_item(&pants, &jeans)
+            .add_exclusion_rule(&red, &jeans);
+
+        let closet = closet_builder.build()
+            .expect("expected build to return Closet");
+
+        let options = closet.options(&[], &[black.clone()]).unwrap_err();
+        assert_eq!(
+            ClosetError::UnknownItems(vec![black.clone()]),
             options
         );
     }
