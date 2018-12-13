@@ -16,6 +16,7 @@ impl Item {
 }
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(tag = "type", content = "item")]
 pub enum ItemStatus<T> {
     Required(T),
     Excluded(T),
