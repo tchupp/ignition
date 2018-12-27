@@ -2,16 +2,17 @@ use std::collections::BTreeMap;
 
 use itertools::Itertools;
 
-use ClosetBuilderError::{CompoundError, ConflictingFamilies, ExclusionError, InclusionError, MissingFamily};
+use ClosetBuilderError::{CompoundError, ExclusionFamilyConflict, ExclusionMissingFamily, InclusionFamilyConflict, InclusionMissingFamily, MultipleFamiliesRegistered};
 use core::Family;
 use core::Item;
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
 pub enum ClosetBuilderError {
-    MissingFamily(Item),
-    ConflictingFamilies(Item, Vec<Family>),
-    InclusionError(Family, Vec<Item>),
-    ExclusionError(Family, Vec<Item>),
+    InclusionMissingFamily(Item),
+    ExclusionMissingFamily(Item),
+    MultipleFamiliesRegistered(Item, Vec<Family>),
+    InclusionFamilyConflict(Family, Vec<Item>),
+    ExclusionFamilyConflict(Family, Vec<Item>),
     CompoundError(Vec<ClosetBuilderError>),
 }
 
@@ -24,8 +25,8 @@ pub(crate) fn validate_closet(
     let conflicts =
         vec![
             find_conflicting_families(contents, item_index),
-            find_illegal_rules(exclusions, item_index, ExclusionError),
-            find_illegal_rules(inclusions, item_index, InclusionError)
+            find_illegal_rules(exclusions, item_index, ExclusionFamilyConflict, ExclusionMissingFamily),
+            find_illegal_rules(inclusions, item_index, InclusionFamilyConflict, InclusionMissingFamily)
         ]
             .iter()
             .flat_map(|conflicts| conflicts)
@@ -49,12 +50,12 @@ fn find_conflicting_families(
             items.iter()
                 .filter_map(|item| {
                     let item_family = match item_index.get(item) {
-                        None => return Some(MissingFamily(item.clone())),
+                        None => panic!("illegal state! we should never had an item in the index with no family"),
                         Some(item_family) => item_family,
                     };
 
                     if item_family != family {
-                        Some(ConflictingFamilies(item.clone(), vec![item_family.clone(), family.clone()]))
+                        Some(MultipleFamiliesRegistered(item.clone(), vec![item_family.clone(), family.clone()]))
                     } else {
                         None
                     }
@@ -67,18 +68,19 @@ fn find_conflicting_families(
 fn find_illegal_rules(
     rules: &BTreeMap<Item, Vec<Item>>,
     item_index: &BTreeMap<Item, Family>,
-    rule_error: fn(Family, Vec<Item>) -> ClosetBuilderError,
+    conflict_error: fn(Family, Vec<Item>) -> ClosetBuilderError,
+    missing_family_error: fn(Item) -> ClosetBuilderError,
 ) -> Vec<ClosetBuilderError> {
     let find_selections_and_items_without_families = |(selection, items): (&Item, &Vec<Item>)| {
         let selection_family = match item_index.get(selection) {
-            None => return vec![MissingFamily(selection.clone())],
+            None => return vec![missing_family_error(selection.clone())],
             Some(selection_family) => selection_family,
         };
 
         items.iter()
             .filter_map(|item| {
                 let item_family = match item_index.get(item) {
-                    None => return Some(MissingFamily(item.clone())),
+                    None => return Some(missing_family_error(item.clone())),
                     Some(item_family) => item_family,
                 };
 
@@ -86,7 +88,7 @@ fn find_illegal_rules(
                     let mut items = vec![selection.clone(), item.clone()];
                     items.sort();
 
-                    Some(rule_error(selection_family.clone(), items))
+                    Some(conflict_error(selection_family.clone(), items))
                 } else {
                     None
                 }

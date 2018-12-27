@@ -199,7 +199,7 @@ mod no_rules_tests {
 }
 
 #[cfg(test)]
-mod exclude_rules_tests {
+mod exclusion_rules_tests {
     use closet_builder::ClosetBuilder;
     use core::Family;
     use core::Item;
@@ -330,7 +330,7 @@ mod exclude_rules_tests {
 }
 
 #[cfg(test)]
-mod include_rules_tests {
+mod inclusion_rules_tests {
     use closet_builder::ClosetBuilder;
     use core::Family;
     use core::Item;
