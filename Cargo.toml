@@ -2,5 +2,6 @@
 members = [
     "bowtie-core",
     "ignition",
-    "weave"
+    "weave",
+    "weave-visualizer",
 ]

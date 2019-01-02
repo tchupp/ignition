@@ -1,0 +1,9 @@
+[package]
+name = "weave-visualizer"
+version = "0.1.0"
+authors = ["theochupp <tclchiam@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+yew = { git = "https://github.com/DenisKolodin/yew", features = ["toml"] }
+weave = { path = "../weave" }

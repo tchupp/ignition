@@ -9,16 +9,18 @@ use core::ItemStatus;
 use zdd::node::Node;
 use zdd::node::NodeId;
 
+pub use self::traversable::TreeNode;
 pub use self::universe::*;
 
 mod combinations;
 mod intersect;
+mod product;
 #[cfg(test)]
 mod restrict;
 mod summarize;
+mod traversable;
 mod union;
 mod universe;
-mod product;
 
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Tree<T: Ord + Hash + Eq> {
@@ -132,6 +134,10 @@ impl<T: Clone + Ord + Hash> Tree<T> {
             .collect_vec();
 
         self.universe.hyper_tree(&combinations)
+    }
+
+    pub fn traverse(&self) -> TreeNode<T> {
+        TreeNode::from(self)
     }
 }
 
