@@ -19,7 +19,11 @@ notifications:
     on_success: never
 
 script:
-- ./ci/install_cargo_web.sh
-- cargo build --verbose --all
-- cargo test --verbose --all
-- cargo bench --verbose --all
+  - cargo build --verbose -p weave
+  - cargo build --verbose -p ignition
+  - cargo test --verbose -p weave
+  - cargo test --verbose -p ignition
+  - cargo bench --verbose -p weave
+  - cargo bench --verbose -p ignition
+  - ./ci/install_cargo_web.sh
+  - cargo web build -p weave-visualizer
