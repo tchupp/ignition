@@ -106,7 +106,7 @@ impl ClosetBuilder {
 
         let tree = universe.hyper_tree(&outfits[..]);
 
-        Ok(Closet::new(tree, self.item_index.clone()))
+        Ok(Closet::new(tree, self.item_index.clone(), vec![], vec![]))
     }
 }
 
@@ -163,7 +163,7 @@ mod no_rules_tests {
         ];
         assert_eq!(
             expected,
-            closet.outfits()
+            closet.outfits(&[], &[]).unwrap()
         );
     }
 
@@ -193,7 +193,7 @@ mod no_rules_tests {
         ];
         assert_eq!(
             expected,
-            closet.outfits()
+            closet.outfits(&[], &[]).unwrap()
         );
     }
 }
@@ -232,7 +232,7 @@ mod exclusion_rules_tests {
         ];
         assert_eq!(
             expected,
-            closet.outfits()
+            closet.outfits(&[], &[]).unwrap()
         );
     }
 
@@ -264,7 +264,7 @@ mod exclusion_rules_tests {
         ];
         assert_eq!(
             expected,
-            closet.outfits()
+            closet.outfits(&[], &[]).unwrap()
         );
     }
 
@@ -293,7 +293,7 @@ mod exclusion_rules_tests {
         let expected = btreeset![];
         assert_eq!(
             expected,
-            closet.outfits()
+            closet.outfits(&[], &[]).unwrap()
         );
     }
 
@@ -324,7 +324,7 @@ mod exclusion_rules_tests {
         ];
         assert_eq!(
             expected,
-            closet.outfits()
+            closet.outfits(&[], &[]).unwrap()
         );
     }
 }
@@ -363,7 +363,7 @@ mod inclusion_rules_tests {
         ];
         assert_eq!(
             expected,
-            closet.outfits()
+            closet.outfits(&[], &[]).unwrap()
         );
     }
 
@@ -395,7 +395,7 @@ mod inclusion_rules_tests {
         ];
         assert_eq!(
             expected,
-            closet.outfits()
+            closet.outfits(&[], &[]).unwrap()
         );
     }
 
@@ -426,7 +426,7 @@ mod inclusion_rules_tests {
         ];
         assert_eq!(
             expected,
-            closet.outfits()
+            closet.outfits(&[], &[]).unwrap()
         );
     }
 }
