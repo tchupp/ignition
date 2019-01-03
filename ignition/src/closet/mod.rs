@@ -30,6 +30,12 @@ impl Closet {
         self.tree.combinations_with(selections, exclusions)
     }
 
+    pub fn select(&self, selections: &[Item]) -> Closet {
+        let tree = self.tree.restrict(&selections[..], &[]);
+
+        Closet::new(tree, self.item_index.clone())
+    }
+
     pub fn options(&self, selections: &[Item], exclusions: &[Item]) -> Result<BTreeMap<Family, Vec<ItemStatus<Item>>>, ClosetError> {
         self.find_unknown_items(&[selections, exclusions])?;
 
@@ -59,7 +65,7 @@ impl Closet {
 }
 
 #[cfg(test)]
-mod tests {
+mod options_tests {
     use closet::ClosetError;
     use closet_builder::ClosetBuilder;
     use core::Family;
@@ -262,6 +268,77 @@ mod tests {
         assert_eq!(
             ClosetError::UnknownItems(vec![black.clone()]),
             options
+        );
+    }
+}
+
+#[cfg(test)]
+mod select_tests {
+    use closet::ClosetError;
+    use closet_builder::ClosetBuilder;
+    use core::Family;
+    use core::Item;
+    use weave::core::ItemStatus;
+
+    #[test]
+    fn selecting_red_is_the_same_as_filtering_options() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &blue)
+            .add_item(&pants, &slacks)
+            .add_item(&pants, &jeans)
+            .add_exclusion_rule(&red, &jeans);
+
+        let closet = closet_builder.build()
+            .expect("expected build to return Closet");
+
+        let outfits_pre = closet.outfits_with(&[red.clone()], &[]);
+
+        let closet = closet.select(&[red.clone()]);
+        let outfits = closet.outfits_with(&[], &[]);
+        assert_eq!(
+            outfits_pre,
+            outfits
+        );
+    }
+
+    #[test]
+    fn selecting_multiple_is_the_same_as_filtering_options() {
+        let blue = Item::new("shirts:blue");
+        let red = Item::new("shirts:red");
+
+        let jeans = Item::new("pants:jeans");
+        let slacks = Item::new("pants:slacks");
+
+        let shirts = Family::new("shirts");
+        let pants = Family::new("pants");
+
+        let closet_builder = ClosetBuilder::new()
+            .add_item(&shirts, &red)
+            .add_item(&shirts, &blue)
+            .add_item(&pants, &slacks)
+            .add_item(&pants, &jeans)
+            .add_exclusion_rule(&red, &jeans);
+
+        let closet = closet_builder.build()
+            .expect("expected build to return Closet");
+
+        let outfits_pre = closet.outfits_with(&[red.clone(), slacks.clone()], &[]);
+
+        let closet = closet.select(&[red.clone(), slacks.clone()]);
+        let outfits = closet.outfits_with(&[], &[]);
+        assert_eq!(
+            outfits_pre,
+            outfits
         );
     }
 }
