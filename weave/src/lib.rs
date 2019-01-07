@@ -12,6 +12,5 @@ extern crate serde_derive;
 pub use zdd::*;
 
 pub mod core;
-pub mod bdd;
 mod zdd;
 
