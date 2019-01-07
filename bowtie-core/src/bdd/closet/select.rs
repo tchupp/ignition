@@ -1,9 +1,10 @@
+use itertools::Itertools;
+
 use bdd::closet::Closet;
 use bdd::node::Node;
 use core::Item;
 use core::ItemStatus;
 use core::SelectItemError;
-use itertools::Itertools;
 
 impl Closet {
     pub fn select_item(&self, item: &Item) -> Result<Closet, SelectItemError> {
@@ -20,7 +21,8 @@ impl Closet {
             .chain(vec![ItemStatus::Selected(item.clone())])
             .chain(summary)
             .unique()
-            .sorted();
+            .sorted()
+            .collect_vec();
 
         Ok(Closet { item_index, summary, root })
     }

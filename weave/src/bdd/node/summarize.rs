@@ -1,9 +1,11 @@
+use std::collections::BinaryHeap;
+use std::collections::HashMap;
+
+use itertools::Itertools;
+
 use bdd::node::Node;
 use core::Item;
 use core::ItemStatus;
-use itertools::Itertools;
-use std::collections::BinaryHeap;
-use std::collections::HashMap;
 
 impl Node {
     pub fn summarize(node: &Node) -> Vec<ItemStatus<Item>> {
@@ -32,6 +34,7 @@ impl Node {
             .filter_map(|s| s.peek())
             .cloned()
             .sorted()
+            .collect_vec()
     }
 }
 

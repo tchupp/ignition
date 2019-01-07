@@ -79,6 +79,7 @@ fn chain(v1: &[Item], v2: &[Item]) -> Vec<Item> {
         .cloned()
         .unique()
         .sorted()
+        .collect_vec()
 }
 
 #[cfg(test)]

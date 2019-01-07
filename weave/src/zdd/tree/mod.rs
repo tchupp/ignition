@@ -58,7 +58,6 @@ impl<T: Clone + Ord + Hash> Tree<T> {
             .chain(combinations.into_iter()
                 .flat_map(|f| f)
                 .sorted()
-                .into_iter()
                 .group_by(|item| item.clone())
                 .into_iter()
                 .map(|(item, copies)| (item, copies.count())))
@@ -75,6 +74,7 @@ impl<T: Clone + Ord + Hash> Tree<T> {
                     ItemStatus::Available(item)
                 })
             .sorted()
+            .collect_vec()
     }
 
     pub fn combinations_recursive(&self) -> BTreeSet<BTreeSet<T>> {

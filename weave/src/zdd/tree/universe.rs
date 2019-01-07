@@ -50,7 +50,6 @@ impl<T: Clone + Ord + Hash> Universe<T> {
             .filter_map(|item| self.item_index.get(&item))
             .cloned()
             .sorted()
-            .into_iter()
             .rev()
             .fold(Node::TRUE, |next, id| NodeId::from(Node::required_branch(id, next)));
 
