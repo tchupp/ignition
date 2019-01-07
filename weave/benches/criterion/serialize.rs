@@ -75,4 +75,20 @@ pub fn bench_deserialize(c: &mut Criterion) {
         let tree_string = serde_json::to_string(&tree).expect("expected to serialize pre-test, but was");
         c.bench_functions("Deserialize_20", functions, tree_string);
     }
+    {
+        let bincode_deserialize = Fun::new("Bincode", |b, tree: &Vec<u8>| b.iter(|| bincode_deserialize(tree.as_slice())));
+        let functions = vec!(bincode_deserialize);
+
+        let tree = tree_building::setup_tree_computer_parts();
+        let tree_string = bincode::serialize(&tree).expect("expected to serialize pre-test, but was");
+        c.bench_functions("Deserialize_Computer_Parts", functions, tree_string);
+    }
+    {
+        let json_deserialize = Fun::new("Json", |b, tree: &String| b.iter(|| json_deserialize(tree.as_bytes())));
+        let functions = vec!(json_deserialize);
+
+        let tree = tree_building::setup_tree_computer_parts();
+        let tree_string = serde_json::to_string(&tree).expect("expected to serialize pre-test, but was");
+        c.bench_functions("Deserialize_Computer_Parts", functions, tree_string);
+    }
 }
