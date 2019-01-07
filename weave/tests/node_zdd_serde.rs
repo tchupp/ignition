@@ -5,13 +5,12 @@ extern crate weave;
 mod tests {
     use serde_test::{assert_tokens, Token};
 
-    use weave::core::Item;
     use weave::Universe;
 
     #[test]
     fn tokenize_small_node() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
 
@@ -29,20 +28,16 @@ mod tests {
             Token::Str("items"),
 
             Token::Seq { len: Some(2) },
-            Token::NewtypeStruct { name: "Item" },
-            Token::Str("1"),
-            Token::NewtypeStruct { name: "Item" },
-            Token::Str("2"),
+            Token::BorrowedStr("1"),
+            Token::BorrowedStr("2"),
             Token::SeqEnd,
 
             Token::Str("item_index"),
 
             Token::Map { len: Some(2) },
-            Token::NewtypeStruct { name: "Item" },
-            Token::Str("1"),
+            Token::BorrowedStr("1"),
             Token::U64(0),
-            Token::NewtypeStruct { name: "Item" },
-            Token::Str("2"),
+            Token::BorrowedStr("2"),
             Token::U64(1),
             Token::MapEnd,
 

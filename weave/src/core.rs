@@ -1,20 +1,5 @@
 use std::hash::Hash;
 
-impl From<Item> for String {
-    fn from(item: Item) -> Self {
-        item.0
-    }
-}
-
-#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
-pub struct Item(String);
-
-impl Item {
-    pub fn new<S>(id: S) -> Item where S: Into<String> {
-        Item(id.into())
-    }
-}
-
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(tag = "type", content = "item")]
 pub enum ItemStatus<T> {

@@ -143,13 +143,11 @@ impl<T: Clone + Ord + Hash> Tree<T> {
 
 #[cfg(test)]
 mod tests {
-    use core::Item;
-
     use super::Universe;
 
     #[test]
     fn universe_can_create_empty_tree() {
-        let universe: Universe<Item> = Universe::default();
+        let universe: Universe<&str> = Universe::default();
         let empty_tree = universe.empty_tree();
 
         assert_eq!(
@@ -160,7 +158,7 @@ mod tests {
 
     #[test]
     fn universe_can_create_unit_tree() {
-        let universe: Universe<Item> = Universe::default();
+        let universe: Universe<&str> = Universe::default();
         let unit_tree = universe.unit_tree();
 
         assert_eq!(
@@ -171,7 +169,7 @@ mod tests {
 
     #[test]
     fn universe_can_create_tree_that_represents_a_set_of_none() {
-        let universe: Universe<Item> = Universe::default();
+        let universe: Universe<&str> = Universe::default();
         let tree = universe.tree(&[]);
 
         assert_eq!(
@@ -186,7 +184,7 @@ mod tests {
 
     #[test]
     fn universe_can_create_tree_that_represents_a_set_of_one() {
-        let item = Item::new("1");
+        let item = "1";
 
         let universe = Universe::from(vec![item.clone()]);
 
@@ -198,8 +196,8 @@ mod tests {
 
     #[test]
     fn universe_can_create_tree_that_represents_a_set_of_multiple() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
         let tree = universe.tree(&[item1.clone(), item2.clone()]);
@@ -212,10 +210,10 @@ mod tests {
 
     #[test]
     fn universe_can_create_tree_that_represents_an_empty_set_unknown_items_are_ignored() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
-        let universe: Universe<Item> = Universe::default();
+        let universe: Universe<&str> = Universe::default();
         let tree = universe.tree(&[item1, item2]);
 
         assert_eq!(
@@ -230,8 +228,8 @@ mod tests {
 
     #[test]
     fn universe_can_create_tree_that_represents_a_set_unknown_items_are_ignored() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone()]);
         let tree = universe.tree(&[item1.clone(), item2.clone()]);

@@ -39,15 +39,13 @@ fn from_node<T: Clone + Ord + Hash>(universe: &Universe<T>, node_id: NodeId) -> 
 
 #[cfg(test)]
 mod tests {
-    use core::Item;
-
     use super::TreeNode;
     use super::Universe;
 
     #[test]
     fn test() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
         let tree = universe.tree(&[item1.clone(), item2.clone()]);

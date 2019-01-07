@@ -4,23 +4,22 @@ use criterion::Fun;
 use serde_json;
 
 use tree_building;
-use weave::core::Item;
 use weave::Tree;
 
-fn bincode_serialize(tree: &Tree<Item>) {
+fn bincode_serialize(tree: &Tree<&str>) {
     bincode::serialize(tree).expect("expected Ok, but was");
 }
 
 fn bincode_deserialize(tree: &[u8]) {
-    let _: Tree<Item> = bincode::deserialize(tree).expect("expected Ok, but was");
+    let _: Tree<&str> = bincode::deserialize(tree).expect("expected Ok, but was");
 }
 
-fn json_serialize(tree: &Tree<Item>) {
+fn json_serialize(tree: &Tree<&str>) {
     serde_json::to_string(tree).expect("expected Ok, but was");
 }
 
 fn json_deserialize(tree: &[u8]) {
-    let _: Tree<Item> = serde_json::from_slice(tree).expect("expected Ok, but was");
+    let _: Tree<&str> = serde_json::from_slice(tree).expect("expected Ok, but was");
 }
 
 pub fn bench_serialize(c: &mut Criterion) {

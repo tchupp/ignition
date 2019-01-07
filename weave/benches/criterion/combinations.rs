@@ -2,14 +2,13 @@ use criterion::Criterion;
 use criterion::Fun;
 
 use tree_building;
-use weave::core::Item;
 use weave::Tree;
 
-fn combinations_recursive(tree: &Tree<Item>) {
+fn combinations_recursive(tree: &Tree<&str>) {
     tree.combinations_recursive();
 }
 
-fn combinations_iterative(tree: &Tree<Item>) {
+fn combinations_iterative(tree: &Tree<&str>) {
     tree.combinations();
 }
 

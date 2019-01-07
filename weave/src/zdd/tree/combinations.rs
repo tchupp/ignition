@@ -57,13 +57,12 @@ pub fn combinations_iter(root: NodeId) -> Vec<Vec<Priority>> {
 
 #[cfg(test)]
 mod tests {
-    use core::Item;
     use zdd::Universe;
 
     #[test]
     fn hyper_tree_with_two_sets_with_no_overlap() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
 
@@ -94,8 +93,8 @@ mod tests {
 
     #[test]
     fn unique_tree_with_two_sets_with_no_overlap() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
 
@@ -127,9 +126,9 @@ mod tests {
 
     #[test]
     fn tree_with_two_sets_with_one_overlap() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
-        let item3 = Item::new("3");
+        let item1 = "1";
+        let item2 = "2";
+        let item3 = "3";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone(), item3.clone()]);
 

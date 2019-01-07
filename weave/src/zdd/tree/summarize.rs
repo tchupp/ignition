@@ -40,14 +40,13 @@ pub fn summarize(root: Node) -> HashSet<ItemStatus<Priority>> {
 
 #[cfg(test)]
 mod summarize_tests {
-    use core::Item;
     use core::ItemStatus;
     use zdd::Universe;
 
     #[test]
     fn summarize_returns_all_excluded_for_empty_tree() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
 
@@ -63,8 +62,8 @@ mod summarize_tests {
 
     #[test]
     fn summarize_returns_available_item_status_if_item_is_in_all_combinations() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
 
@@ -83,10 +82,10 @@ mod summarize_tests {
 
     #[test]
     fn summarize_returns_available_item_status_if_item_is_in_some_combinations() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
-        let item3 = Item::new("3");
-        let item4 = Item::new("4");
+        let item1 = "1";
+        let item2 = "2";
+        let item3 = "3";
+        let item4 = "4";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone(), item3.clone(), item4.clone()]);
 
@@ -110,10 +109,10 @@ mod summarize_tests {
 
     #[test]
     fn summarize_returns_selected_item_status_if_item_is_selected() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
-        let item3 = Item::new("3");
-        let item4 = Item::new("4");
+        let item1 = "1";
+        let item2 = "2";
+        let item3 = "3";
+        let item4 = "4";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone(), item3.clone(), item4.clone()]);
 

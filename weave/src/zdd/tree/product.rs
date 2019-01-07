@@ -41,14 +41,13 @@ pub fn product(node1: Node, node2: Node) -> Node {
 
 #[cfg(test)]
 mod tests {
-    use core::Item;
     use zdd::tree::Tree;
     use zdd::tree::Universe;
 
     #[test]
     fn product_returns_tree_that_has_correct_combination() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
         let tree1 = universe.tree(&[item1.clone()]);
@@ -75,10 +74,10 @@ mod tests {
 
     #[test]
     fn product_returns_tree_that_has_correct_combinations_one() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
-        let item3 = Item::new("3");
-        let item4 = Item::new("4");
+        let item1 = "1";
+        let item2 = "2";
+        let item3 = "3";
+        let item4 = "4";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone(), item3.clone(), item4.clone()]);
         let tree1 = universe.unique_tree(&[item1.clone(), item2.clone(), item3.clone()]);
@@ -115,10 +114,10 @@ mod tests {
 
     #[test]
     fn product_returns_tree_that_has_correct_combinations_many() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
-        let item3 = Item::new("3");
-        let item4 = Item::new("4");
+        let item1 = "1";
+        let item2 = "2";
+        let item3 = "3";
+        let item4 = "4";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone(), item3.clone(), item4.clone()]);
         let tree1 = universe.unique_tree(&[item1.clone(), item2.clone()]);

@@ -53,14 +53,13 @@ pub fn union(node1: Node, node2: Node) -> Node {
 
 #[cfg(test)]
 mod tests {
-    use core::Item;
     use zdd::tree::Tree;
     use zdd::tree::Universe;
 
     #[test]
     fn union_returns_tree_that_has_both_combinations() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
         let tree1 = universe.tree(&[item1.clone()]);
@@ -87,8 +86,8 @@ mod tests {
 
     #[test]
     fn union_returns_identity_when_trees_are_equal() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
         let tree1 = universe.tree(&[item1.clone()]);
@@ -115,8 +114,8 @@ mod tests {
 
     #[test]
     fn union_returns_identity_when_one_tree_is_empty() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
         let tree1 = universe.empty_tree();
@@ -143,8 +142,8 @@ mod tests {
 
     #[test]
     fn union_returns_correct_when_one_tree_is_unit() {
-        let item1 = Item::new("1");
-        let item2 = Item::new("2");
+        let item1 = "1";
+        let item2 = "2";
 
         let universe = Universe::from(vec![item1.clone(), item2.clone()]);
         let tree1 = universe.unit_tree();
@@ -171,7 +170,7 @@ mod tests {
 
     #[test]
     fn union_returns_unit_when_both_trees_are_unit() {
-        let universe: Universe<Item> = Universe::default();
+        let universe: Universe<&str> = Universe::default();
         let tree1 = universe.unit_tree();
         let tree2 = universe.unit_tree();
 
@@ -190,7 +189,7 @@ mod tests {
 
     #[test]
     fn union_returns_empty_when_both_trees_are_empty() {
-        let universe: Universe<Item> = Universe::default();
+        let universe: Universe<&str> = Universe::default();
         let tree1 = universe.empty_tree();
         let tree2 = universe.empty_tree();
 
