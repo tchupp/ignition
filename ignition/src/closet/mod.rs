@@ -5,7 +5,7 @@ use itertools::Itertools;
 
 use core::Family;
 use core::Item;
-use weave::core::ItemStatus;
+use weave::ItemStatus;
 use weave::Tree;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -88,7 +88,7 @@ mod options_tests {
     use closet_builder::ClosetBuilder;
     use core::Family;
     use core::Item;
-    use weave::core::ItemStatus;
+    use weave::ItemStatus;
 
     #[test]
     fn options_with_empty_selections_has_all_options_available() {

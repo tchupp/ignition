@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use core::ItemStatus;
+use status::ItemStatus;
 use zdd::node::Node;
 use zdd::node::Priority;
 
@@ -40,7 +40,7 @@ pub fn summarize(root: Node) -> HashSet<ItemStatus<Priority>> {
 
 #[cfg(test)]
 mod summarize_tests {
-    use core::ItemStatus;
+    use status::ItemStatus;
     use zdd::Universe;
 
     #[test]

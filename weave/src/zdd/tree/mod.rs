@@ -5,7 +5,7 @@ use std::hash::Hash;
 
 use itertools::Itertools;
 
-use core::ItemStatus;
+use status::ItemStatus;
 use zdd::node::Node;
 use zdd::node::NodeId;
 
@@ -17,6 +17,7 @@ mod intersect;
 mod product;
 #[cfg(test)]
 mod restrict;
+#[cfg(test)]
 mod summarize;
 mod traversable;
 mod union;

@@ -9,8 +9,8 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 
+pub use status::*;
 pub use zdd::*;
 
-pub mod core;
+mod status;
 mod zdd;
-
