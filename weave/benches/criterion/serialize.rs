@@ -40,6 +40,14 @@ pub fn bench_serialize(c: &mut Criterion) {
         let tree = tree_building::setup_tree_20();
         c.bench_functions("Serialize_20", functions, tree);
     }
+    {
+        let bincode_serialize = Fun::new("Bincode", |b, tree| b.iter(|| bincode_serialize(tree)));
+        let json_serialize = Fun::new("Json", |b, tree| b.iter(|| json_serialize(tree)));
+        let functions = vec!(bincode_serialize, json_serialize);
+
+        let tree = tree_building::setup_tree_computer_parts();
+        c.bench_functions("Serialize_Computer_Parts", functions, tree);
+    }
 }
 
 pub fn bench_deserialize(c: &mut Criterion) {
