@@ -1,6 +1,7 @@
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet};
 use std::hash::Hash;
 
+use hashbrown::HashMap;
 use itertools::Itertools;
 use serde::{Serialize, Serializer};
 

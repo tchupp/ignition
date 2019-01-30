@@ -1,7 +1,8 @@
+use hashbrown::hash_map::Entry::*;
+use hashbrown::HashMap;
+
 use zdd::node::Node;
 use zdd::node::NodeId;
-use std::collections::hash_map::Entry::*;
-use std::collections::HashMap;
 
 #[derive(Clone, Eq, PartialEq, Debug)]
 pub struct NodeArena {

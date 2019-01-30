@@ -1,8 +1,8 @@
 use std::collections::BTreeSet;
-use std::collections::HashMap;
 use std::fmt;
 use std::hash::Hash;
 
+use hashbrown::HashMap;
 use itertools::Itertools;
 
 use status::ItemStatus;
