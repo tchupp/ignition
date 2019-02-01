@@ -14,9 +14,11 @@ serde_derive = "1.0"
 maplit = "1.0"
 nom = "^4"
 
+rayon = "1"
+
 [dependencies.hashbrown]
 version = "0.1"
-features = ["serde"]
+features = ["serde", "rayon"]
 
 [dev-dependencies]
 criterion = "0.2"

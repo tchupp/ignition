@@ -3,6 +3,9 @@ use std::hash::Hash;
 
 use hashbrown::HashSet;
 
+mod intersect;
+mod union;
+
 /// Tree is an immutable set of elements
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Tree<T: Hash + Eq + Clone + Ord> {
@@ -47,7 +50,7 @@ impl<T: Hash + Eq + Clone + Ord> Into<BTreeSet<T>> for Tree<T> {
     }
 }
 
-impl<T: Hash + Eq + Clone + Ord> Tree<T> {
+impl<T: Hash + Eq + Clone + Ord + Sync + Send> Tree<T> {
     pub fn empty() -> Self {
         Tree::Empty
     }
@@ -57,13 +60,19 @@ impl<T: Hash + Eq + Clone + Ord> Tree<T> {
     }
 
     pub fn many(elements: &[T]) -> Self {
-        let mut set = HashSet::with_capacity(elements.len());
-        elements
-            .into_iter()
-            .cloned()
-            .for_each(|e| { set.insert(e); });
+        match elements.len() {
+            0 => Tree::Empty,
+            1 => Tree::One(elements[0].clone()),
+            _ => {
+                let mut set = HashSet::with_capacity(elements.len());
+                elements
+                    .into_iter()
+                    .cloned()
+                    .for_each(|e| { set.insert(e); });
 
-        Tree::Many(set)
+                Tree::Many(set)
+            }
+        }
     }
 
     pub fn len(&self) -> usize {
@@ -79,6 +88,10 @@ impl<T: Hash + Eq + Clone + Ord> Tree<T> {
             Tree::Empty => true,
             _ => false
         }
+    }
+
+    pub fn intersect(self, other: Self) -> Self {
+        intersect::intersect(self, other)
     }
 }
 
@@ -106,6 +119,22 @@ mod eq_tree_tests {
     fn many_element() {
         let tree1 = Tree::many(&["1", "2"]);
         let tree2 = Tree::many(&["1", "2"]);
+
+        assert_eq!(tree1, tree2);
+    }
+
+    #[test]
+    fn many_element_with_none() {
+        let tree1 = Tree::<&str>::many(&[]);
+        let tree2 = Tree::<&str>::default();
+
+        assert_eq!(tree1, tree2);
+    }
+
+    #[test]
+    fn many_element_with_one() {
+        let tree1 = Tree::many(&["1"]);
+        let tree2 = Tree::one("1");
 
         assert_eq!(tree1, tree2);
     }

@@ -6,6 +6,7 @@ extern crate lazy_static;
 extern crate maplit;
 #[macro_use]
 extern crate nom;
+extern crate rayon;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
