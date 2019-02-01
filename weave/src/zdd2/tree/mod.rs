@@ -93,6 +93,10 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Tree<T> {
     pub fn intersect(self, other: Self) -> Self {
         intersect::intersect(self, other)
     }
+
+    pub fn union(self, other: Self) -> Self {
+        union::union(self, other)
+    }
 }
 
 #[cfg(test)]
