@@ -14,9 +14,9 @@ pub enum Tree<T: Hash + Eq + Clone + Ord> {
     Many(HashSet<T>),
 }
 
-impl<T: Hash + Eq + Clone + Ord> Default for Tree<T> {
+impl<T: Hash + Eq + Clone + Ord + Sync + Send> Default for Tree<T> {
     fn default() -> Self {
-        Tree::Empty
+        Tree::empty()
     }
 }
 
@@ -66,7 +66,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Tree<T> {
             _ => {
                 let mut set = HashSet::with_capacity(elements.len());
                 elements
-                    .into_iter()
+                    .iter()
                     .cloned()
                     .for_each(|e| { set.insert(e); });
 

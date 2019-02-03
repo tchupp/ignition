@@ -10,8 +10,8 @@ pub fn intersect<T: Hash + Clone + Ord + Sync + Send>(tree1: Tree<T>, tree2: Tre
     }
 
     match (&tree1, &tree2) {
-        (_, Tree::Empty) => Tree::Empty,
-        (Tree::Empty, _) => Tree::Empty,
+        (_, Tree::Empty) => Tree::empty(),
+        (Tree::Empty, _) => Tree::empty(),
 
         (Tree::Many(set), Tree::One(element)) if set.contains(element) =>
             tree2.clone(),
@@ -33,7 +33,56 @@ pub fn intersect<T: Hash + Clone + Ord + Sync + Send>(tree1: Tree<T>, tree2: Tre
 }
 
 #[cfg(test)]
-mod empty_tree_tests {
+mod subset_tests {
+    use zdd2::Tree;
+
+    #[test]
+    fn intersect_returns_left_when_left_is_subset_one() {
+        let tree1 = Tree::one("1");
+        let tree2 = Tree::many(&["1", "2"]);
+
+        assert_eq!(
+            Tree::one("1"),
+            Tree::intersect(tree1, tree2)
+        );
+    }
+
+    #[test]
+    fn intersect_returns_right_when_right_is_subset_one() {
+        let tree1 = Tree::many(&["1", "2"]);
+        let tree2 = Tree::one("2");
+
+        assert_eq!(
+            Tree::one("2"),
+            Tree::intersect(tree1, tree2)
+        );
+    }
+
+    #[test]
+    fn intersect_returns_left_when_left_is_subset_many() {
+        let tree1 = Tree::many(&["1", "2"]);
+        let tree2 = Tree::many(&["1", "2", "3"]);
+
+        assert_eq!(
+            Tree::many(&["1", "2"]),
+            Tree::intersect(tree1, tree2)
+        );
+    }
+
+    #[test]
+    fn intersect_returns_right_when_right_is_subset_many() {
+        let tree1 = Tree::many(&["1", "2", "3"]);
+        let tree2 = Tree::many(&["1", "2"]);
+
+        assert_eq!(
+            Tree::many(&["1", "2"]),
+            Tree::intersect(tree1, tree2)
+        );
+    }
+}
+
+#[cfg(test)]
+mod tests {
     use zdd2::Tree;
 
     #[test]
@@ -68,63 +117,9 @@ mod empty_tree_tests {
             Tree::intersect(tree1, tree2)
         );
     }
-}
-
-#[cfg(test)]
-mod subset_tests {
-    use zdd2::Tree;
 
     #[test]
-    fn intersect_returns_left_when_left_is_one_subset() {
-        let tree1 = Tree::one("1");
-        let tree2 = Tree::many(&["1", "2"]);
-
-        assert_eq!(
-            Tree::one("1"),
-            Tree::intersect(tree1, tree2)
-        );
-    }
-
-    #[test]
-    fn intersect_returns_right_when_right_is_one_subset() {
-        let tree1 = Tree::many(&["1", "2"]);
-        let tree2 = Tree::one("2");
-
-        assert_eq!(
-            Tree::one("2"),
-            Tree::intersect(tree1, tree2)
-        );
-    }
-
-    #[test]
-    fn intersect_returns_left_when_left_is_many_subset() {
-        let tree1 = Tree::many(&["1", "2"]);
-        let tree2 = Tree::many(&["1", "2", "3"]);
-
-        assert_eq!(
-            Tree::many(&["1", "2"]),
-            Tree::intersect(tree1, tree2)
-        );
-    }
-
-    #[test]
-    fn intersect_returns_right_when_right_is_many_subset() {
-        let tree1 = Tree::many(&["1", "2", "3"]);
-        let tree2 = Tree::many(&["1", "2"]);
-
-        assert_eq!(
-            Tree::many(&["1", "2"]),
-            Tree::intersect(tree1, tree2)
-        );
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use zdd2::Tree;
-
-    #[test]
-    fn intersect_returns_identity_when_trees_are_equal() {
+    fn intersect_returns_identity_when_both_trees_are_empty() {
         let tree1 = Tree::<&str>::empty();
         let tree2 = Tree::<&str>::empty();
 
@@ -136,22 +131,22 @@ mod tests {
 
     #[test]
     fn intersect_returns_identity_when_trees_are_equal_one() {
-        let tree1 = Tree::many(&["1", "2"]);
-        let tree2 = Tree::many(&["1", "2"]);
+        let tree1 = Tree::one("1");
+        let tree2 = Tree::one("1");
 
         assert_eq!(
-            Tree::many(&["1", "2"]),
+            Tree::one("1"),
             Tree::intersect(tree1, tree2)
         );
     }
 
     #[test]
     fn intersect_returns_identity_when_trees_are_equal_many() {
-        let tree1 = Tree::one("1");
-        let tree2 = Tree::one("1");
+        let tree1 = Tree::many(&["1", "2"]);
+        let tree2 = Tree::many(&["1", "2"]);
 
         assert_eq!(
-            Tree::one("1"),
+            Tree::many(&["1", "2"]),
             Tree::intersect(tree1, tree2)
         );
     }

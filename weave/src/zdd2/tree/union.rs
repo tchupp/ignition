@@ -16,49 +16,16 @@ pub fn union<T: Hash + Clone + Ord + Sync + Send>(tree1: Tree<T>, tree2: Tree<T>
         (Tree::One(element1), Tree::One(element2)) =>
             Tree::many(&[element1.clone(), element2.clone()]),
 
-        (Tree::Many(set), Tree::One(element)) if set.contains(element) =>
-            tree1.clone(),
+        (Tree::Many(set), Tree::One(element)) if set.contains(element) => tree1.clone(),
+        (Tree::One(element), Tree::Many(set)) if set.contains(element) => tree2.clone(),
 
-        (Tree::One(element), Tree::Many(set)) if set.contains(element) =>
-            tree2.clone(),
-
-        (Tree::Many(set1), Tree::Many(set2)) if set1.par_is_subset(set2) =>
-            tree2.clone(),
-
-        (Tree::Many(set1), Tree::Many(set2)) if set1.par_is_superset(set2) =>
-            tree1.clone(),
+        (Tree::Many(set1), Tree::Many(set2)) if set1.par_is_subset(set2) => tree2.clone(),
+        (Tree::Many(set1), Tree::Many(set2)) if set1.par_is_superset(set2) => tree1.clone(),
 
         (Tree::Many(set1), Tree::Many(set2)) =>
             Tree::many(&set1.par_union(set2).cloned().collect::<Vec<_>>()),
 
         (_, _) => Tree::Empty,
-    }
-}
-
-#[cfg(test)]
-mod empty_tree_tests {
-    use zdd2::Tree;
-
-    #[test]
-    fn left_side_empty() {
-        let tree1 = Tree::<&str>::empty();
-        let tree2 = Tree::one("1");
-
-        assert_eq!(
-            Tree::one("1"),
-            Tree::union(tree1, tree2)
-        );
-    }
-
-    #[test]
-    fn right_side_empty() {
-        let tree1 = Tree::one("1");
-        let tree2 = Tree::<&str>::empty();
-
-        assert_eq!(
-            Tree::one("1"),
-            Tree::union(tree1, tree2)
-        );
     }
 }
 
@@ -116,6 +83,28 @@ mod tests {
     use zdd2::Tree;
 
     #[test]
+    fn left_side_empty() {
+        let tree1 = Tree::<&str>::empty();
+        let tree2 = Tree::one("1");
+
+        assert_eq!(
+            Tree::one("1"),
+            Tree::union(tree1, tree2)
+        );
+    }
+
+    #[test]
+    fn right_side_empty() {
+        let tree1 = Tree::one("1");
+        let tree2 = Tree::<&str>::empty();
+
+        assert_eq!(
+            Tree::one("1"),
+            Tree::union(tree1, tree2)
+        );
+    }
+
+    #[test]
     fn returns_all_when_trees_are_disjoint() {
         let tree1 = Tree::one("1");
         let tree2 = Tree::one("2");
@@ -139,22 +128,22 @@ mod tests {
 
     #[test]
     fn union_returns_identity_when_trees_are_equal_one() {
-        let tree1 = Tree::many(&["1", "2"]);
-        let tree2 = Tree::many(&["1", "2"]);
+        let tree1 = Tree::one("1");
+        let tree2 = Tree::one("1");
 
         assert_eq!(
-            Tree::many(&["1", "2"]),
+            Tree::one("1"),
             Tree::union(tree1, tree2)
         );
     }
 
     #[test]
     fn union_returns_identity_when_trees_are_equal_many() {
-        let tree1 = Tree::one("1");
-        let tree2 = Tree::one("1");
+        let tree1 = Tree::many(&["1", "2"]);
+        let tree2 = Tree::many(&["1", "2"]);
 
         assert_eq!(
-            Tree::one("1"),
+            Tree::many(&["1", "2"]),
             Tree::union(tree1, tree2)
         );
     }
