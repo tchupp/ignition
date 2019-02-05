@@ -3,7 +3,10 @@ use std::hash::Hash;
 
 use hashbrown::HashSet;
 
+use zdd2::Forest;
+
 mod intersect;
+mod product;
 mod union;
 
 /// Tree is an immutable set of elements
@@ -92,6 +95,10 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Tree<T> {
 
     pub fn intersect(self, other: Self) -> Self {
         intersect::intersect(self, other)
+    }
+
+    pub fn product(self, other: Self) -> Forest<T> {
+        product::product(self, other)
     }
 
     pub fn union(self, other: Self) -> Self {

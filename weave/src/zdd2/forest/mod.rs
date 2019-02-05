@@ -1,6 +1,8 @@
 use std::hash::Hash;
+use std::iter::FromIterator;
 
 use hashbrown::HashSet;
+use itertools::Itertools;
 
 use zdd2::Tree;
 
@@ -28,13 +30,13 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for Forest<T> 
     }
 }
 
-impl<T: Hash + Eq + Clone + Sync + Send> Forest<T> {
+impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     pub fn empty() -> Self {
         Forest::Empty
     }
 
     pub fn unit(set: &[T]) -> Self {
-        Forest::Unit(set.to_vec())
+        Forest::Unit(Self::unique(set))
     }
 
     pub fn many(matrix: &[Vec<T>]) -> Self {
@@ -44,11 +46,16 @@ impl<T: Hash + Eq + Clone + Sync + Send> Forest<T> {
             _ => {
                 let matrix = matrix.iter()
                     .cloned()
+                    .map(|set| Self::unique(&set))
                     .collect();
 
                 Forest::Many(matrix)
             }
         }
+    }
+
+    fn unique<B: FromIterator<T>>(set: &[T]) -> B {
+        set.iter().cloned().sorted().unique().collect::<B>()
     }
 
     pub fn len(&self) -> usize {

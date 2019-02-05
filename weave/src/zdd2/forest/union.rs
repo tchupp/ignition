@@ -4,7 +4,7 @@ use rayon::iter::ParallelIterator;
 
 use zdd2::Forest;
 
-pub fn union<T: Hash + Eq + Clone + Sync + Send>(forest1: Forest<T>, forest2: Forest<T>) -> Forest<T> {
+pub fn union<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, forest2: Forest<T>) -> Forest<T> {
     if forest1 == forest2 {
         return forest1;
     }
