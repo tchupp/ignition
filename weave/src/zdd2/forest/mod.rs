@@ -9,6 +9,7 @@ use zdd2::Tree;
 mod union;
 mod intersect;
 mod subset;
+mod product;
 
 /// Forest is an immutable set of sets
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -80,6 +81,10 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
 
     pub fn union(self, other: Self) -> Self {
         union::union(self, other)
+    }
+
+    pub fn product(self, other: Tree<T>) -> Self {
+        product::product(self, other)
     }
 
     pub fn subset(self, element: T) -> Self {
