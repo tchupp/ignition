@@ -2,8 +2,8 @@ use std::hash::Hash;
 
 use hashbrown::HashSet;
 
-use zdd2::Forest;
-use zdd2::Tree;
+use matrix::Forest;
+use matrix::Tree;
 
 pub fn product<T: Hash + Eq + Clone + Ord + Sync + Send>(tree1: Tree<T>, tree2: Tree<T>) -> Forest<T> {
     match (tree1, tree2) {
@@ -41,8 +41,8 @@ fn many_to_many<T: Hash + Clone + Ord + Sync + Send>(set1: HashSet<T>, set2: Has
 
 #[cfg(test)]
 mod tests {
-    use zdd2::Forest;
-    use zdd2::Tree;
+    use matrix::Forest;
+    use matrix::Tree;
 
     #[test]
     fn left_side_empty() {

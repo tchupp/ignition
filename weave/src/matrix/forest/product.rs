@@ -2,8 +2,8 @@ use std::hash::Hash;
 
 use hashbrown::HashSet;
 
-use zdd2::Forest;
-use zdd2::Tree;
+use matrix::Forest;
+use matrix::Tree;
 
 pub fn product<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, tree: Tree<T>) -> Forest<T> {
     match (forest, tree) {
@@ -17,8 +17,6 @@ pub fn product<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, tree
         (Forest::Many(matrix), Tree::One(element)) => one_to_matrix(matrix, element),
 
         (Forest::Many(matrix), Tree::Many(set)) => many_to_matrix(matrix, set),
-
-        (_, _) => Forest::empty(),
     }
 }
 
@@ -61,8 +59,8 @@ fn many_to_matrix<T: Hash + Clone + Ord + Sync + Send>(matrix: HashSet<Vec<T>>, 
 
 #[cfg(test)]
 mod tests {
-    use zdd2::Forest;
-    use zdd2::Tree;
+    use matrix::Forest;
+    use matrix::Tree;
 
     #[test]
     fn empty_tree_returns_empty() {

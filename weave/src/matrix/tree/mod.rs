@@ -3,7 +3,7 @@ use std::hash::Hash;
 
 use hashbrown::HashSet;
 
-use zdd2::Forest;
+use matrix::Forest;
 
 mod intersect;
 mod product;

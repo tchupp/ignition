@@ -1,8 +1,6 @@
 use std::hash::Hash;
 
-use hashbrown::HashSet;
-
-use zdd2::Forest;
+use matrix::Forest;
 
 pub fn subset<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, element: T) -> Forest<T> {
     match &forest {
@@ -26,7 +24,7 @@ pub fn subset_many<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, 
 
     match &forest {
         Forest::Unit(set) =>
-            if elements.into_iter().all(|e| set.contains(e)) {
+            if elements.iter().all(|e| set.contains(e)) {
                 forest.clone()
             } else {
                 Forest::empty()
@@ -34,7 +32,7 @@ pub fn subset_many<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, 
         Forest::Many(matrix) => {
             let forest: Vec<Vec<T>> = matrix.into_iter()
                 .cloned()
-                .filter(|set| elements.into_iter().all(|e| set.contains(e)))
+                .filter(|set| elements.iter().all(|e| set.contains(e)))
                 .collect();
 
             Forest::many(&forest)
@@ -45,7 +43,7 @@ pub fn subset_many<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, 
 
 #[cfg(test)]
 mod subset_tests {
-    use zdd2::Forest;
+    use matrix::Forest;
 
     #[test]
     fn subset_of_empty_returns_empty() {
@@ -97,7 +95,7 @@ mod subset_tests {
 
 #[cfg(test)]
 mod subset_many_tests {
-    use zdd2::Forest;
+    use matrix::Forest;
 
     #[test]
     fn subset_many_of_empty_returns_empty() {
