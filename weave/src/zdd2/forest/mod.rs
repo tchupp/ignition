@@ -8,6 +8,7 @@ use zdd2::Tree;
 
 mod union;
 mod intersect;
+mod subset;
 
 /// Forest is an immutable set of sets
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -80,6 +81,14 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     pub fn union(self, other: Self) -> Self {
         union::union(self, other)
     }
+
+    pub fn subset(self, element: T) -> Self {
+        subset::subset(self, element)
+    }
+
+    pub fn subset_many(self, elements: &[T]) -> Self {
+        subset::subset_many(self, elements)
+    }
 }
 
 #[cfg(test)]
@@ -97,7 +106,7 @@ mod eq_forest_tests {
     #[test]
     fn unit_forest() {
         let forest1: Forest<&str> = Forest::unit(&["1", "2"]);
-        let forest2: Forest<&str> = Forest::unit(&["1", "2"]);
+        let forest2: Forest<&str> = Forest::unit(&["2", "1"]);
 
         assert_eq!(forest1, forest2);
     }
@@ -105,7 +114,7 @@ mod eq_forest_tests {
     #[test]
     fn many_forest() {
         let forest1: Forest<&str> = Forest::many(&[vec!["1", "2"]]);
-        let forest2: Forest<&str> = Forest::many(&[vec!["1", "2"]]);
+        let forest2: Forest<&str> = Forest::many(&[vec!["2", "1"]]);
 
         assert_eq!(forest1, forest2);
     }
@@ -165,7 +174,6 @@ mod unit_forest_tests {
     #[test]
     fn unit_forest_has_size_1() {
         let forest: Forest<&str> = Forest::unit(&["1", "2"]);
-        ;
 
         assert_eq!(1, forest.len());
     }
@@ -173,7 +181,6 @@ mod unit_forest_tests {
     #[test]
     fn unit_forest_is_empty() {
         let forest: Forest<&str> = Forest::unit(&["1", "2"]);
-        ;
 
         assert_eq!(false, forest.is_empty());
     }

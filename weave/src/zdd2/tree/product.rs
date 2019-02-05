@@ -67,7 +67,7 @@ mod tests {
     }
 
     #[test]
-    fn returns_empty_when_trees_are_disjoint() {
+    fn returns_unit_when_trees_are_disjoint() {
         let tree1 = Tree::one("1");
         let tree2 = Tree::one("2");
 
