@@ -38,7 +38,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     }
 
     pub fn unit(set: &[T]) -> Self {
-        Forest::Unit(Self::unique(set))
+        Forest::Unit(Self::filter_repeats(set))
     }
 
     pub fn many(matrix: &[Vec<T>]) -> Self {
@@ -48,7 +48,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
             _ => {
                 let matrix = matrix.iter()
                     .cloned()
-                    .map(|set| Self::unique(&set))
+                    .map(|set| Self::filter_repeats(&set))
                     .collect();
 
                 Forest::Many(matrix)
@@ -56,7 +56,16 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
         }
     }
 
-    fn unique<B: FromIterator<T>>(set: &[T]) -> B {
+    pub fn unique(set: &[T]) -> Self {
+        let matrix: Vec<Vec<T>> = set.iter()
+            .cloned()
+            .map(|element| vec![element])
+            .collect();
+
+        Forest::many(&matrix)
+    }
+
+    fn filter_repeats<B: FromIterator<T>>(set: &[T]) -> B {
         set.iter().cloned().sorted().unique().collect::<B>()
     }
 
@@ -83,7 +92,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
         union::union(self, other)
     }
 
-    pub fn product(self, other: Tree<T>) -> Self {
+    pub fn product(self, other: Self) -> Self {
         product::product(self, other)
     }
 
@@ -208,7 +217,7 @@ mod many_forest_tests {
     use matrix::Tree;
 
     #[test]
-    fn many_forest_has_size_1() {
+    fn many_forest_has_size_2() {
         let forest: Forest<&str> = Forest::many(&[
             vec!["1", "2"],
             vec!["2", "3"]
@@ -218,7 +227,7 @@ mod many_forest_tests {
     }
 
     #[test]
-    fn many_forest_is_empty() {
+    fn many_forest_is_not_empty() {
         let forest: Forest<&str> = Forest::many(&[
             vec!["1", "2"],
             vec!["2", "3"]
@@ -241,6 +250,69 @@ mod many_forest_tests {
         assert_eq!(
             expected,
             Into::<Vec<_>>::into(forest.clone())
+        );
+    }
+
+    #[test]
+    fn unique_forest_into() {
+        let forest: Forest<&str> = Forest::unique(&["1", "2"]);
+        let expected: Vec<Tree<&str>> = vec![
+            Tree::many(&["2"]),
+            Tree::many(&["1"]),
+        ];
+
+        assert_eq!(
+            expected,
+            Into::<Vec<_>>::into(forest.clone())
+        );
+    }
+}
+
+#[cfg(test)]
+mod random_tests {
+    use matrix::Forest;
+
+    #[test]
+    fn product_of_three_forests_of_three() {
+        let forest = Forest::unique(&["1-1", "1-2", "1-3"])
+            .product(Forest::unique(&["2-1", "2-2", "2-3"]))
+            .product(Forest::unique(&["3-1", "3-2", "3-3"]));
+
+        assert_eq!(27, forest.len());
+
+        let expected = Forest::many(&[
+            vec!["1-1", "2-1", "3-1"],
+            vec!["1-1", "2-1", "3-2"],
+            vec!["1-1", "2-1", "3-3"],
+            vec!["1-1", "2-2", "3-1"],
+            vec!["1-1", "2-2", "3-2"],
+            vec!["1-1", "2-2", "3-3"],
+            vec!["1-1", "2-3", "3-1"],
+            vec!["1-1", "2-3", "3-2"],
+            vec!["1-1", "2-3", "3-3"],
+            vec!["1-2", "2-1", "3-1"],
+            vec!["1-2", "2-1", "3-2"],
+            vec!["1-2", "2-1", "3-3"],
+            vec!["1-2", "2-2", "3-1"],
+            vec!["1-2", "2-2", "3-2"],
+            vec!["1-2", "2-2", "3-3"],
+            vec!["1-2", "2-3", "3-1"],
+            vec!["1-2", "2-3", "3-2"],
+            vec!["1-2", "2-3", "3-3"],
+            vec!["1-3", "2-1", "3-1"],
+            vec!["1-3", "2-1", "3-2"],
+            vec!["1-3", "2-1", "3-3"],
+            vec!["1-3", "2-2", "3-1"],
+            vec!["1-3", "2-2", "3-2"],
+            vec!["1-3", "2-2", "3-3"],
+            vec!["1-3", "2-3", "3-1"],
+            vec!["1-3", "2-3", "3-2"],
+            vec!["1-3", "2-3", "3-3"],
+    ]);
+
+        assert_eq!(
+            expected,
+            forest
         );
     }
 }
