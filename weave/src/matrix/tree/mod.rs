@@ -1,4 +1,3 @@
-use std::collections::BTreeSet;
 use std::hash::Hash;
 
 use hashbrown::HashSet;
@@ -28,26 +27,6 @@ impl<T: Hash + Eq + Clone + Ord> Into<Vec<T>> for Tree<T> {
         match self {
             Tree::Empty => Vec::new(),
             Tree::One(element) => vec![element],
-            Tree::Many(set) => set.into_iter().collect(),
-        }
-    }
-}
-
-impl<T: Hash + Eq + Clone + Ord> Into<::std::collections::HashSet<T>> for Tree<T> {
-    fn into(self) -> ::std::collections::HashSet<T> {
-        match self {
-            Tree::Empty => ::std::collections::HashSet::new(),
-            Tree::One(element) => hashset![element],
-            Tree::Many(set) => set.into_iter().collect(),
-        }
-    }
-}
-
-impl<T: Hash + Eq + Clone + Ord> Into<BTreeSet<T>> for Tree<T> {
-    fn into(self) -> BTreeSet<T> {
-        match self {
-            Tree::Empty => BTreeSet::new(),
-            Tree::One(element) => btreeset![element],
             Tree::Many(set) => set.into_iter().collect(),
         }
     }
@@ -153,9 +132,6 @@ mod eq_tree_tests {
 
 #[cfg(test)]
 mod empty_tree_tests {
-    use std::collections::BTreeSet;
-    use std::collections::HashSet;
-
     use super::Tree;
 
     #[test]
@@ -184,16 +160,11 @@ mod empty_tree_tests {
         let tree: Tree<&str> = Tree::empty();
 
         assert_eq!(Vec::<&str>::new(), Into::<Vec<_>>::into(tree.clone()));
-        assert_eq!(HashSet::<&str>::new(), Into::<HashSet<_>>::into(tree.clone()));
-        assert_eq!(BTreeSet::<&str>::new(), Into::<BTreeSet<_>>::into(tree.clone()));
     }
 }
 
 #[cfg(test)]
 mod one_element_tree_tests {
-    use std::collections::BTreeSet;
-    use std::collections::HashSet;
-
     use super::Tree;
 
     #[test]
@@ -215,16 +186,11 @@ mod one_element_tree_tests {
         let tree = Tree::one("1");
 
         assert_eq!(vec!["1"], Into::<Vec<_>>::into(tree.clone()));
-        assert_eq!(hashset!["1"], Into::<HashSet<_>>::into(tree.clone()));
-        assert_eq!(btreeset!["1"], Into::<BTreeSet<_>>::into(tree.clone()));
     }
 }
 
 #[cfg(test)]
 mod many_element_tree_tests {
-    use std::collections::BTreeSet;
-    use std::collections::HashSet;
-
     use super::Tree;
 
     #[test]
@@ -246,7 +212,5 @@ mod many_element_tree_tests {
         let tree = Tree::many(&["1", "2"]);
 
         assert_eq!(vec!["1", "2"], Into::<Vec<_>>::into(tree.clone()));
-        assert_eq!(hashset!["1", "2"], Into::<HashSet<_>>::into(tree.clone()));
-        assert_eq!(btreeset!["1", "2"], Into::<BTreeSet<_>>::into(tree.clone()));
     }
 }

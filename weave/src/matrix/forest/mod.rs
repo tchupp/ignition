@@ -49,6 +49,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
                 let matrix = matrix.iter()
                     .cloned()
                     .map(|set| Self::filter_repeats(&set))
+                    .unique()
                     .collect();
 
                 Forest::Many(matrix)
@@ -308,7 +309,7 @@ mod random_tests {
             vec!["1-3", "2-3", "3-1"],
             vec!["1-3", "2-3", "3-2"],
             vec!["1-3", "2-3", "3-3"],
-    ]);
+        ]);
 
         assert_eq!(
             expected,

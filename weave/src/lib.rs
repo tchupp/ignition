@@ -2,6 +2,7 @@ extern crate hashbrown;
 extern crate itertools;
 #[macro_use]
 extern crate lazy_static;
+#[cfg(test)]
 #[macro_use]
 extern crate maplit;
 #[macro_use]
@@ -16,5 +17,5 @@ pub use zdd::*;
 
 mod status;
 mod zdd;
-mod zdd2;
-mod matrix;
+pub mod zdd2;
+pub mod matrix;
