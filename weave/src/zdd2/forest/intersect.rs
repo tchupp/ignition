@@ -1,7 +1,6 @@
 use std::hash::Hash;
 
-use zdd2::Forest;
-use zdd2::Tree;
+use super::Forest;
 
 pub fn intersect<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, forest2: Forest<T>) -> Forest<T> {
     if forest1 == forest2 {
@@ -13,14 +12,14 @@ pub fn intersect<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, f
         (Forest::Empty, _) => Forest::empty(),
 
         (Forest::Many(matrix), Forest::Unit(set)) => {
-            if matrix.trees().contains(&Tree::many(set)) {
+            if matrix.trees().contains(set) {
                 forest2.clone()
             } else {
                 Forest::empty()
             }
         }
         (Forest::Unit(set), Forest::Many(matrix)) => {
-            if matrix.trees().contains(&Tree::many(set)) {
+            if matrix.trees().contains(set) {
                 forest1.clone()
             } else {
                 Forest::empty()

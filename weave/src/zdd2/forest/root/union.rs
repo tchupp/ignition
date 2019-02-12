@@ -93,12 +93,6 @@ mod tests {
         let forest1 = ForestRoot::unit(&["1", "2"]);
         let forest2 = ForestRoot::unit(&["3", "4"]);
 
-        println!("{:?}", ForestRoot::many(&[
-            vec!["1", "2"],
-            vec!["1", "3"],
-            vec!["1", "4"],
-        ]));
-
         assert_eq!(
             ForestRoot::many(&[
                 vec!["1", "2"],

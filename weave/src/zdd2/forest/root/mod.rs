@@ -2,7 +2,6 @@ use std::hash::Hash;
 
 use super::node::Node;
 use super::node::NodeId;
-use super::Tree;
 
 use self::universe::Universe;
 
@@ -47,11 +46,10 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
         ForestRoot { root, universe }
     }
 
-    pub fn trees(&self) -> Vec<Tree<T>> {
-        let trees = trees::trees(self.root);
-        trees.into_iter()
+    pub fn trees(&self) -> Vec<Vec<T>> {
+        trees::trees(self.root)
+            .into_iter()
             .map(|set| self.universe.get_items::<Vec<_>>(&set))
-            .map(|set| Tree::many(&set))
             .collect()
     }
 
@@ -70,7 +68,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
         let other_root = translate_root(&other.universe, &universe, other.root.into());
         let root = union::union(self_root, other_root);
 
-        ForestRoot { root: root.into(), universe }
+        Self::many(&ForestRoot { root: root.into(), universe }.trees())
     }
 
     pub fn intersect(&self, other: &Self) -> Self {
@@ -80,7 +78,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
         let other_root = translate_root(&other.universe, &universe, other.root.into());
         let root = intersect::intersect(self_root, other_root);
 
-        ForestRoot { root: root.into(), universe }
+        Self::many(&ForestRoot { root: root.into(), universe }.trees())
     }
 
     pub fn product(&self, other: &Self) -> Self {
@@ -90,7 +88,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
         let other_root = translate_root(&other.universe, &universe, other.root.into());
         let root = product::product(self_root, other_root);
 
-        ForestRoot { root: root.into(), universe }
+        Self::many(&ForestRoot { root: root.into(), universe }.trees())
     }
 
     pub fn extend(&self, set: &[T]) -> Self {

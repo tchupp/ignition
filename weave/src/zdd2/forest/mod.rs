@@ -28,7 +28,10 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for Forest<T> 
         match self {
             Forest::Empty => Vec::new(),
             Forest::Unit(set) => vec![Tree::many(&set)],
-            Forest::Many(matrix) => matrix.trees(),
+            Forest::Many(matrix) => matrix.trees()
+                .into_iter()
+                .map(|set| Tree::many(&set))
+                .collect(),
         }
     }
 }
@@ -54,7 +57,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
                     .collect::<Vec<_>>();
 
                 Forest::Many(ForestRoot::many(&matrix))
-            },
+            }
         }
     }
 
