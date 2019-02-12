@@ -18,7 +18,7 @@ pub fn union<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, fores
         (Forest::Unit(set), Forest::Many(matrix)) => Forest::Many(matrix.extend(&set)),
 
         (Forest::Many(matrix1), Forest::Many(matrix2)) =>
-            Forest::Many(matrix1.union(matrix2)),
+            Forest::from_root(matrix1.union(&matrix2)),
     }
 }
 

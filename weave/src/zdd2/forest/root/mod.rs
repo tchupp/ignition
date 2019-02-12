@@ -16,7 +16,7 @@ mod product;
 pub struct Priority(pub(crate) usize);
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct ForestRoot<T: Hash + Eq + Clone> {
+pub struct ForestRoot<T: Hash + Eq + Clone + Ord> {
     root: NodeId,
     universe: Universe<T>,
 }
@@ -46,6 +46,10 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
         ForestRoot { root, universe }
     }
 
+    pub fn canonical(self) -> Self {
+        Self::many(&self.trees())
+    }
+
     pub fn trees(&self) -> Vec<Vec<T>> {
         trees::trees(self.root)
             .into_iter()
@@ -61,14 +65,19 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
         trees::trees(self.root).is_empty()
     }
 
+    pub fn contains(&self, set: &[T]) -> bool {
+        self.trees()
+            .contains(&set.into())
+    }
+
     pub fn union(&self, other: &Self) -> Self {
         let universe = Universe::merge(&self.universe, &other.universe);
 
         let self_root = translate_root(&self.universe, &universe, self.root.into());
         let other_root = translate_root(&other.universe, &universe, other.root.into());
-        let root = union::union(self_root, other_root);
+        let root = union::union(self_root, other_root).into();
 
-        Self::many(&ForestRoot { root: root.into(), universe }.trees())
+        ForestRoot { root, universe }.canonical()
     }
 
     pub fn intersect(&self, other: &Self) -> Self {
@@ -76,9 +85,9 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
 
         let self_root = translate_root(&self.universe, &universe, self.root.into());
         let other_root = translate_root(&other.universe, &universe, other.root.into());
-        let root = intersect::intersect(self_root, other_root);
+        let root = intersect::intersect(self_root, other_root).into();
 
-        Self::many(&ForestRoot { root: root.into(), universe }.trees())
+        ForestRoot { root, universe }.canonical()
     }
 
     pub fn product(&self, other: &Self) -> Self {
@@ -86,9 +95,9 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
 
         let self_root = translate_root(&self.universe, &universe, self.root.into());
         let other_root = translate_root(&other.universe, &universe, other.root.into());
-        let root = product::product(self_root, other_root);
+        let root = product::product(self_root, other_root).into();
 
-        Self::many(&ForestRoot { root: root.into(), universe }.trees())
+        ForestRoot { root, universe }.canonical()
     }
 
     pub fn extend(&self, set: &[T]) -> Self {
@@ -102,13 +111,13 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
     }
 }
 
-fn items_as_node<T: Hash + Eq + Clone>(universe: &Universe<T>, items: &[T]) -> NodeId {
+fn items_as_node<T: Hash + Eq + Clone + Ord>(universe: &Universe<T>, items: &[T]) -> NodeId {
     universe.get_priorities::<Vec<_>>(items)
         .into_iter()
         .fold(Node::TRUE, |root, item| Node::branch(item, Node::FALSE, root).into())
 }
 
-fn translate_root<T: Hash + Eq + Clone>(old_universe: &Universe<T>, new_universe: &Universe<T>, node: Node) -> Node {
+fn translate_root<T: Hash + Eq + Clone + Ord>(old_universe: &Universe<T>, new_universe: &Universe<T>, node: Node) -> Node {
     match node {
         Node::Branch(id, low, high) => {
             let low = translate_root(old_universe, new_universe, low.into());

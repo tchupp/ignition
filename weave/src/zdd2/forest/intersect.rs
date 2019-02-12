@@ -12,14 +12,14 @@ pub fn intersect<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, f
         (Forest::Empty, _) => Forest::empty(),
 
         (Forest::Many(matrix), Forest::Unit(set)) => {
-            if matrix.trees().contains(set) {
+            if matrix.contains(set) {
                 forest2.clone()
             } else {
                 Forest::empty()
             }
         }
         (Forest::Unit(set), Forest::Many(matrix)) => {
-            if matrix.trees().contains(set) {
+            if matrix.contains(set) {
                 forest1.clone()
             } else {
                 Forest::empty()
@@ -27,7 +27,7 @@ pub fn intersect<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, f
         }
 
         (Forest::Many(matrix1), Forest::Many(matrix2)) =>
-            Forest::Many(matrix1.intersect(matrix2)),
+            Forest::from_root(matrix1.intersect(matrix2)),
 
         (_, _) => Forest::empty()
     }

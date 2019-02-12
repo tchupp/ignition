@@ -24,7 +24,7 @@ pub fn product<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, for
         (Forest::Unit(set), Forest::Many(matrix)) => Forest::Many(matrix.product(&ForestRoot::unit(&set))),
 
         (Forest::Many(matrix1), Forest::Many(matrix2)) =>
-            Forest::Many(matrix1.product(&matrix2)),
+            Forest::from_root(matrix1.product(&matrix2)),
     }
 }
 
@@ -120,13 +120,13 @@ mod tests {
         let forest2 = Forest::unit(&["3", "4"]);
 
         assert_eq!(
-            Forest::many(&[
+            Into::<Vec<_>>::into(Forest::many(&[
                 vec!["1", "2", "3"],
                 vec!["1", "2", "4"],
                 vec!["5", "6", "3"],
                 vec!["5", "6", "4"],
-            ]),
-            Forest::product(forest1, forest2)
+            ])),
+            Into::<Vec<_>>::into(Forest::product(forest1, forest2))
         );
     }
 

@@ -17,7 +17,7 @@ mod product;
 
 /// Forest is an immutable set of sets
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub enum Forest<T: Hash + Eq + Clone> {
+pub enum Forest<T: Hash + Eq + Clone + Ord> {
     Empty,
     Unit(Vec<T>),
     Many(ForestRoot<T>),
@@ -58,6 +58,15 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
 
                 Forest::Many(ForestRoot::many(&matrix))
             }
+        }
+    }
+
+    pub fn from_root(root: ForestRoot<T>) -> Self {
+        let trees = root.trees();
+        match trees.len() {
+            0 => Forest::empty(),
+            1 => Forest::unit(&trees[0]),
+            _ => Forest::Many(root),
         }
     }
 

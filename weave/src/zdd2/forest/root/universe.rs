@@ -7,13 +7,13 @@ use itertools::Itertools;
 use super::Priority;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Universe<T: Hash + Eq + Clone> {
+pub struct Universe<T: Hash + Eq + Clone + Ord> {
     occurrences: HashMap<T, usize>,
     priority: HashMap<T, Priority>,
     index: Vec<T>,
 }
 
-impl<T: Hash + Eq + Clone> Default for Universe<T> {
+impl<T: Hash + Eq + Clone + Ord> Default for Universe<T> {
     fn default() -> Self {
         Universe {
             occurrences: HashMap::new(),
@@ -23,7 +23,7 @@ impl<T: Hash + Eq + Clone> Default for Universe<T> {
     }
 }
 
-impl<T: Hash + Eq + Clone> Universe<T> {
+impl<T: Hash + Eq + Clone + Ord> Universe<T> {
     pub fn from_items(items: &[T]) -> Self {
         let occurrences: HashMap<T, usize> = items.iter()
             .fold(HashMap::new(), |mut occurrences, item| {
@@ -93,6 +93,7 @@ impl<T: Hash + Eq + Clone> Universe<T> {
         ids.iter()
             .filter_map(|id| self.get_item(*id))
             .cloned()
+            .sorted()
             .collect::<B>()
     }
 
