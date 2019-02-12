@@ -144,7 +144,7 @@ mod tests {
     }
 
     #[test]
-    fn many_forest_and_many_tree_returns_many() {
+    fn many_forests_returns_many() {
         let forest1 = Forest::many(&[
             vec!["1", "2"],
             vec!["5", "6"]

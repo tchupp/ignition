@@ -46,11 +46,12 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Tree<T> {
             0 => Tree::Empty,
             1 => Tree::One(elements[0].clone()),
             _ => {
-                let mut set = HashSet::with_capacity(elements.len());
-                elements
-                    .iter()
+                let set = elements.iter()
                     .cloned()
-                    .for_each(|e| { set.insert(e); });
+                    .fold(HashSet::with_capacity(elements.len()), |mut set, e| {
+                        set.insert(e);
+                        set
+                    });
 
                 Tree::Many(set)
             }
