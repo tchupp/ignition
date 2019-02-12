@@ -58,7 +58,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
     }
 
     pub fn is_empty(&self) -> bool {
-        true
+        trees::trees(self.root).is_empty()
     }
 
     pub fn union(&self, other: &Self) -> Self {
