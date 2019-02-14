@@ -38,3 +38,90 @@ pub fn product(node1: Node, node2: Node) -> Node {
 
     Node::branch(id, low, high)
 }
+
+#[cfg(test)]
+mod tests {
+    use zdd2::forest::root::ForestRoot;
+
+    #[test]
+    fn left_empty_right_empty() {
+        let forest1: ForestRoot<&str> = ForestRoot::empty();
+        let forest2: ForestRoot<&str> = ForestRoot::empty();
+
+        assert_eq!(
+            ForestRoot::empty(),
+            ForestRoot::product(&forest1, &forest2)
+        );
+    }
+
+    #[test]
+    fn left_empty_right_unit() {
+        let forest1: ForestRoot<&str> = ForestRoot::empty();
+        let forest2 = ForestRoot::unit(&["1", "2"]);
+
+        assert_eq!(
+            ForestRoot::empty(),
+            ForestRoot::product(&forest1, &forest2)
+        );
+    }
+
+    #[test]
+    fn left_unit_right_empty() {
+        let forest1 = ForestRoot::unit(&["1", "2"]);
+        let forest2: ForestRoot<&str> = ForestRoot::empty();
+
+        assert_eq!(
+            ForestRoot::empty(),
+            ForestRoot::product(&forest1, &forest2)
+        );
+    }
+
+    #[test]
+    fn left_unit_right_unit_disjoint() {
+        let forest1 = ForestRoot::unit(&["1", "2"]);
+        let forest2 = ForestRoot::unit(&["3", "4"]);
+
+        assert_eq!(
+            ForestRoot::many(&[
+                vec!["1", "2", "3", "4"],
+            ]),
+            ForestRoot::product(&forest1, &forest2)
+        );
+    }
+
+    #[test]
+    fn left_unit_right_unique_disjoint() {
+        let forest1 = ForestRoot::unit(&["1", "2"]);
+        let forest2 = ForestRoot::unique(&["3", "4"]);
+
+        assert_eq!(
+            ForestRoot::many(&[
+                vec!["1", "2", "3"],
+                vec!["1", "2", "4"],
+            ]),
+            ForestRoot::product(&forest1, &forest2)
+        );
+    }
+
+    #[test]
+    fn left_unit_right_unit_same() {
+        let forest1 = ForestRoot::unit(&["1", "2"]);
+        let forest2 = ForestRoot::unit(&["1", "2"]);
+
+        assert_eq!(
+            ForestRoot::unit(&["1", "2"]),
+            ForestRoot::product(&forest1, &forest2)
+        );
+    }
+
+    #[test]
+    fn left_unit_right_unit_contains() {
+        let forest1 = ForestRoot::unit(&["1"]);
+        let forest2 = ForestRoot::unit(&["1", "2"]);
+
+        assert_eq!(
+            ForestRoot::unit(&["1", "2"]),
+            ForestRoot::product(&forest1, &forest2)
+        );
+    }
+}

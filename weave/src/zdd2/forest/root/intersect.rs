@@ -12,13 +12,13 @@ pub fn intersect(node1: Node, node2: Node) -> Node {
         (_, Node::Leaf(false)) => return Node::Leaf(false),
         (Node::Leaf(false), _) => return Node::Leaf(false),
 
-        (Node::Branch(id_1, low_1, high_1), Node::Branch(id_2, _, _)) if id_1 < id_2 => {
+        (Node::Branch(id_1, low_1, _), Node::Branch(id_2, _, _)) if id_1 < id_2 => {
             let low = intersect(low_1.into(), node2);
             let high = Node::Leaf(false);
 
             (id_1, low, high)
         }
-        (Node::Branch(id_1, _, _), Node::Branch(id_2, low_2, high_2)) if id_1 > id_2 => {
+        (Node::Branch(id_1, _, _), Node::Branch(id_2, low_2, _)) if id_1 > id_2 => {
             let low = intersect(node1, low_2.into());
             let high = Node::Leaf(false);
 

@@ -47,8 +47,8 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
 
     pub fn many(matrix: &[Vec<T>]) -> Self {
         match matrix.len() {
-            0 => Forest::empty(),
-            1 => Forest::unit(&matrix[0]),
+            0 => Self::empty(),
+            1 => Self::unit(&matrix[0]),
             _ => {
                 let matrix = matrix.iter()
                     .cloned()
@@ -64,8 +64,8 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     pub fn from_root(root: ForestRoot<T>) -> Self {
         let trees = root.trees();
         match trees.len() {
-            0 => Forest::empty(),
-            1 => Forest::unit(&trees[0]),
+            0 => Self::empty(),
+            1 => Self::unit(&trees[0]),
             _ => Forest::Many(root),
         }
     }
@@ -76,7 +76,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
             .map(|element| vec![element])
             .collect();
 
-        Forest::many(&matrix)
+        Self::many(&matrix)
     }
 
     fn filter_repeats<B: FromIterator<T>>(set: &[T]) -> B {
@@ -286,7 +286,32 @@ mod many_forest_tests {
 
 #[cfg(test)]
 mod random_tests {
-    use zdd2::Forest;
+    use super::Forest;
+
+    #[test]
+    fn product_of_two_forests_of_two() {
+        let forest = Forest::unique(&["1-1", "1-2", "1-3"])
+            .product(Forest::unique(&["2-1", "2-2", "2-3"]));
+
+        assert_eq!(9, forest.len());
+
+        let expected = Forest::many(&[
+            vec!["1-3", "2-1"],
+            vec!["1-3", "2-2"],
+            vec!["2-3", "1-2"],
+            vec!["1-1", "2-2"],
+            vec!["1-2", "2-2"],
+            vec!["2-1", "1-2"],
+            vec!["1-3", "2-3"],
+            vec!["1-1", "2-1"],
+            vec!["1-1", "2-3"],
+        ]);
+
+        assert_eq!(
+            expected,
+            forest
+        );
+    }
 
     #[test]
     fn product_of_three_forests_of_three() {

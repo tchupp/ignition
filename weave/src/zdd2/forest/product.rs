@@ -30,7 +30,7 @@ pub fn product<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, for
 
 #[cfg(test)]
 mod tests {
-    use zdd2::Forest;
+    use super::Forest;
 
     #[test]
     fn empty_right_returns_empty() {
@@ -81,21 +81,18 @@ mod tests {
     }
 
     #[test]
-    fn disjoint_unit_forests_returns_many_2() {
+    fn disjoint_unit_forests_returns_unit() {
         let forest1 = Forest::unit(&["1", "2"]);
         let forest2 = Forest::unit(&["3", "4"]);
 
         assert_eq!(
-            Forest::many(&[
-                vec!["1", "2", "3"],
-                vec!["1", "2", "4"],
-            ]),
+            Forest::unit(&["1", "2", "3", "4"]),
             Forest::product(forest1, forest2)
         );
     }
 
     #[test]
-    fn many_forest_and_unit_forest_returns_many() {
+    fn many_forest_and_single_unit_forest_returns_many() {
         let forest1 = Forest::many(&[
             vec!["1", "2"],
             vec!["2", "3"]
@@ -112,7 +109,62 @@ mod tests {
     }
 
     #[test]
-    fn many_forests_returns_many() {
+    fn many_forest_and_double_unit_forest_with_overlap_returns_many() {
+        let forest1 = Forest::many(&[
+            vec!["1", "2"],
+            vec!["2", "3"]
+        ]);
+        let forest2 = Forest::unit(&["3", "4"]);
+
+        assert_eq!(
+            Forest::many(&[
+                vec!["1", "2", "3", "4"],
+                vec!["2", "3", "4"]
+            ]),
+            Forest::product(forest1, forest2)
+        );
+    }
+
+    #[test]
+    fn many_forest_and_unique_forest_with_overlap_returns_many() {
+        let forest1 = Forest::many(&[
+            vec!["1", "2"],
+            vec!["2", "3"]
+        ]);
+        let forest2 = Forest::unique(&["3", "4"]);
+
+        assert_eq!(
+            Forest::many(&[
+                vec!["1", "2", "3"],
+                vec!["1", "2", "4"],
+                vec!["2", "3"],
+                vec!["2", "3", "4"]
+            ]),
+            Forest::product(forest1, forest2)
+        );
+    }
+
+    #[test]
+    fn many_forest_and_unique_forest_returns_many() {
+        let forest1 = Forest::many(&[
+            vec!["1", "2"],
+            vec!["5", "6"]
+        ]);
+        let forest2 = Forest::unique(&["3", "4"]);
+
+        assert_eq!(
+            Forest::many(&[
+                vec!["1", "2", "3"],
+                vec!["1", "2", "4"],
+                vec!["5", "6", "3"],
+                vec!["5", "6", "4"],
+            ]),
+            Forest::product(forest1, forest2)
+        );
+    }
+
+    #[test]
+    fn many_forest_and_double_unit_forest_returns_many() {
         let forest1 = Forest::many(&[
             vec!["1", "2"],
             vec!["5", "6"]
@@ -120,13 +172,11 @@ mod tests {
         let forest2 = Forest::unit(&["3", "4"]);
 
         assert_eq!(
-            Into::<Vec<_>>::into(Forest::many(&[
-                vec!["1", "2", "3"],
-                vec!["1", "2", "4"],
-                vec!["5", "6", "3"],
-                vec!["5", "6", "4"],
-            ])),
-            Into::<Vec<_>>::into(Forest::product(forest1, forest2))
+            Forest::many(&[
+                vec!["1", "2", "3", "4"],
+                vec!["5", "6", "3", "4"],
+            ]),
+            Forest::product(forest1, forest2)
         );
     }
 

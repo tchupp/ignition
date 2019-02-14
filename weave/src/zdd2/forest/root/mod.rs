@@ -46,7 +46,16 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
         ForestRoot { root, universe }
     }
 
-    pub fn canonical(self) -> Self {
+    pub fn unique(set: &[T]) -> Self {
+        let matrix: Vec<Vec<T>> = set.iter()
+            .cloned()
+            .map(|element| vec![element])
+            .collect();
+
+        Self::many(&matrix)
+    }
+
+    fn canonical(self) -> Self {
         Self::many(&self.trees())
     }
 
@@ -119,6 +128,7 @@ fn items_as_node<T: Hash + Eq + Clone + Ord>(universe: &Universe<T>, items: &[T]
 
 fn translate_root<T: Hash + Eq + Clone + Ord>(old_universe: &Universe<T>, new_universe: &Universe<T>, node: Node) -> Node {
     match node {
+        Node::Leaf(_) => node,
         Node::Branch(id, low, high) => {
             let low = translate_root(old_universe, new_universe, low.into());
             let high = translate_root(old_universe, new_universe, high.into());
@@ -128,6 +138,5 @@ fn translate_root<T: Hash + Eq + Clone + Ord>(old_universe: &Universe<T>, new_un
 
             Node::branch(id, low, high)
         }
-        Node::Leaf(_) => node,
     }
 }

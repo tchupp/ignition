@@ -271,7 +271,32 @@ mod many_forest_tests {
 
 #[cfg(test)]
 mod random_tests {
-    use matrix::Forest;
+    use super::Forest;
+
+    #[test]
+    fn product_of_two_forests_of_two() {
+        let forest = Forest::unique(&["1-1", "1-2", "1-3"])
+            .product(Forest::unique(&["2-1", "2-2", "2-3"]));
+
+        assert_eq!(9, forest.len());
+
+        let expected = Forest::many(&[
+            vec!["1-3", "2-1"],
+            vec!["1-3", "2-2"],
+            vec!["2-3", "1-2"],
+            vec!["1-1", "2-2"],
+            vec!["1-2", "2-2"],
+            vec!["2-1", "1-2"],
+            vec!["1-3", "2-3"],
+            vec!["1-1", "2-1"],
+            vec!["1-1", "2-3"],
+        ]);
+
+        assert_eq!(
+            expected,
+            forest
+        );
+    }
 
     #[test]
     fn product_of_three_forests_of_three() {
