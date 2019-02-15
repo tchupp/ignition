@@ -47,12 +47,13 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
     }
 
     pub fn unique(set: &[T]) -> Self {
-        let matrix: Vec<Vec<T>> = set.iter()
-            .cloned()
-            .map(|element| vec![element])
-            .collect();
+        let universe = Universe::from_items(set);
 
-        Self::many(&matrix)
+        let root = universe.get_priorities::<Vec<_>>(set)
+            .into_iter()
+            .fold(Node::FALSE, |root, item| Node::branch(item, root, Node::TRUE).into());
+
+        ForestRoot { root, universe }
     }
 
     fn canonical(self) -> Self {

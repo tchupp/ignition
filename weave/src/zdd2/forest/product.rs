@@ -8,16 +8,9 @@ pub fn product<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, for
         (_, Forest::Empty) => Forest::empty(),
         (Forest::Empty, _) => Forest::empty(),
 
-        (Forest::Unit(set1), Forest::Unit(set2)) => {
-            let matrix: Vec<Vec<T>> = set2.iter()
-                .map(|element| set1.iter()
-                    .cloned()
-                    .chain(vec![element.clone()])
-                    .collect::<Vec<_>>()
-                )
-                .collect();
-
-            Forest::many(&matrix)
+        (Forest::Unit(mut set1), Forest::Unit(set2)) => {
+            set1.extend(set2);
+            Forest::unit(&set1)
         }
 
         (Forest::Many(matrix), Forest::Unit(set)) => Forest::Many(matrix.product(&ForestRoot::unit(&set))),
