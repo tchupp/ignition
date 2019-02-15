@@ -36,8 +36,12 @@ impl NodeArena {
         }
     }
 
-    pub fn get(&self, index: NodeId) -> Option<&Node> {
+    pub fn get_by_id(&self, index: NodeId) -> Option<&Node> {
         self.nodes.get(index.0)
+    }
+
+    pub fn get_by_node(&self, node: &Node) -> Option<&NodeId> {
+        self.node_index.get(node)
     }
 }
 
@@ -45,13 +49,13 @@ impl NodeArena {
 mod tests {
     use super::Node;
     use super::NodeArena;
-    use zdd2::forest::root::Priority;
+    use super::super::Priority;
 
     #[test]
     fn get_has_true_leaf_saved() {
         let arena = NodeArena::new();
 
-        let true_leaf = arena.get(Node::TRUE).expect("Expected node to exist");
+        let true_leaf = arena.get_by_id(Node::TRUE).expect("Expected node to exist");
 
         assert_eq!(
             Node::Leaf(true),
@@ -63,7 +67,7 @@ mod tests {
     fn get_has_false_leaf_saved() {
         let arena = NodeArena::new();
 
-        let false_leaf = arena.get(Node::FALSE).expect("Expected node to exist");
+        let false_leaf = arena.get_by_id(Node::FALSE).expect("Expected node to exist");
 
         assert_eq!(
             Node::Leaf(false),
@@ -83,11 +87,11 @@ mod tests {
 
         assert_eq!(
             &node1,
-            arena.get(node1_id).expect("Expected node to exist")
+            arena.get_by_id(node1_id).expect("Expected node to exist")
         );
         assert_eq!(
             &node2,
-            arena.get(node2_id).expect("Expected node to exist")
+            arena.get_by_id(node2_id).expect("Expected node to exist")
         );
     }
 

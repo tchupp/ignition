@@ -90,7 +90,7 @@ mod tests {
     #[test]
     fn left_unit_right_unit_same() {
         let forest1 = ForestRoot::unit(&["1", "2"]);
-        let forest2 = ForestRoot::unit(&["1", "2"]);
+        let forest2 = ForestRoot::unit(&["1", "2", "1"]);
 
         assert_eq!(
             ForestRoot::unit(&["1", "2"]),
