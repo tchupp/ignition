@@ -44,10 +44,6 @@ pub fn union(node1: Node, node2: Node) -> Node {
         }
     };
 
-    if high == Node::Leaf(false) {
-        return low;
-    }
-
     Node::branch(id, low, high)
 }
 
@@ -99,6 +95,30 @@ mod tests {
                 vec!["3", "4"],
             ]),
             ForestRoot::union(&forest1, &forest2)
+        );
+    }
+
+    #[test]
+    fn union_returns_many_when_trees_are_have_commonality() {
+        let tree1 = ForestRoot::many(&[
+            vec!["1", "2"],
+            vec!["2", "3"],
+            vec!["3", "4"],
+        ]);
+        let tree2 = ForestRoot::many(&[
+            vec!["2", "3"],
+            vec!["3", "4"],
+            vec!["4", "5"],
+        ]);
+
+        assert_eq!(
+            ForestRoot::many(&[
+                vec!["1", "2"],
+                vec!["2", "3"],
+                vec!["3", "4"],
+                vec!["4", "5"],
+            ]),
+            ForestRoot::union(&tree1, &tree2)
         );
     }
 }

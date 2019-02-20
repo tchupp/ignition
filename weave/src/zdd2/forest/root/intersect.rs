@@ -32,10 +32,6 @@ pub fn intersect(node1: Node, node2: Node) -> Node {
         }
     };
 
-    if high == Node::Leaf(false) {
-        return low;
-    }
-
     Node::branch(id, low, high)
 }
 
