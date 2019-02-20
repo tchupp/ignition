@@ -57,6 +57,11 @@ impl Node {
             (Node::Leaf(false), _) => {
                 return low;
             }
+            (Node::Branch(h_id, h_low, h_high), Node::Branch(l_id, l_low, l_high)) if h_id < id && l_id == h_id => {
+                let low = Node::branch(id, l_low, h_low);
+                let high = Node::branch(id, l_high, h_high);
+                return Node::branch(h_id, low, high);
+            }
             (Node::Branch(h_id, h_low, h_high), _) if h_id < id => {
                 let high = Node::branch(id, h_low, h_high);
                 return Node::branch(h_id, low, high);
@@ -267,6 +272,71 @@ mod tests {
                 Priority(0),
                 expected_low.into(),
                 expected_high.into(),
+            );
+
+            expected
+        };
+
+
+        assert_eq!(
+            expected,
+            initial
+        );
+    }
+
+    #[test]
+    fn zdd_nodes_reorder_when_high_and_low_have_higher_priority() {
+        let initial = {
+            let low_1 = Node::branch(
+                Priority(0),
+                Node::FALSE,
+                Node::branch(
+                    Priority(2),
+                    Node::FALSE,
+                    Node::TRUE,
+                ),
+            );
+            let high_1 = Node::branch(
+                Priority(0),
+                Node::branch(
+                    Priority(3),
+                    Node::FALSE,
+                    Node::TRUE,
+                ),
+                Node::TRUE,
+            );
+            let initial = Node::branch(
+                Priority(1),
+                low_1,
+                high_1,
+            );
+
+            initial
+        };
+
+        let expected = {
+            let expected_low_1 = Node::Branch(
+                Priority(1),
+                Node::FALSE,
+                Node::Branch(
+                    Priority(3),
+                    Node::FALSE,
+                    Node::TRUE,
+                ).into(),
+            );
+            let expected_high_1 = Node::Branch(
+                Priority(1),
+                Node::Branch(
+                    Priority(2),
+                    Node::FALSE,
+                    Node::TRUE,
+                ).into(),
+                Node::TRUE,
+            );
+            let expected = Node::Branch(
+                Priority(0),
+                expected_low_1.into(),
+                expected_high_1.into(),
             );
 
             expected
