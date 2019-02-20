@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::hash::Hash;
 use std::iter::FromIterator;
 
@@ -46,15 +47,17 @@ impl<T: Hash + Eq + Clone + Ord> Universe<T> {
     }
 
     fn from_occurrences(occurrences: HashMap<T, usize>) -> Self {
+        let ordering: fn(&(&T, &usize), &(&T, &usize)) -> Ordering = |(name1, count1), (name2, count2)| Ord::cmp(count2, count1).then(Ord::cmp(name1, name2));
+
         let priority: HashMap<T, Priority> = occurrences.iter()
-            .sorted_by(|(_, a), (_, b)| Ord::cmp(&b, &a))
+            .sorted_by(ordering)
             .map(|(item, _)| item)
             .enumerate()
             .map(|(index, item)| (item.clone(), Priority(index)))
             .collect();
 
         let index: Vec<T> = occurrences.iter()
-            .sorted_by(|(_, a), (_, b)| Ord::cmp(&b, &a))
+            .sorted_by(ordering)
             .map(|(index, _)| index.clone())
             .collect();
 
@@ -149,26 +152,26 @@ mod tests {
         let priority: HashMap<&str, Priority> = hashmap! {
                 "1-1" => Priority(0),
                 "2-1" => Priority(1),
-                "3-1" => Priority(2),
-                "3-2" => Priority(3),
-                "1-2" => Priority(4),
-                "3-3" => Priority(5),
-                "2-2" => Priority(6),
-                "2-3" => Priority(7),
-                "1-3" => Priority(8),
+                "1-2" => Priority(2),
+                "2-2" => Priority(3),
+                "3-1" => Priority(4),
+                "3-2" => Priority(5),
+                "3-3" => Priority(6),
+                "1-3" => Priority(7),
+                "2-3" => Priority(8),
             }.into_iter().collect();
         assert_eq!(priority, universe.priority);
 
         let index: Vec<&str> = vec![
             "1-1",
             "2-1",
+            "1-2",
+            "2-2",
             "3-1",
             "3-2",
-            "1-2",
             "3-3",
-            "2-2",
-            "2-3",
             "1-3",
+            "2-3",
         ];
         assert_eq!(index, universe.index);
     }
