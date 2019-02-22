@@ -1,4 +1,5 @@
 use super::Node;
+use super::union;
 
 pub fn product(node1: Node, node2: Node) -> Node {
     if node1 == node2 {
@@ -25,8 +26,24 @@ pub fn product(node1: Node, node2: Node) -> Node {
             (id_2, low, high)
         }
         (Node::Branch(id_1, low_1, high_1), Node::Branch(_, low_2, high_2)) => {
-            let low = product(low_1.into(), low_2.into());
-            let high = product(high_1.into(), high_2.into());
+            let high = {
+                let new_low = {
+                    let low_1_low_2 = product(low_1.into(), low_2.into());
+                    let low_1_high_2 = product(low_1.into(), high_2.into());
+
+                    union::union(low_1_low_2, low_1_high_2)
+                };
+
+                let new_high = {
+                    let high_1_low_2 = product(high_1.into(), low_2.into());
+                    let high_1_high_2 = product(high_1.into(), high_2.into());
+
+                    union::union(high_1_low_2, high_1_high_2)
+                };
+
+                union::union(new_low, new_high)
+            };
+            let low = Node::Leaf(false);
 
             (id_1, low, high)
         }
