@@ -26,26 +26,19 @@ pub fn product(node1: Node, node2: Node) -> Node {
             (id_2, low, high)
         }
         (Node::Branch(id_1, low_1, high_1), Node::Branch(_, low_2, high_2)) => {
-            let high = {
-                let new_low = {
-                    let low_1_low_2 = product(low_1.into(), low_2.into());
-                    let low_1_high_2 = product(low_1.into(), high_2.into());
+            let low_1_low_2 = product(low_1.into(), low_2.into());
+            let low_1_high_2 = product(low_1.into(), high_2.into());
 
-                    union::union(low_1_low_2, low_1_high_2)
-                };
+            let new_high = {
+                let high_1_low_2 = product(high_1.into(), low_2.into());
+                let high_1_high_2 = product(high_1.into(), high_2.into());
 
-                let new_high = {
-                    let high_1_low_2 = product(high_1.into(), low_2.into());
-                    let high_1_high_2 = product(high_1.into(), high_2.into());
-
-                    union::union(high_1_low_2, high_1_high_2)
-                };
-
-                union::union(new_low, new_high)
+                union::union(high_1_low_2, high_1_high_2)
             };
-            let low = Node::Leaf(false);
 
-            (id_1, low, high)
+            let high = union::union(low_1_high_2, new_high);
+
+            (id_1, low_1_low_2, high)
         }
     };
 
@@ -134,6 +127,42 @@ mod tests {
 
         assert_eq!(
             ForestRoot::unit(&["1", "2"]),
+            ForestRoot::product(&forest1, &forest2)
+        );
+    }
+
+    #[test]
+    fn many_forest_and_double_unit_forest_with_overlap_returns_many() {
+        let forest1 = ForestRoot::many(&[
+            vec!["1", "2"],
+            vec!["2", "3"]
+        ]);
+        let forest2 = ForestRoot::unit(&["3", "4"]);
+
+        assert_eq!(
+            ForestRoot::many(&[
+                vec!["1", "2", "3", "4"],
+                vec!["2", "3", "4"]
+            ]),
+            ForestRoot::product(&forest1, &forest2)
+        );
+    }
+
+    #[test]
+    fn many_forest_and_unique_forest_with_overlap_returns_many() {
+        let forest1 = ForestRoot::many(&[
+            vec!["1", "2"],
+            vec!["2", "3"]
+        ]);
+        let forest2 = ForestRoot::unique(&["3", "4"]);
+
+        assert_eq!(
+            ForestRoot::many(&[
+                vec!["1", "2", "3"],
+                vec!["1", "2", "4"],
+                vec!["2", "3"],
+                vec!["2", "3", "4"]
+            ]),
             ForestRoot::product(&forest1, &forest2)
         );
     }
