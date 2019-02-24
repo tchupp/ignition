@@ -1,5 +1,5 @@
-use weave::Tree;
-use weave::Universe;
+use weave::zdd::Tree;
+use weave::zdd::Universe;
 
 pub fn setup_tree_20() -> Tree<&'static str> {
     let item0 = "0";

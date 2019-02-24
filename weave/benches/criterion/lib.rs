@@ -6,7 +6,8 @@ extern crate weave;
 
 use criterion::Criterion;
 
-mod tree_building;
+mod zdd_building;
+mod zdd2_building;
 
 mod combinations;
 mod serialize;

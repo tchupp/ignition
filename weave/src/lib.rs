@@ -16,6 +16,6 @@ pub use status::*;
 pub use zdd::*;
 
 mod status;
-mod zdd;
+pub mod zdd;
 pub mod zdd2;
 pub mod matrix;
