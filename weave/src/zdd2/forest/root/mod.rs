@@ -1,3 +1,4 @@
+use std::fmt;
 use std::hash::Hash;
 
 use super::node::Node;
@@ -15,10 +16,34 @@ mod product;
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
 pub struct Priority(pub(crate) usize);
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct ForestRoot<T: Hash + Eq + Clone + Ord> {
     root: NodeId,
     universe: Universe<T>,
+}
+
+impl<T: Hash + Eq + Clone + Ord + fmt::Debug> fmt::Debug for ForestRoot<T> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "\n{}", self.fmt_inner(self.root.into(), 1))
+    }
+}
+
+impl<T: Hash + Eq + Clone + Ord + fmt::Debug> ForestRoot<T> {
+    fn fmt_inner(&self, root: Node, indent: usize) -> String {
+        match root {
+            Node::Leaf(val) => format!("{}", val),
+            Node::Branch(id, low, high) =>
+                format!(
+                    "{:?}: {:?}\n{}{}\n{}{}",
+                    id,
+                    self.universe.get_item(id).unwrap(),
+                    "| ".repeat(indent),
+                    self.fmt_inner(Node::from(low), indent + 1),
+                    "| ".repeat(indent),
+                    self.fmt_inner(Node::from(high), indent + 1)
+                ),
+        }
+    }
 }
 
 impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
