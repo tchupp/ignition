@@ -12,7 +12,7 @@ mod root;
 
 mod union;
 mod intersect;
-//mod subset;
+mod subset;
 mod product;
 
 /// Forest is an immutable set of sets
@@ -128,13 +128,11 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     }
 
     pub fn subset(self, element: T) -> Self {
-//        subset::subset(self, element)
-        self
+        subset::subset(self, element)
     }
 
     pub fn subset_many(self, elements: &[T]) -> Self {
-//        subset::subset_many(self, elements)
-        self
+        subset::subset_many(self, elements)
     }
 }
 

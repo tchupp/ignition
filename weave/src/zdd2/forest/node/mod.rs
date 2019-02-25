@@ -89,10 +89,10 @@ impl<'a> From<Node> for NodeId {
             let guard = ARENA.read().unwrap();
             guard.get_by_node(&node).cloned()
         };
-        match node_id {
-            Some(node_id) => return node_id,
-            None => ARENA.write().unwrap().add(node),
-        }
+
+        node_id.unwrap_or_else(
+            || ARENA.write().unwrap().add(node)
+        )
     }
 }
 

@@ -12,6 +12,7 @@ mod universe;
 mod intersect;
 mod union;
 mod product;
+mod subset;
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
 pub struct Priority(pub(crate) usize);
@@ -138,11 +139,31 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> ForestRoot<T> {
     pub fn extend(&self, set: &[T]) -> Self {
         let trees: Vec<Vec<T>> = self.trees()
             .into_iter()
-            .map(|tree| tree.into())
             .chain(vec![set.to_vec()])
             .collect();
 
         Self::many(&trees)
+    }
+
+    pub fn subset(self, element: T) -> Self {
+        let element = match self.universe.get_priority(&element) {
+            None => return Self::empty(),
+            Some(element) => element,
+        };
+        let root = subset::subset(self.root.into(), element).into();
+
+        ForestRoot { root, universe: self.universe }.canonical()
+    }
+
+    pub fn subset_many(self, elements: &[T]) -> Self {
+        if elements.is_empty() {
+            return self;
+        }
+
+        let elements: Vec<_> = self.universe.get_priorities(elements);
+        let root = subset::subset_many(self.root.into(), &elements).into();
+
+        ForestRoot { root, universe: self.universe.clone() }.canonical()
     }
 }
 

@@ -1,6 +1,6 @@
 use std::hash::Hash;
 
-use matrix::Forest;
+use super::Forest;
 
 pub fn subset<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, element: T) -> Forest<T> {
     match &forest {
@@ -57,9 +57,23 @@ mod subset_tests {
     }
 
     #[test]
-    fn subset_of_disjoint_returns_empty() {
+    fn subset_of_disjoint_unit_returns_empty() {
         let forest: Forest<&str> = Forest::unit(&["2", "3"]);
         let element = "1";
+
+        assert_eq!(
+            Forest::<&str>::empty(),
+            Forest::subset(forest, element)
+        );
+    }
+
+    #[test]
+    fn subset_of_disjoint_many_returns_empty() {
+        let forest: Forest<&str> = Forest::many(&[
+            vec!["1", "3"],
+            vec!["2", "3"]
+        ]);
+        let element = "4";
 
         assert_eq!(
             Forest::<&str>::empty(),
@@ -79,7 +93,7 @@ mod subset_tests {
     }
 
     #[test]
-    fn subset_of_containing_returns_unit() {
+    fn subset_of_containing_returns_unit_1() {
         let forest: Forest<&str> = Forest::many(&[
             vec!["1", "3"],
             vec!["2", "3"]
@@ -88,6 +102,20 @@ mod subset_tests {
 
         assert_eq!(
             Forest::unit(&["1", "3"]),
+            Forest::subset(forest, element)
+        );
+    }
+
+    #[test]
+    fn subset_of_containing_returns_unit_2() {
+        let forest: Forest<&str> = Forest::many(&[
+            vec!["1", "3"],
+            vec!["2", "3"]
+        ]);
+        let element = "2";
+
+        assert_eq!(
+            Forest::unit(&["2", "3"]),
             Forest::subset(forest, element)
         );
     }
