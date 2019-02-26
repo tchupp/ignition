@@ -202,4 +202,21 @@ mod tests {
             Forest::union(tree1, tree2)
         );
     }
+
+    #[test]
+    fn union_returns_identity_when_left_is_unit_right_is_many() {
+        let tree1 = Forest::unit(&["1", "2"]);
+        let tree2 = Forest::many(&[
+            vec!["1", "2"],
+            vec!["2", "3"]
+        ]);
+
+        assert_eq!(
+            Forest::many(&[
+                vec!["1", "2"],
+                vec!["2", "3"]
+            ]),
+            Forest::union(tree1, tree2)
+        );
+    }
 }

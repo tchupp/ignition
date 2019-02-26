@@ -32,6 +32,19 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for Forest<T> 
     }
 }
 
+impl<'a, T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for &'a Forest<T> {
+    fn into(self) -> Vec<Tree<T>> {
+        match self {
+            Forest::Empty => Vec::new(),
+            Forest::Unit(set) => vec![Tree::many(&set)],
+            Forest::Many(matrix) => matrix
+                .into_iter()
+                .map(|s| Tree::many(&s))
+                .collect(),
+        }
+    }
+}
+
 impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     pub fn empty() -> Self {
         Forest::Empty

@@ -36,7 +36,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> types::Forest<T> for Forest<T> {
     }
 
     fn trees(&self) -> Vec<Tree<T>> {
-        Forest::trees(self)
+        Into::<Vec<_>>::into(self)
     }
 
     fn intersect(self, other: Self) -> Self {
