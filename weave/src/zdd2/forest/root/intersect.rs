@@ -37,7 +37,7 @@ pub fn intersect(node1: Node, node2: Node) -> Node {
 
 #[cfg(test)]
 mod tests {
-    use zdd2::forest::root::ForestRoot;
+    use super::super::ForestRoot;
 
     #[test]
     fn left_empty_right_empty() {

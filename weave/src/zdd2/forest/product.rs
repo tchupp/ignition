@@ -1,7 +1,7 @@
 use std::hash::Hash;
 
-use zdd2::Forest;
-use zdd2::forest::root::ForestRoot;
+use super::Forest;
+use super::root::ForestRoot;
 
 pub fn product<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, forest2: Forest<T>) -> Forest<T> {
     match (forest1, forest2) {

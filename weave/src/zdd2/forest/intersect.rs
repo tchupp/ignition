@@ -35,7 +35,7 @@ pub fn intersect<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, f
 
 #[cfg(test)]
 mod tests {
-    use zdd2::Forest;
+    use super::Forest;
 
     #[test]
     fn intersect_returns_identity_when_both_trees_are_empty() {

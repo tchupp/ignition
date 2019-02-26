@@ -3,7 +3,7 @@ use std::iter::FromIterator;
 
 use itertools::Itertools;
 
-use zdd2::Tree;
+use super::Tree;
 
 use self::root::ForestRoot;
 
@@ -183,8 +183,8 @@ mod eq_forest_tests {
 
 #[cfg(test)]
 mod empty_forest_tests {
-    use zdd2::Forest;
-    use zdd2::Tree;
+    use super::Forest;
+    use super::Tree;
 
     #[test]
     fn empty_forest_has_size_0() {
@@ -213,8 +213,8 @@ mod empty_forest_tests {
 
 #[cfg(test)]
 mod unit_forest_tests {
-    use zdd2::Forest;
-    use zdd2::Tree;
+    use super::Forest;
+    use super::Tree;
 
     #[test]
     fn unit_forest_has_size_1() {
@@ -244,8 +244,8 @@ mod unit_forest_tests {
 
 #[cfg(test)]
 mod many_forest_tests {
-    use zdd2::Forest;
-    use zdd2::Tree;
+    use super::Forest;
+    use super::Tree;
 
     #[test]
     fn many_forest_has_size_2() {

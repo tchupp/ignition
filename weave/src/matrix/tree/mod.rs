@@ -2,7 +2,7 @@ use std::hash::Hash;
 
 use hashbrown::HashSet;
 
-use matrix::Forest;
+use super::Forest;
 
 mod intersect;
 mod product;

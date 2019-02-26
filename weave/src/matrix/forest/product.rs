@@ -2,7 +2,7 @@ use std::hash::Hash;
 
 use hashbrown::HashSet;
 
-use matrix::Forest;
+use super::Forest;
 
 pub fn product<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, forest2: Forest<T>) -> Forest<T> {
     match (forest1, forest2) {

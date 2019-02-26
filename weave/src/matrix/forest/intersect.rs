@@ -2,7 +2,7 @@ use std::hash::Hash;
 
 use rayon::iter::ParallelIterator;
 
-use matrix::Forest;
+use super::Forest;
 
 pub fn intersect<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, forest2: Forest<T>) -> Forest<T> {
     if forest1 == forest2 {
@@ -25,7 +25,7 @@ pub fn intersect<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, f
 
 #[cfg(test)]
 mod tests {
-    use matrix::Forest;
+    use super::Forest;
 
     #[test]
     fn intersect_returns_identity_when_both_trees_are_empty() {

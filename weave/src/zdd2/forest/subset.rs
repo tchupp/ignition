@@ -29,7 +29,7 @@ pub fn subset_many<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, 
 
 #[cfg(test)]
 mod subset_tests {
-    use zdd2::Forest;
+    use super::Forest;
 
     #[test]
     fn subset_of_empty_returns_empty() {
@@ -109,7 +109,7 @@ mod subset_tests {
 
 #[cfg(test)]
 mod subset_many_tests {
-    use zdd2::Forest;
+    use super::Forest;
 
     #[test]
     fn subset_many_of_empty_returns_empty() {

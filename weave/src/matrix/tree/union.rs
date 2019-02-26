@@ -31,7 +31,7 @@ pub fn union<T: Hash + Clone + Ord + Sync + Send>(tree1: Tree<T>, tree2: Tree<T>
 
 #[cfg(test)]
 mod subset_tests {
-    use matrix::Tree;
+    use super::Tree;
 
     #[test]
     fn union_returns_right_when_left_is_one_subset() {
@@ -80,7 +80,7 @@ mod subset_tests {
 
 #[cfg(test)]
 mod tests {
-    use matrix::Tree;
+    use super::Tree;
 
     #[test]
     fn left_side_empty() {

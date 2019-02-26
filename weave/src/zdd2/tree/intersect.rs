@@ -34,7 +34,7 @@ pub fn intersect<T: Hash + Clone + Ord + Sync + Send>(tree1: Tree<T>, tree2: Tre
 
 #[cfg(test)]
 mod subset_tests {
-    use zdd2::Tree;
+    use super::Tree;
 
     #[test]
     fn intersect_returns_left_when_left_is_subset_one() {
@@ -83,7 +83,7 @@ mod subset_tests {
 
 #[cfg(test)]
 mod tests {
-    use zdd2::Tree;
+    use super::Tree;
 
     #[test]
     fn left_side_empty() {

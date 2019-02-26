@@ -4,7 +4,7 @@ use std::iter::FromIterator;
 use hashbrown::HashSet;
 use itertools::Itertools;
 
-use matrix::Tree;
+use super::Tree;
 
 mod union;
 mod intersect;
@@ -153,8 +153,8 @@ mod eq_forest_tests {
 
 #[cfg(test)]
 mod empty_forest_tests {
-    use matrix::Forest;
-    use matrix::Tree;
+    use super::Forest;
+    use super::Tree;
 
     #[test]
     fn empty_forest_has_size_0() {
@@ -183,8 +183,8 @@ mod empty_forest_tests {
 
 #[cfg(test)]
 mod unit_forest_tests {
-    use matrix::Forest;
-    use matrix::Tree;
+    use super::Forest;
+    use super::Tree;
 
     #[test]
     fn unit_forest_has_size_1() {
@@ -214,8 +214,8 @@ mod unit_forest_tests {
 
 #[cfg(test)]
 mod many_forest_tests {
-    use matrix::Forest;
-    use matrix::Tree;
+    use super::Forest;
+    use super::Tree;
 
     #[test]
     fn many_forest_has_size_2() {
