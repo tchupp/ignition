@@ -4,7 +4,7 @@ use criterion::Fun;
 use serde_json;
 
 use tree_building;
-use weave::Tree;
+use weave::zdd::Tree;
 
 fn bincode_serialize(tree: &Tree<&str>) {
     bincode::serialize(tree).expect("expected Ok, but was");

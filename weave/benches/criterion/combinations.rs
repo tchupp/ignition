@@ -2,7 +2,7 @@ use criterion::Criterion;
 use criterion::Fun;
 
 use tree_building;
-use weave::Tree;
+use weave::zdd::Tree;
 
 fn combinations_recursive(tree: &Tree<&str>) {
     tree.combinations_recursive();
