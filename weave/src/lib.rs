@@ -13,6 +13,8 @@ extern crate serde;
 extern crate serde_derive;
 
 pub use status::*;
+pub use types::Forest;
+pub use types::Tree;
 pub use zdd::*;
 
 mod types;
