@@ -7,7 +7,7 @@ use yew::prelude::{
     Renderable,
 };
 
-use weave::{
+use weave::zdd::{
     Tree,
     TreeNode,
     Universe,
