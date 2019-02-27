@@ -6,7 +6,7 @@ use itertools::Itertools;
 use core::Family;
 use core::Item;
 use weave::ItemStatus;
-use weave::Tree;
+use weave::zdd::Tree;
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Closet {

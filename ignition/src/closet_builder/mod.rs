@@ -6,8 +6,8 @@ use itertools::Itertools;
 use closet::Closet;
 use core::Family;
 use core::Item;
-use weave::Tree;
-use weave::Universe;
+use weave::zdd::Tree;
+use weave::zdd::Universe;
 
 pub use self::validation::ClosetBuilderError;
 
