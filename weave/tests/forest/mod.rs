@@ -1,5 +1,7 @@
 pub mod intersect;
 pub mod product;
+pub mod subset;
+pub mod subset_many;
 pub mod union;
 
 macro_rules! intersect {
@@ -104,6 +106,68 @@ macro_rules! product_tests {
             product!($forest, disjoint_unique_forests);
 
             product!($forest, forests_are_disjoint_many);
+        }
+    };
+}
+
+macro_rules! subset {
+    ($forest:ty, $test_case:ident) => {
+
+        #[test]
+        fn $test_case() {
+            let (forest, element, expected) = $crate::forest::subset::$test_case::<$forest>();
+
+            assert_eq!(
+                expected,
+                <$forest>::subset(forest, element)
+            );
+        }
+    };
+}
+
+macro_rules! subset_many {
+    ($forest:ty, $test_case:ident) => {
+
+        #[test]
+        fn $test_case() {
+            let (forest, elements, expected) = $crate::forest::subset_many::$test_case::<$forest>();
+
+            assert_eq!(
+                expected,
+                <$forest>::subset_many(forest, &elements)
+            );
+        }
+    };
+}
+
+macro_rules! subset_tests {
+    ($forest:ty) => {
+
+        #[cfg(test)]
+        mod subset_tests {
+            subset!($forest, empty_forest);
+
+            subset!($forest, unit_forest_with_disjoint_element);
+
+            subset!($forest, many_forest_with_disjoint_element);
+
+            subset!($forest, unit_forest_with_matching_element);
+
+            subset!($forest, many_forest_with_matching_element_1);
+
+            subset!($forest, many_forest_with_matching_element_2);
+
+            subset_many!($forest, empty_forest_with_single_element);
+
+            subset_many!($forest, unit_forest_with_empty_elements);
+
+            subset_many!($forest, unit_forest_with_one_element);
+
+            subset_many!($forest, unit_forest_with_disjoint_elements);
+
+            subset_many!($forest, many_forest_with_one_element);
+
+            subset_many!($forest, many_forest_with_many_elements);
         }
     };
 }
