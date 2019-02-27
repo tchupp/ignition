@@ -6,3 +6,5 @@ mod forest;
 intersect_tests!(weave::zdd2::Forest<&str>);
 
 union_tests!(weave::zdd2::Forest<&str>);
+
+product_tests!(weave::zdd2::Forest<&str>);
