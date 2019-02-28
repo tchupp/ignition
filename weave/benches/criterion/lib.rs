@@ -4,17 +4,22 @@ extern crate criterion;
 extern crate serde_json;
 extern crate weave;
 
-use criterion::Criterion;
-
-mod tree_building;
+mod zdd_building;
 
 mod combinations;
 mod serialize;
+
+mod forest;
+
+mod matrix;
+mod zdd;
 
 criterion_group!(
     benches,
     combinations::bench_combinations,
     serialize::bench_serialize,
-    serialize::bench_deserialize
+    serialize::bench_deserialize,
+    matrix::benches,
+    zdd::benches,
 );
 criterion_main!(benches);
