@@ -10,9 +10,13 @@ mod node;
 mod universe;
 mod trees;
 
+#[cfg(test)]
 mod union;
+#[cfg(test)]
 mod intersect;
+#[cfg(test)]
 mod subset;
+#[cfg(test)]
 mod product;
 
 /// Forest is an immutable set of sets
@@ -66,7 +70,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
 
         let root = matrix.iter()
             .map(|items| items_as_node(&universe, items))
-            .fold(Node::Leaf(false), union::union);
+            .fold(Node::Leaf(false), Node::union);
 
         Forest { root: root.into(), universe }
     }
@@ -108,7 +112,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
 
         let self_root = translate_root(&self.universe, &universe, self.root.into());
         let other_root = translate_root(&other.universe, &universe, other.root.into());
-        let root = intersect::intersect(self_root, other_root);
+        let root = Node::intersect(self_root, other_root);
 
         Self::canonical(root, universe)
     }
@@ -118,7 +122,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
 
         let self_root = translate_root(&self.universe, &universe, self.root.into());
         let other_root = translate_root(&other.universe, &universe, other.root.into());
-        let root = union::union(self_root, other_root);
+        let root = Node::union(self_root, other_root);
 
         Self::canonical(root, universe)
     }
@@ -128,7 +132,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
 
         let self_root = translate_root(&self.universe, &universe, self.root.into());
         let other_root = translate_root(&other.universe, &universe, other.root.into());
-        let root = product::product(self_root, other_root);
+        let root = Node::product(self_root, other_root);
 
         Self::canonical(root, universe)
     }
@@ -138,7 +142,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
             None => return Self::empty(),
             Some(element) => element,
         };
-        let root = subset::subset(self.root.into(), element);
+        let root = Node::subset(self.root.into(), element);
 
         Self::canonical(root, self.universe)
     }
@@ -157,7 +161,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
             known_elements
         };
 
-        let root = subset::subset_all(self.root.into(), &elements);
+        let root = Node::subset_all(self.root.into(), &elements);
 
         Self::canonical(root, self.universe)
     }

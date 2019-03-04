@@ -5,6 +5,11 @@ use self::arena::*;
 
 mod arena;
 
+mod intersect;
+mod union;
+mod product;
+mod subset;
+
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
 pub struct Priority(pub(crate) usize);
 
@@ -55,32 +60,50 @@ impl Node {
         let high = Node::from(high.into());
 
         match (high, low) {
-            (Node::Leaf(false), _) => {
-                return low;
-            }
+            (Node::Leaf(false), _) => low,
             (Node::Branch(h_id, h_low, h_high), Node::Branch(l_id, l_low, l_high)) if h_id < id && l_id == h_id => {
                 let low = Node::branch(id, l_low, h_low);
                 let high = Node::branch(id, l_high, h_high);
-                return Node::branch(h_id, low, high);
+
+                Node::branch(h_id, low, high)
             }
+
             (Node::Branch(h_id, h_low, h_high), _) if h_id < id => {
                 let high = Node::branch(id, h_low, h_high);
-                return Node::branch(h_id, low, high);
+
+                Node::branch(h_id, low, high)
             }
             (_, Node::Branch(l_id, l_low, l_high)) if l_id < id => {
                 let low = Node::branch(id, l_low, high);
-                return Node::branch(l_id, low, l_high);
-            }
-            (Node::Branch(h_id, _, h_high), _) if h_id == id => {
-                return Node::branch(id, low, h_high);
-            }
-            (_, Node::Branch(l_id, l_low, _)) if l_id == id => {
-                return Node::branch(id, l_low, high);
-            }
-            _ => {}
-        }
 
-        Node::Branch(id, low.into(), high.into())
+                Node::branch(l_id, low, l_high)
+            }
+
+            (Node::Branch(h_id, _, h_high), _) if h_id == id => Node::branch(id, low, h_high),
+            (_, Node::Branch(l_id, l_low, _)) if l_id == id => Node::branch(id, l_low, high),
+
+            _ => Node::Branch(id, low.into(), high.into())
+        }
+    }
+
+    pub fn intersect(self, other: Self) -> Self {
+        intersect::intersect(self, other)
+    }
+
+    pub fn union(self, other: Self) -> Self {
+        union::union(self, other)
+    }
+
+    pub fn product(self, other: Self) -> Self {
+        product::product(self, other)
+    }
+
+    pub fn subset(self, element: Priority) -> Self {
+        subset::subset(self, element)
+    }
+
+    pub fn subset_all(self, elements: &[Priority]) -> Self {
+        subset::subset_all(self, elements)
     }
 }
 
