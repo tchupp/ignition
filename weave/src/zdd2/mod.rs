@@ -58,8 +58,8 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> types::Forest<T> for Forest<T> {
         Forest::subset(self, element)
     }
 
-    fn subset_many(self, elements: &[T]) -> Self {
-        Forest::subset_many(self, elements)
+    fn subset_all(self, elements: &[T]) -> Self {
+        Forest::subset_all(self, elements)
     }
 }
 

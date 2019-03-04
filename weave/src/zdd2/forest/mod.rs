@@ -143,7 +143,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
         Self::canonical(root, self.universe)
     }
 
-    pub fn subset_many(self, elements: &[T]) -> Self {
+    pub fn subset_all(self, elements: &[T]) -> Self {
         if elements.is_empty() {
             return self;
         }
@@ -157,7 +157,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
             known_elements
         };
 
-        let root = subset::subset_many(self.root.into(), &elements);
+        let root = subset::subset_all(self.root.into(), &elements);
 
         Self::canonical(root, self.universe)
     }

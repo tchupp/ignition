@@ -114,8 +114,8 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
         subset::subset(self, element)
     }
 
-    pub fn subset_many(self, elements: &[T]) -> Self {
-        subset::subset_many(self, elements)
+    pub fn subset_all(self, elements: &[T]) -> Self {
+        subset::subset_all(self, elements)
     }
 }
 

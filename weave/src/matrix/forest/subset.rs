@@ -17,7 +17,7 @@ pub fn subset<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, eleme
     }
 }
 
-pub fn subset_many<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, elements: &[T]) -> Forest<T> {
+pub fn subset_all<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, elements: &[T]) -> Forest<T> {
     if elements.is_empty() {
         return forest;
     }
@@ -122,55 +122,55 @@ mod subset_tests {
 }
 
 #[cfg(test)]
-mod subset_many_tests {
+mod subset_all_tests {
     use super::Forest;
 
     #[test]
-    fn subset_many_of_empty_returns_empty() {
+    fn subset_all_of_empty_returns_empty() {
         let forest: Forest<&str> = Forest::empty();
         let elements = &["1"];
 
         assert_eq!(
             Forest::<&str>::empty(),
-            Forest::subset_many(forest, elements)
+            Forest::subset_all(forest, elements)
         );
     }
 
     #[test]
-    fn subset_many_with_empty_elements_returns_identity() {
+    fn subset_all_with_empty_elements_returns_identity() {
         let forest: Forest<&str> = Forest::unit(&["2", "3"]);
         let elements = &[];
 
         assert_eq!(
             Forest::unit(&["2", "3"]),
-            Forest::subset_many(forest, elements)
+            Forest::subset_all(forest, elements)
         );
     }
 
     #[test]
-    fn subset_many_with_one_element_returns_identity() {
+    fn subset_all_with_one_element_returns_identity() {
         let forest: Forest<&str> = Forest::unit(&["2", "3"]);
         let elements = &["2"];
 
         assert_eq!(
             Forest::unit(&["2", "3"]),
-            Forest::subset_many(forest, elements)
+            Forest::subset_all(forest, elements)
         );
     }
 
     #[test]
-    fn subset_many_with_disjoint_elements_returns_empty() {
+    fn subset_all_with_disjoint_elements_returns_empty() {
         let forest: Forest<&str> = Forest::unit(&["2", "3"]);
         let elements = &["1", "2"];
 
         assert_eq!(
             Forest::<&str>::empty(),
-            Forest::subset_many(forest, elements)
+            Forest::subset_all(forest, elements)
         );
     }
 
     #[test]
-    fn subset_many_with_one_element_returns_many() {
+    fn subset_all_with_one_element_returns_many() {
         let forest: Forest<&str> = Forest::many(&[
             vec!["1", "3"],
             vec!["2", "3"],
@@ -183,12 +183,12 @@ mod subset_many_tests {
                 vec!["1", "3"],
                 vec!["2", "3"],
             ]),
-            Forest::subset_many(forest, elements)
+            Forest::subset_all(forest, elements)
         );
     }
 
     #[test]
-    fn subset_many_with_many_elements_returns_unit() {
+    fn subset_all_with_many_elements_returns_unit() {
         let forest: Forest<&str> = Forest::many(&[
             vec!["1", "3"],
             vec!["2", "3"],
@@ -198,7 +198,7 @@ mod subset_many_tests {
 
         assert_eq!(
             Forest::unit(&["1", "3"]),
-            Forest::subset_many(forest, elements)
+            Forest::subset_all(forest, elements)
         );
     }
 }
