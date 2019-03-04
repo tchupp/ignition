@@ -4,7 +4,7 @@ use super::Forest;
 
 pub fn subset<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, element: T) -> Forest<T> {
     match forest {
-        Forest::Many(matrix) =>
+        Forest(matrix) =>
             Forest::from_root(matrix.subset(element)),
     }
 }
@@ -15,7 +15,7 @@ pub fn subset_many<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, 
     }
 
     match forest {
-        Forest::Many(matrix) =>
+        Forest(matrix) =>
             Forest::from_root(matrix.subset_many(elements)),
     }
 }

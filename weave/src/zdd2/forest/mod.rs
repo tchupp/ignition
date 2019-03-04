@@ -14,14 +14,12 @@ mod product;
 
 /// Forest is an immutable set of sets
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub enum Forest<T: Hash + Eq + Clone + Ord> {
-    Many(ForestRoot<T>),
-}
+pub struct Forest<T: Hash + Eq + Clone + Ord>(ForestRoot<T>);
 
 impl<T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for Forest<T> {
     fn into(self) -> Vec<Tree<T>> {
         match self {
-            Forest::Many(matrix) => matrix.trees()
+            Forest(matrix) => matrix.trees()
                 .into_iter()
                 .map(|set| Tree::many(&set))
                 .collect(),
@@ -32,7 +30,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for Forest<T> 
 impl<'a, T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for &'a Forest<T> {
     fn into(self) -> Vec<Tree<T>> {
         match self {
-            Forest::Many(matrix) => matrix.trees()
+            Forest(matrix) => matrix.trees()
                 .into_iter()
                 .map(|set| Tree::many(&set))
                 .collect(),
@@ -42,34 +40,34 @@ impl<'a, T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for &'a Fo
 
 impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     pub fn empty() -> Self {
-        Forest::Many(ForestRoot::empty())
+        Forest(ForestRoot::empty())
     }
 
     pub fn unit(set: &[T]) -> Self {
-        Forest::Many(ForestRoot::unit(set))
+        Forest(ForestRoot::unit(set))
     }
 
     pub fn many(matrix: &[Vec<T>]) -> Self {
-        Forest::Many(ForestRoot::many(&matrix))
+        Forest(ForestRoot::many(&matrix))
     }
 
     pub fn from_root(root: ForestRoot<T>) -> Self {
-        Forest::Many(root)
+        Forest(root)
     }
 
     pub fn unique(set: &[T]) -> Self {
-        Forest::Many(ForestRoot::unique(set))
+        Forest(ForestRoot::unique(set))
     }
 
     pub fn len(&self) -> usize {
         match self {
-            Forest::Many(matrix) => matrix.len(),
+            Forest(matrix) => matrix.len(),
         }
     }
 
     pub fn is_empty(&self) -> bool {
         match self {
-            Forest::Many(matrix) => matrix.is_empty(),
+            Forest(matrix) => matrix.is_empty(),
         }
     }
 

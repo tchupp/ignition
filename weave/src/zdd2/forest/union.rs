@@ -8,7 +8,7 @@ pub fn union<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, fores
     }
 
     match (&forest1, &forest2) {
-        (Forest::Many(matrix1), Forest::Many(matrix2)) =>
+        (Forest(matrix1), Forest(matrix2)) =>
             Forest::from_root(matrix1.union(&matrix2)),
     }
 }

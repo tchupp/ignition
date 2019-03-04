@@ -4,7 +4,7 @@ use super::Forest;
 
 pub fn product<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, forest2: Forest<T>) -> Forest<T> {
     match (forest1, forest2) {
-        (Forest::Many(matrix1), Forest::Many(matrix2)) =>
+        (Forest(matrix1), Forest(matrix2)) =>
             Forest::from_root(matrix1.product(&matrix2)),
     }
 }
