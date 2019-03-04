@@ -38,6 +38,7 @@ impl<T: Hash + Eq + Clone + Ord> Universe<T> {
 
     pub fn from_matrix(matrix: &[Vec<T>]) -> Self {
         let occurrences: HashMap<T, usize> = matrix.iter()
+            .map(|set| Self::filter_repeats::<Vec<_>>(set))
             .unique()
             .flatten()
             .fold(HashMap::new(), |mut occurrences, item| {
@@ -46,6 +47,10 @@ impl<T: Hash + Eq + Clone + Ord> Universe<T> {
             });
 
         Universe::from_occurrences(occurrences)
+    }
+
+    fn filter_repeats<B: FromIterator<T>>(set: &[T]) -> B {
+        set.iter().cloned().sorted().unique().collect::<B>()
     }
 
     pub fn merge(&self, other: &Self) -> Self {

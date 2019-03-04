@@ -8,15 +8,6 @@ pub fn union<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, fores
     }
 
     match (&forest1, &forest2) {
-        (_, Forest::Empty) => forest1.clone(),
-        (Forest::Empty, _) => forest2.clone(),
-
-        (Forest::Unit(set1), Forest::Unit(set2)) =>
-            Forest::many(&[set1.clone(), set2.clone()]),
-
-        (Forest::Many(matrix), Forest::Unit(set)) => Forest::Many(matrix.extend(&set)),
-        (Forest::Unit(set), Forest::Many(matrix)) => Forest::Many(matrix.extend(&set)),
-
         (Forest::Many(matrix1), Forest::Many(matrix2)) =>
             Forest::from_root(matrix1.union(&matrix2)),
     }

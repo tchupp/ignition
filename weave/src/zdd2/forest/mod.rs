@@ -1,7 +1,4 @@
 use std::hash::Hash;
-use std::iter::FromIterator;
-
-use itertools::Itertools;
 
 use super::Tree;
 
@@ -18,16 +15,12 @@ mod product;
 /// Forest is an immutable set of sets
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Forest<T: Hash + Eq + Clone + Ord> {
-    Empty,
-    Unit(Vec<T>),
     Many(ForestRoot<T>),
 }
 
 impl<T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for Forest<T> {
     fn into(self) -> Vec<Tree<T>> {
         match self {
-            Forest::Empty => Vec::new(),
-            Forest::Unit(set) => vec![Tree::many(&set)],
             Forest::Many(matrix) => matrix.trees()
                 .into_iter()
                 .map(|set| Tree::many(&set))
@@ -39,8 +32,6 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for Forest<T> 
 impl<'a, T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for &'a Forest<T> {
     fn into(self) -> Vec<Tree<T>> {
         match self {
-            Forest::Empty => Vec::new(),
-            Forest::Unit(set) => vec![Tree::many(set)],
             Forest::Many(matrix) => matrix.trees()
                 .into_iter()
                 .map(|set| Tree::many(&set))
@@ -51,63 +42,34 @@ impl<'a, T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for &'a Fo
 
 impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     pub fn empty() -> Self {
-        Forest::Empty
+        Forest::Many(ForestRoot::empty())
     }
 
     pub fn unit(set: &[T]) -> Self {
-        Forest::Unit(Self::filter_repeats(set))
+        Forest::Many(ForestRoot::unit(set))
     }
 
     pub fn many(matrix: &[Vec<T>]) -> Self {
-        match matrix.len() {
-            0 => Self::empty(),
-            1 => Self::unit(&matrix[0]),
-            _ => {
-                let matrix = matrix.iter()
-                    .cloned()
-                    .map(|set| Self::filter_repeats(&set))
-                    .unique()
-                    .collect::<Vec<_>>();
-
-                Forest::Many(ForestRoot::many(&matrix))
-            }
-        }
+        Forest::Many(ForestRoot::many(&matrix))
     }
 
     pub fn from_root(root: ForestRoot<T>) -> Self {
-        let trees = root.trees();
-        match trees.len() {
-            0 => Self::empty(),
-            1 => Self::unit(&trees[0]),
-            _ => Forest::Many(root),
-        }
+        Forest::Many(root)
     }
 
     pub fn unique(set: &[T]) -> Self {
-        let matrix: Vec<Vec<T>> = set.iter()
-            .cloned()
-            .map(|element| vec![element])
-            .collect();
-
-        Self::many(&matrix)
-    }
-
-    fn filter_repeats<B: FromIterator<T>>(set: &[T]) -> B {
-        set.iter().cloned().sorted().unique().collect::<B>()
+        Forest::Many(ForestRoot::unique(set))
     }
 
     pub fn len(&self) -> usize {
         match self {
-            Forest::Empty => 0,
-            Forest::Unit(_) => 1,
             Forest::Many(matrix) => matrix.len(),
         }
     }
 
     pub fn is_empty(&self) -> bool {
         match self {
-            Forest::Empty => true,
-            _ => false
+            Forest::Many(matrix) => matrix.is_empty(),
         }
     }
 

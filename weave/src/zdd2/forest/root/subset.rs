@@ -1,3 +1,4 @@
+use super::intersect;
 use super::Node;
 use super::Priority;
 
@@ -31,31 +32,9 @@ fn subset_inner(root: Node, element: Priority) -> Matching {
 }
 
 pub fn subset_many(root: Node, elements: &[Priority]) -> Node {
-    subset_many_inner(root, elements).0
-}
-
-fn subset_many_inner(root: Node, elements: &[Priority]) -> Matching {
-    match root {
-        Node::Leaf(_) => (root, false),
-        Node::Branch(id, _low, high) if elements.contains(&id) => {
-            let low = Node::FALSE;
-            let (high, _keep) = subset_many_inner(high.into(), elements);
-
-            (Node::branch(id, low, high), true)
-        }
-        Node::Branch(id, low, high) => {
-            let (low, keep_low) = reduce_branch(
-                subset_many_inner(low.into(), elements)
-            );
-            let (high, keep_high) = reduce_branch(
-                subset_many_inner(high.into(), elements)
-            );
-
-            let keep = keep_low || keep_high;
-
-            (Node::branch(id, low, high), keep)
-        }
-    }
+    elements.iter()
+        .map(|element| subset(root, element.to_owned()))
+        .fold(Node::Leaf(true), |acc, next| intersect::intersect(acc, next))
 }
 
 fn reduce_branch((root, keep): Matching) -> Matching {

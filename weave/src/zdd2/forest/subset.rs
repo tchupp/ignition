@@ -4,9 +4,8 @@ use super::Forest;
 
 pub fn subset<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, element: T) -> Forest<T> {
     match forest {
-        Forest::Unit(ref set) if set.contains(&element) => Forest::unit(&set),
-        Forest::Many(matrix) => Forest::from_root(matrix.subset(element)),
-        _ => Forest::empty(),
+        Forest::Many(matrix) =>
+            Forest::from_root(matrix.subset(element)),
     }
 }
 
@@ -16,14 +15,8 @@ pub fn subset_many<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, 
     }
 
     match forest {
-        Forest::Unit(set) =>
-            if elements.iter().all(|e| set.contains(e)) {
-                Forest::unit(&set)
-            } else {
-                Forest::empty()
-            },
-        Forest::Many(matrix) => Forest::from_root(matrix.subset_many(elements)),
-        _ => Forest::empty()
+        Forest::Many(matrix) =>
+            Forest::from_root(matrix.subset_many(elements)),
     }
 }
 

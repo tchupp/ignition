@@ -1,21 +1,9 @@
 use std::hash::Hash;
 
 use super::Forest;
-use super::root::ForestRoot;
 
 pub fn product<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, forest2: Forest<T>) -> Forest<T> {
     match (forest1, forest2) {
-        (_, Forest::Empty) => Forest::empty(),
-        (Forest::Empty, _) => Forest::empty(),
-
-        (Forest::Unit(mut set1), Forest::Unit(set2)) => {
-            set1.extend(set2);
-            Forest::unit(&set1)
-        }
-
-        (Forest::Many(matrix), Forest::Unit(set)) => Forest::Many(matrix.product(&ForestRoot::unit(&set))),
-        (Forest::Unit(set), Forest::Many(matrix)) => Forest::Many(matrix.product(&ForestRoot::unit(&set))),
-
         (Forest::Many(matrix1), Forest::Many(matrix2)) =>
             Forest::from_root(matrix1.product(&matrix2)),
     }
