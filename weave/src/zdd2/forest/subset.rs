@@ -1,28 +1,52 @@
-use std::hash::Hash;
+use super::intersect;
+use super::Node;
+use super::Priority;
 
-use super::Forest;
+type Matching = (Node, bool);
 
-pub fn subset<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, element: T) -> Forest<T> {
-    match forest {
-        Forest(matrix) =>
-            Forest::from_root(matrix.subset(element)),
+pub fn subset(root: Node, element: Priority) -> Node {
+    subset_inner(root, element).0
+}
+
+fn subset_inner(root: Node, element: Priority) -> Matching {
+    match root {
+        Node::Leaf(_) => (root, false),
+        Node::Branch(id, _low, high) if element == id => {
+            let low = Node::FALSE;
+
+            (Node::branch(id, low, high), true)
+        }
+        Node::Branch(id, low, high) => {
+            let (low, keep_low) = reduce_branch(
+                subset_inner(low.into(), element)
+            );
+            let (high, keep_high) = reduce_branch(
+                subset_inner(high.into(), element)
+            );
+
+            let keep = keep_low || keep_high;
+
+            (Node::branch(id, low, high), keep)
+        }
     }
 }
 
-pub fn subset_many<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, elements: &[T]) -> Forest<T> {
-    if elements.is_empty() {
-        return forest;
-    }
+pub fn subset_many(root: Node, elements: &[Priority]) -> Node {
+    elements.iter()
+        .map(|element| subset(root, element.to_owned()))
+        .fold(Node::Leaf(true), intersect::intersect)
+}
 
-    match forest {
-        Forest(matrix) =>
-            Forest::from_root(matrix.subset_many(elements)),
+fn reduce_branch((root, keep): Matching) -> Matching {
+    match (root, keep) {
+        (_root, false) => (Node::Leaf(false), keep),
+        (root, true) => (root, keep)
     }
 }
 
 #[cfg(test)]
 mod subset_tests {
-    use super::Forest;
+    use super::super::Forest;
 
     #[test]
     fn subset_of_empty_returns_empty() {
@@ -102,7 +126,7 @@ mod subset_tests {
 
 #[cfg(test)]
 mod subset_many_tests {
-    use super::Forest;
+    use super::super::Forest;
 
     #[test]
     fn subset_many_of_empty_returns_empty() {

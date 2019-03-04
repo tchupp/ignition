@@ -1,21 +1,55 @@
-use std::hash::Hash;
+use super::Node;
 
-use super::Forest;
-
-pub fn union<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, forest2: Forest<T>) -> Forest<T> {
-    if forest1 == forest2 {
-        return forest1;
+pub fn union(node1: Node, node2: Node) -> Node {
+    if node1 == node2 {
+        return node1;
     }
 
-    match (&forest1, &forest2) {
-        (Forest(matrix1), Forest(matrix2)) =>
-            Forest::from_root(matrix1.union(&matrix2)),
-    }
+    let (id, low, high) = match (node1, node2) {
+        (_, Node::Leaf(false)) => return node1,
+        (Node::Leaf(false), _) => return node2,
+
+        (Node::Leaf(true), Node::Leaf(true)) => return Node::Leaf(true),
+
+        (Node::Branch(id, low, high), Node::Leaf(true)) => {
+            let low = union(low.into(), node2);
+            let high = Node::from(high);
+
+            (id, low, high)
+        }
+        (Node::Leaf(true), Node::Branch(id, low, high)) => {
+            let low = union(node1, low.into());
+            let high = Node::from(high);
+
+            (id, low, high)
+        }
+
+        (Node::Branch(id_1, low_1, high_1), Node::Branch(id_2, _, _)) if id_1 < id_2 => {
+            let low = union(low_1.into(), node2);
+            let high = Node::from(high_1);
+
+            (id_1, low, high)
+        }
+        (Node::Branch(id_1, _, _), Node::Branch(id_2, low_2, high_2)) if id_1 > id_2 => {
+            let low = union(node1, low_2.into());
+            let high = Node::from(high_2);
+
+            (id_2, low, high)
+        }
+        (Node::Branch(id_1, low_1, high_1), Node::Branch(_, low_2, high_2)) => {
+            let low = union(low_1.into(), low_2.into());
+            let high = union(high_1.into(), high_2.into());
+
+            (id_1, low, high)
+        }
+    };
+
+    Node::branch(id, low, high)
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Forest;
+    use super::super::Forest;
 
     #[test]
     fn union_returns_identity_when_both_trees_are_empty() {

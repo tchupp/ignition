@@ -1,11 +1,12 @@
 use std::fmt;
 use std::sync::RwLock;
 
-use super::root::Priority;
-
 use self::arena::*;
 
 mod arena;
+
+#[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash, Debug)]
+pub struct Priority(pub(crate) usize);
 
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct NodeId(usize);

@@ -1,21 +1,43 @@
-use std::hash::Hash;
+use super::Node;
 
-use super::Forest;
-
-pub fn intersect<T: Hash + Eq + Clone + Ord + Sync + Send>(forest1: Forest<T>, forest2: Forest<T>) -> Forest<T> {
-    if forest1 == forest2 {
-        return forest1;
+pub fn intersect(node1: Node, node2: Node) -> Node {
+    if node1 == node2 {
+        return node1;
     }
 
-    match (&forest1, &forest2) {
-        (Forest(matrix1), Forest(matrix2)) =>
-            Forest::from_root(matrix1.intersect(matrix2)),
-    }
+    let (id, low, high) = match (node1, node2) {
+        (_, Node::Leaf(true)) => return node1,
+        (Node::Leaf(true), _) => return node2,
+
+        (_, Node::Leaf(false)) => return Node::Leaf(false),
+        (Node::Leaf(false), _) => return Node::Leaf(false),
+
+        (Node::Branch(id_1, low_1, _), Node::Branch(id_2, _, _)) if id_1 < id_2 => {
+            let low = intersect(low_1.into(), node2);
+            let high = Node::Leaf(false);
+
+            (id_1, low, high)
+        }
+        (Node::Branch(id_1, _, _), Node::Branch(id_2, low_2, _)) if id_1 > id_2 => {
+            let low = intersect(node1, low_2.into());
+            let high = Node::Leaf(false);
+
+            (id_2, low, high)
+        }
+        (Node::Branch(id_1, low_1, high_1), Node::Branch(_, low_2, high_2)) => {
+            let low = intersect(low_1.into(), low_2.into());
+            let high = intersect(high_1.into(), high_2.into());
+
+            (id_1, low, high)
+        }
+    };
+
+    Node::branch(id, low, high)
 }
 
 #[cfg(test)]
 mod tests {
-    use super::Forest;
+    use super::super::Forest;
 
     #[test]
     fn intersect_returns_identity_when_both_trees_are_empty() {
