@@ -5,6 +5,9 @@ use self::arena::*;
 
 mod arena;
 
+#[macro_use]
+mod macros;
+
 mod intersect;
 mod union;
 mod product;
@@ -163,11 +166,11 @@ mod tests {
     #[test]
     fn zdd_nodes_reduce_when_high_is_never_node() {
         {
-            let node = Node::branch(
-                Priority(0),
-                Node::ALWAYS,
-                Node::ALWAYS,
-            );
+            let node = node! {
+                id: 0,
+                low: node!(Always),
+                high: node!(Always)
+            };
 
             assert_eq!(
                 Node::Branch(Priority(0), Node::ALWAYS, Node::ALWAYS),
@@ -175,11 +178,11 @@ mod tests {
             );
         }
         {
-            let node = Node::branch(
-                Priority(0),
-                Node::ALWAYS,
-                Node::NEVER,
-            );
+            let node = node! {
+                id: 0,
+                low: node!(Always),
+                high: node!(Never)
+            };
 
             assert_eq!(
                 Node::Always,
@@ -187,11 +190,11 @@ mod tests {
             );
         }
         {
-            let node = Node::branch(
-                Priority(0),
-                Node::NEVER,
-                Node::NEVER,
-            );
+            let node = node! {
+                id: 0,
+                low: node!(Never),
+                high: node!(Never)
+            };
 
             assert_eq!(
                 Node::Never,
@@ -199,11 +202,7 @@ mod tests {
             );
         }
         {
-            let node = Node::branch(
-                Priority(0),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
+            let node = node!(id: 0);
 
             assert_eq!(
                 Node::Branch(Priority(0), Node::NEVER, Node::ALWAYS),
@@ -214,46 +213,21 @@ mod tests {
 
     #[test]
     fn zdd_nodes_reorder_when_low_has_higher_priority() {
-        let initial = {
-            let low = Node::branch(
-                Priority(0),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-            let high = Node::branch(
-                Priority(2),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-            let initial = Node::branch(
-                Priority(1),
-                low,
-                high,
-            );
-
-            initial
+        let initial = node! {
+            id: 1,
+            low: node!(id: 0),
+            high: node!(id: 2)
         };
 
-        let expected = {
-            let expected_high = Node::Branch(
-                Priority(2),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-            let expected_low = Node::Branch(
-                Priority(1),
-                Node::NEVER,
-                expected_high.into(),
-            );
-            let expected = Node::Branch(
-                Priority(0),
-                expected_low.into(),
-                Node::ALWAYS,
-            );
-
-            expected
+        let expected = node! {
+            id: 0,
+            low: node! {
+                id: 1,
+                low: node!(Never),
+                high: node!(id: 2)
+            },
+            high: node!(Always)
         };
-
 
         assert_eq!(
             expected,
@@ -263,46 +237,17 @@ mod tests {
 
     #[test]
     fn zdd_nodes_reorder_when_high_has_higher_priority() {
-        let initial = {
-            let low = Node::branch(
-                Priority(2),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-            let high = Node::branch(
-                Priority(0),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-            let initial = Node::branch(
-                Priority(1),
-                low,
-                high,
-            );
-
-            initial
+        let initial = node! {
+            id: 1,
+            low: node!(id: 2),
+            high: node!(id: 0)
         };
 
-        let expected = {
-            let expected_low = Node::Branch(
-                Priority(2),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-            let expected_high = Node::Branch(
-                Priority(1),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-            let expected = Node::Branch(
-                Priority(0),
-                expected_low.into(),
-                expected_high.into(),
-            );
-
-            expected
+        let expected = node! {
+            id: 0,
+            low: node!(id: 2),
+            high: node!(id: 1)
         };
-
 
         assert_eq!(
             expected,
@@ -312,60 +257,32 @@ mod tests {
 
     #[test]
     fn zdd_nodes_reorder_when_high_and_low_have_higher_priority() {
-        let initial = {
-            let low_1 = Node::branch(
-                Priority(0),
-                Node::NEVER,
-                Node::branch(
-                    Priority(2),
-                    Node::NEVER,
-                    Node::ALWAYS,
-                ),
-            );
-            let high_1 = Node::branch(
-                Priority(0),
-                Node::branch(
-                    Priority(3),
-                    Node::NEVER,
-                    Node::ALWAYS,
-                ),
-                Node::ALWAYS,
-            );
-            let initial = Node::branch(
-                Priority(1),
-                low_1,
-                high_1,
-            );
-
-            initial
+        let initial = node! {
+            id: 1,
+            low: node! {
+                id: 0,
+                low: node!(Never),
+                high: node!(id: 2)
+            },
+            high: node! {
+                id: 0,
+                low: node!(id: 3),
+                high: node!(Always)
+            }
         };
 
-        let expected = {
-            let expected_low_1 = Node::Branch(
-                Priority(1),
-                Node::NEVER,
-                Node::Branch(
-                    Priority(3),
-                    Node::NEVER,
-                    Node::ALWAYS,
-                ).into(),
-            );
-            let expected_high_1 = Node::Branch(
-                Priority(1),
-                Node::Branch(
-                    Priority(2),
-                    Node::NEVER,
-                    Node::ALWAYS,
-                ).into(),
-                Node::ALWAYS,
-            );
-            let expected = Node::Branch(
-                Priority(0),
-                expected_low_1.into(),
-                expected_high_1.into(),
-            );
-
-            expected
+        let expected = node! {
+            id: 0,
+            low: node! {
+                id: 1,
+                low: node!(Never),
+                high: node!(id: 3)
+            },
+            high: node! {
+                id: 1,
+                low: node!(id: 2),
+                high: node!(Always)
+            }
         };
 
 
@@ -377,33 +294,20 @@ mod tests {
 
     #[test]
     fn zdd_nodes_reorder_when_empty_set_is_allowed() {
-        let initial = {
-            let high = Node::branch(
-                Priority(0),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-            let initial = Node::branch(
-                Priority(1),
-                Node::ALWAYS,
-                high,
-            );
-
-            initial
+        let initial = node! {
+            id: 1,
+            low: node!(Always),
+            high: node! {
+                id: 0,
+                low: node!(Never),
+                high: node!(Always)
+            }
         };
 
-        let expected = {
-            let high = Node::Branch(
-                Priority(1),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-
-            Node::Branch(
-                Priority(0),
-                Node::ALWAYS,
-                high.into(),
-            )
+        let expected = node! {
+            id: 0,
+            low: node!(Always),
+            high: node!(id: 1)
         };
 
         assert_eq!(
@@ -414,38 +318,24 @@ mod tests {
 
     #[test]
     fn zdd_nodes_dedup_when_low_has_same_priority() {
-        let initial = {
-            let low = Node::branch(
-                Priority(1),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-            let high = Node::branch(
-                Priority(2),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-            let initial = Node::branch(
-                Priority(1),
-                low,
-                high,
-            );
-
-            initial
+        let initial = node! {
+            id: 1,
+            low: node! {
+                id: 1,
+                low: node!(Never),
+                high: node!(Always)
+            },
+            high: node! {
+                id: 2,
+                low: node!(Never),
+                high: node!(Always)
+            }
         };
 
-        let expected = {
-            let high = Node::Branch(
-                Priority(2),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-
-            Node::Branch(
-                Priority(1),
-                Node::NEVER,
-                high.into(),
-            )
+        let expected = node! {
+            id: 1,
+            low: node!(Never),
+            high: node!(id: 2)
         };
 
         assert_eq!(
@@ -456,38 +346,20 @@ mod tests {
 
     #[test]
     fn zdd_nodes_dedup_when_high_has_same_priority() {
-        let initial = {
-            let high2 = Node::branch(
-                Priority(2),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-            let high1 = Node::branch(
-                Priority(1),
-                Node::NEVER,
-                high2,
-            );
-            let initial = Node::branch(
-                Priority(1),
-                Node::NEVER,
-                high1,
-            );
-
-            initial
+        let initial = node! {
+            id: 1,
+            low: node!(Never),
+            high: node! {
+                id: 1,
+                low: node!(Never),
+                high: node!(id: 2)
+            }
         };
 
-        let expected = {
-            let high = Node::Branch(
-                Priority(2),
-                Node::NEVER,
-                Node::ALWAYS,
-            );
-
-            Node::Branch(
-                Priority(1),
-                Node::NEVER,
-                high.into(),
-            )
+        let expected = node! {
+            id: 1,
+            low: node!(Never),
+            high: node!(id: 2)
         };
 
         assert_eq!(
