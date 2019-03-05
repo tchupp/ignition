@@ -7,6 +7,7 @@ mod arena;
 
 #[macro_use]
 mod macros;
+mod parser;
 
 mod intersect;
 mod union;
@@ -297,11 +298,7 @@ mod tests {
         let initial = node! {
             id: 1,
             low: node!(Always),
-            high: node! {
-                id: 0,
-                low: node!(Never),
-                high: node!(Always)
-            }
+            high: node!(id: 0)
         };
 
         let expected = node! {
@@ -320,16 +317,8 @@ mod tests {
     fn zdd_nodes_dedup_when_low_has_same_priority() {
         let initial = node! {
             id: 1,
-            low: node! {
-                id: 1,
-                low: node!(Never),
-                high: node!(Always)
-            },
-            high: node! {
-                id: 2,
-                low: node!(Never),
-                high: node!(Always)
-            }
+            low: node!(id: 1),
+            high: node!(id: 2)
         };
 
         let expected = node! {

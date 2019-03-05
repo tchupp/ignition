@@ -1,6 +1,6 @@
-use super::Priority;
 use super::node::Node;
 use super::node::NodeId;
+use super::Priority;
 
 pub fn trees(root: NodeId) -> Vec<Vec<Priority>> {
     let trees: Vec<Vec<Priority>> = {
@@ -29,4 +29,3 @@ pub fn trees(root: NodeId) -> Vec<Vec<Priority>> {
 
     trees
 }
-
