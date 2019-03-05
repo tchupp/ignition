@@ -19,8 +19,8 @@ pub fn trees(root: NodeId) -> Vec<Vec<Priority>> {
                     path.push(id);
                     queue.push((high, path));
                 }
-                Node::Leaf(true) => trees.push(path),
-                Node::Leaf(false) => {}
+                Node::Always => trees.push(path),
+                Node::Never => {}
             };
         }
 

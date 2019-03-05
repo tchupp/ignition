@@ -13,8 +13,8 @@ pub struct NodeArena {
 impl Default for NodeArena {
     fn default() -> Self {
         let mut arena = NodeArena { nodes: Vec::new(), node_index: HashMap::new() };
-        arena.add(Node::Leaf(false));
-        arena.add(Node::Leaf(true));
+        arena.add(Node::Never);
+        arena.add(Node::Always);
         arena
     }
 }
@@ -52,33 +52,33 @@ mod tests {
     use super::super::Priority;
 
     #[test]
-    fn get_has_true_leaf_saved() {
+    fn get_has_always_node_saved() {
         let arena = NodeArena::new();
 
-        let true_leaf = arena.get_by_id(Node::TRUE).expect("Expected node to exist");
+        let always_node = arena.get_by_id(Node::ALWAYS).expect("Expected node to exist");
 
         assert_eq!(
-            Node::Leaf(true),
-            *true_leaf
+            Node::Always,
+            *always_node
         );
     }
 
     #[test]
-    fn get_has_false_leaf_saved() {
+    fn get_has_never_node_saved() {
         let arena = NodeArena::new();
 
-        let false_leaf = arena.get_by_id(Node::FALSE).expect("Expected node to exist");
+        let never_node = arena.get_by_id(Node::NEVER).expect("Expected node to exist");
 
         assert_eq!(
-            Node::Leaf(false),
-            *false_leaf
+            Node::Never,
+            *never_node
         );
     }
 
     #[test]
     fn add_returns_unique_node_id_for_different_nodes() {
-        let node1 = Node::branch(Priority(1), Node::FALSE, Node::TRUE);
-        let node2 = Node::branch(Priority(2), Node::TRUE, Node::FALSE);
+        let node1 = Node::branch(Priority(1), Node::NEVER, Node::ALWAYS);
+        let node2 = Node::branch(Priority(2), Node::ALWAYS, Node::NEVER);
 
         let mut arena = NodeArena::new();
 
@@ -97,7 +97,7 @@ mod tests {
 
     #[test]
     fn add_returns_same_node_id_for_same_nodes() {
-        let node1 = Node::branch(Priority(1), Node::FALSE, Node::TRUE);
+        let node1 = Node::branch(Priority(1), Node::NEVER, Node::ALWAYS);
 
         let mut arena = NodeArena::new();
 

@@ -35,7 +35,6 @@ impl<T: Hash + Eq + Clone + Ord + fmt::Debug> fmt::Debug for Forest<T> {
 impl<T: Hash + Eq + Clone + Ord + fmt::Debug> Forest<T> {
     fn fmt_inner(&self, root: Node, indent: usize) -> String {
         match root {
-            Node::Leaf(val) => format!("{}", val),
             Node::Branch(id, low, high) =>
                 format!(
                     "{:?}: {:?}\n{}{}\n{}{}",
@@ -46,6 +45,8 @@ impl<T: Hash + Eq + Clone + Ord + fmt::Debug> Forest<T> {
                     "| ".repeat(indent),
                     self.fmt_inner(Node::from(high), indent + 1)
                 ),
+            Node::Always => String::from("Always"),
+            Node::Never => String::from("Never"),
         }
     }
 }
@@ -53,7 +54,7 @@ impl<T: Hash + Eq + Clone + Ord + fmt::Debug> Forest<T> {
 impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     pub fn empty() -> Self {
         let universe = Universe::default();
-        let root = Node::FALSE;
+        let root = Node::NEVER;
 
         Forest { root, universe }
     }
@@ -70,7 +71,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
 
         let root = matrix.iter()
             .map(|items| items_as_node(&universe, items))
-            .fold(Node::Leaf(false), Node::union);
+            .fold(Node::Never, Node::union);
 
         Forest { root: root.into(), universe }
     }
@@ -80,7 +81,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
 
         let root = universe.get_priorities::<Vec<_>>(set)
             .into_iter()
-            .fold(Node::Leaf(false), |root, item| Node::branch(item, root, Node::Leaf(true)));
+            .fold(Node::Never, |root, item| Node::branch(item, root, Node::Always));
 
         Forest { root: root.into(), universe }
     }
@@ -170,12 +171,11 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
 fn items_as_node<T: Hash + Eq + Clone + Ord>(universe: &Universe<T>, items: &[T]) -> Node {
     universe.get_priorities::<Vec<_>>(items)
         .into_iter()
-        .fold(Node::Leaf(true), |root, item| Node::branch(item, Node::Leaf(false), root))
+        .fold(Node::Always, |root, item| Node::branch(item, Node::Never, root))
 }
 
 fn translate_root<T: Hash + Eq + Clone + Ord>(old_universe: &Universe<T>, new_universe: &Universe<T>, node: Node) -> Node {
     match node {
-        Node::Leaf(_) => node,
         Node::Branch(id, low, high) => {
             let low = translate_root(old_universe, new_universe, low.into());
             let high = translate_root(old_universe, new_universe, high.into());
@@ -185,6 +185,7 @@ fn translate_root<T: Hash + Eq + Clone + Ord>(old_universe: &Universe<T>, new_un
 
             Node::branch(id, low, high)
         }
+        _ => node
     }
 }
 

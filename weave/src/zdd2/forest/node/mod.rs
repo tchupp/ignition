@@ -25,7 +25,8 @@ impl fmt::Debug for NodeId {
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub enum Node {
     Branch(Priority, NodeId, NodeId),
-    Leaf(bool),
+    Always,
+    Never,
 }
 
 impl fmt::Debug for Node {
@@ -35,9 +36,8 @@ impl fmt::Debug for Node {
 }
 
 impl Node {
-    fn fmt_inner(&self, indent: usize) -> String {
+    fn fmt_inner(self, indent: usize) -> String {
         match self {
-            Node::Leaf(val) => format!("{}", val),
             Node::Branch(id, low, high) =>
                 format!(
                     "{:?}:\n{}{}\n{}{}",
@@ -47,20 +47,22 @@ impl Node {
                     "| ".repeat(indent),
                     Node::from(high).fmt_inner(indent + 1)
                 ),
+            Node::Always => String::from("Always"),
+            Node::Never => String::from("Never"),
         }
     }
 }
 
 impl Node {
-    pub const FALSE: NodeId = NodeId(0);
-    pub const TRUE: NodeId = NodeId(1);
+    pub const NEVER: NodeId = NodeId(0);
+    pub const ALWAYS: NodeId = NodeId(1);
 
     pub fn branch<L, H>(id: Priority, low: L, high: H) -> Self where L: Into<NodeId>, H: Into<NodeId> {
         let low = Node::from(low.into());
         let high = Node::from(high.into());
 
         match (high, low) {
-            (Node::Leaf(false), _) => low,
+            (Node::Never, _) => low,
             (Node::Branch(h_id, h_low, h_high), Node::Branch(l_id, l_low, l_high)) if h_id < id && l_id == h_id => {
                 let low = Node::branch(id, l_low, h_low);
                 let high = Node::branch(id, l_high, h_high);
@@ -159,52 +161,52 @@ mod tests {
     use super::Priority;
 
     #[test]
-    fn zdd_nodes_reduce_when_high_is_false() {
+    fn zdd_nodes_reduce_when_high_is_never_node() {
         {
             let node = Node::branch(
                 Priority(0),
-                Node::TRUE,
-                Node::TRUE,
+                Node::ALWAYS,
+                Node::ALWAYS,
             );
 
             assert_eq!(
-                Node::Branch(Priority(0), Node::TRUE, Node::TRUE),
+                Node::Branch(Priority(0), Node::ALWAYS, Node::ALWAYS),
                 node
             );
         }
         {
             let node = Node::branch(
                 Priority(0),
-                Node::TRUE,
-                Node::FALSE,
+                Node::ALWAYS,
+                Node::NEVER,
             );
 
             assert_eq!(
-                Node::Leaf(true),
+                Node::Always,
                 node
             );
         }
         {
             let node = Node::branch(
                 Priority(0),
-                Node::FALSE,
-                Node::FALSE,
+                Node::NEVER,
+                Node::NEVER,
             );
 
             assert_eq!(
-                Node::Leaf(false),
+                Node::Never,
                 node
             );
         }
         {
             let node = Node::branch(
                 Priority(0),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
 
             assert_eq!(
-                Node::Branch(Priority(0), Node::FALSE, Node::TRUE),
+                Node::Branch(Priority(0), Node::NEVER, Node::ALWAYS),
                 node
             );
         }
@@ -215,13 +217,13 @@ mod tests {
         let initial = {
             let low = Node::branch(
                 Priority(0),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
             let high = Node::branch(
                 Priority(2),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
             let initial = Node::branch(
                 Priority(1),
@@ -235,18 +237,18 @@ mod tests {
         let expected = {
             let expected_high = Node::Branch(
                 Priority(2),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
             let expected_low = Node::Branch(
                 Priority(1),
-                Node::FALSE,
+                Node::NEVER,
                 expected_high.into(),
             );
             let expected = Node::Branch(
                 Priority(0),
                 expected_low.into(),
-                Node::TRUE,
+                Node::ALWAYS,
             );
 
             expected
@@ -264,13 +266,13 @@ mod tests {
         let initial = {
             let low = Node::branch(
                 Priority(2),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
             let high = Node::branch(
                 Priority(0),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
             let initial = Node::branch(
                 Priority(1),
@@ -284,13 +286,13 @@ mod tests {
         let expected = {
             let expected_low = Node::Branch(
                 Priority(2),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
             let expected_high = Node::Branch(
                 Priority(1),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
             let expected = Node::Branch(
                 Priority(0),
@@ -313,21 +315,21 @@ mod tests {
         let initial = {
             let low_1 = Node::branch(
                 Priority(0),
-                Node::FALSE,
+                Node::NEVER,
                 Node::branch(
                     Priority(2),
-                    Node::FALSE,
-                    Node::TRUE,
+                    Node::NEVER,
+                    Node::ALWAYS,
                 ),
             );
             let high_1 = Node::branch(
                 Priority(0),
                 Node::branch(
                     Priority(3),
-                    Node::FALSE,
-                    Node::TRUE,
+                    Node::NEVER,
+                    Node::ALWAYS,
                 ),
-                Node::TRUE,
+                Node::ALWAYS,
             );
             let initial = Node::branch(
                 Priority(1),
@@ -341,21 +343,21 @@ mod tests {
         let expected = {
             let expected_low_1 = Node::Branch(
                 Priority(1),
-                Node::FALSE,
+                Node::NEVER,
                 Node::Branch(
                     Priority(3),
-                    Node::FALSE,
-                    Node::TRUE,
+                    Node::NEVER,
+                    Node::ALWAYS,
                 ).into(),
             );
             let expected_high_1 = Node::Branch(
                 Priority(1),
                 Node::Branch(
                     Priority(2),
-                    Node::FALSE,
-                    Node::TRUE,
+                    Node::NEVER,
+                    Node::ALWAYS,
                 ).into(),
-                Node::TRUE,
+                Node::ALWAYS,
             );
             let expected = Node::Branch(
                 Priority(0),
@@ -378,12 +380,12 @@ mod tests {
         let initial = {
             let high = Node::branch(
                 Priority(0),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
             let initial = Node::branch(
                 Priority(1),
-                Node::TRUE,
+                Node::ALWAYS,
                 high,
             );
 
@@ -393,13 +395,13 @@ mod tests {
         let expected = {
             let high = Node::Branch(
                 Priority(1),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
 
             Node::Branch(
                 Priority(0),
-                Node::TRUE,
+                Node::ALWAYS,
                 high.into(),
             )
         };
@@ -415,13 +417,13 @@ mod tests {
         let initial = {
             let low = Node::branch(
                 Priority(1),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
             let high = Node::branch(
                 Priority(2),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
             let initial = Node::branch(
                 Priority(1),
@@ -435,13 +437,13 @@ mod tests {
         let expected = {
             let high = Node::Branch(
                 Priority(2),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
 
             Node::Branch(
                 Priority(1),
-                Node::FALSE,
+                Node::NEVER,
                 high.into(),
             )
         };
@@ -457,17 +459,17 @@ mod tests {
         let initial = {
             let high2 = Node::branch(
                 Priority(2),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
             let high1 = Node::branch(
                 Priority(1),
-                Node::FALSE,
+                Node::NEVER,
                 high2,
             );
             let initial = Node::branch(
                 Priority(1),
-                Node::FALSE,
+                Node::NEVER,
                 high1,
             );
 
@@ -477,13 +479,13 @@ mod tests {
         let expected = {
             let high = Node::Branch(
                 Priority(2),
-                Node::FALSE,
-                Node::TRUE,
+                Node::NEVER,
+                Node::ALWAYS,
             );
 
             Node::Branch(
                 Priority(1),
-                Node::FALSE,
+                Node::NEVER,
                 high.into(),
             )
         };

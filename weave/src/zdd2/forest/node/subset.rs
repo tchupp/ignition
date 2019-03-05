@@ -9,9 +9,8 @@ pub fn subset(root: Node, element: Priority) -> Node {
 
 fn subset_inner(root: Node, element: Priority) -> Matching {
     match root {
-        Node::Leaf(_) => (root, false),
         Node::Branch(id, _low, high) if element == id => {
-            let low = Node::FALSE;
+            let low = Node::NEVER;
 
             (Node::branch(id, low, high), true)
         }
@@ -27,18 +26,19 @@ fn subset_inner(root: Node, element: Priority) -> Matching {
 
             (Node::branch(id, low, high), keep)
         }
+        _ => (root, false),
     }
 }
 
 pub fn subset_all(root: Node, elements: &[Priority]) -> Node {
     elements.iter()
         .map(|element| subset(root, element.to_owned()))
-        .fold(Node::Leaf(true), Node::intersect)
+        .fold(Node::Always, Node::intersect)
 }
 
 fn reduce_branch((root, keep): Matching) -> Matching {
     match (root, keep) {
-        (_root, false) => (Node::Leaf(false), keep),
+        (_root, false) => (Node::Never, keep),
         (root, true) => (root, keep)
     }
 }

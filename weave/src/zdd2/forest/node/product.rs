@@ -6,11 +6,11 @@ pub fn product(node1: Node, node2: Node) -> Node {
     }
 
     let (id, low, high) = match (node1, node2) {
-        (_, Node::Leaf(true)) => return node1,
-        (Node::Leaf(true), _) => return node2,
+        (_, Node::Always) => return node1,
+        (Node::Always, _) => return node2,
 
-        (_, Node::Leaf(false)) => return Node::Leaf(false),
-        (Node::Leaf(false), _) => return Node::Leaf(false),
+        (_, Node::Never) => return Node::Never,
+        (Node::Never, _) => return Node::Never,
 
         (Node::Branch(id_1, low_1, high_1), Node::Branch(id_2, _, _)) if id_1 < id_2 => {
             let low = product(low_1.into(), node2);

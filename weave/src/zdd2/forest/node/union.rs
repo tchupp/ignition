@@ -6,18 +6,18 @@ pub fn union(node1: Node, node2: Node) -> Node {
     }
 
     let (id, low, high) = match (node1, node2) {
-        (_, Node::Leaf(false)) => return node1,
-        (Node::Leaf(false), _) => return node2,
+        (_, Node::Never) => return node1,
+        (Node::Never, _) => return node2,
 
-        (Node::Leaf(true), Node::Leaf(true)) => return Node::Leaf(true),
+        (Node::Always, Node::Always) => return Node::Always,
 
-        (Node::Branch(id, low, high), Node::Leaf(true)) => {
+        (Node::Branch(id, low, high), Node::Always) => {
             let low = union(low.into(), node2);
             let high = Node::from(high);
 
             (id, low, high)
         }
-        (Node::Leaf(true), Node::Branch(id, low, high)) => {
+        (Node::Always, Node::Branch(id, low, high)) => {
             let low = union(node1, low.into());
             let high = Node::from(high);
 
