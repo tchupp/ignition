@@ -7,6 +7,8 @@ use itertools::Itertools;
 
 use super::Priority;
 
+mod serialize;
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Universe<T: Hash + Eq + Clone + Ord> {
     occurrences: HashMap<T, usize>,

@@ -6,6 +6,7 @@ use self::node::NodeId;
 use self::node::Priority;
 use self::universe::Universe;
 
+#[macro_use]
 mod node;
 mod universe;
 mod trees;
@@ -20,7 +21,7 @@ mod subset;
 mod product;
 
 /// Forest is an immutable set of sets
-#[derive(Clone, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Forest<T: Hash + Eq + Clone + Ord> {
     root: NodeId,
     universe: Universe<T>,
