@@ -1,16 +1,21 @@
 #[macro_export]
 macro_rules! node {
-    (Always) => {Node::Always};
-    (Never) => {Node::Never};
+    (Always) => {$crate::zdd2::forest::node::Node::Always};
+    (Never) => {$crate::zdd2::forest::node::Node::Never};
 
-    (id: $id:expr,) => {Node::branch(Priority($id), Node::Never, Node::Always)};
-    (id: $id:expr) => {Node::branch(Priority($id), Node::Never, Node::Always)};
+    (id: $id:expr,) => {node!(id: $id, low: node!(Never), high: node!(Always))};
+    (id: $id:expr) => {node!(id: $id, low: node!(Never), high: node!(Always))};
 
-    (id: $id:expr, low: $low:expr,) => {Node::branch(Priority($id), $low, Node::Always)};
-    (id: $id:expr, low: $low:expr) => {Node::branch(Priority($id), $low, Node::Always)};
+    (id: $id:expr, low: $low:expr,) => {node!(id: $id, low: $low, high: node!(Always))};
+    (id: $id:expr, low: $low:expr) => {node!(id: $id, low: $low, high: node!(Always))};
 
-    (id: $id:expr, low: $low:expr, high: $high:expr,) => {Node::branch(Priority($id), $low, $high)};
-    (id: $id:expr, low: $low:expr, high: $high:expr) => {Node::branch(Priority($id), $low, $high)};
+    (id: $id:expr, low: $low:expr, high: $high:expr,) => {node!(id: $id, low: $low, high: $high)};
+    (id: $id:expr, low: $low:expr, high: $high:expr) => {{
+        use $crate::zdd2::forest::node::Node;
+        use $crate::zdd2::forest::node::Priority;
+
+        Node::branch(Priority($id), $low, $high)
+    }};
 }
 
 #[cfg(test)]
