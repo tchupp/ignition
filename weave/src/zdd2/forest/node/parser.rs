@@ -15,7 +15,7 @@ pub fn build_node_string(node: impl Into<Node>) -> String {
         Node::Never => String::from(NEVER_NODE),
         Node::Branch(id, low, high) => format!(
             "({:?} {} {})",
-            id,
+            id.0,
             build_node_string(low),
             build_node_string(high)
         ),
@@ -55,53 +55,52 @@ named!(node<Node>,
 mod tests {
     use super::Node;
     use super::parse_node_string;
-    use super::Priority;
 
     #[test]
-    fn test_parse_leafs() {
+    fn parse_leafs() {
         assert_eq!(
-            Ok(Node::Always),
-            parse_node_string("(A)"));
+            Node::Always,
+            parse_node_string("(A)").unwrap());
 
         assert_eq!(
-            Ok(Node::Never),
-            parse_node_string("(N)"));
+            Node::Never,
+            parse_node_string("(N)").unwrap());
     }
 
     #[test]
-    fn test_parse_branch_no_whitespace() {
+    fn parse_branch_no_whitespace() {
         assert_eq!(
-            Ok(node! {id: 0, low: node!(Always), high: node!(Never)}),
-            parse_node_string("(0(A)(N))"));
+            node! {id: 0, low: node!(Always), high: node!(Never)},
+            parse_node_string("(0(A)(N))").unwrap());
 
         assert_eq!(
-            Ok(node!(id: 0)),
-            parse_node_string("(0(N)(A))"));
+            node!(id: 0),
+            parse_node_string("(0(N)(A))").unwrap());
     }
 
     #[test]
-    fn test_parse_branch_with_whitespace() {
+    fn parse_branch_with_whitespace() {
         assert_eq!(
-            Ok(node!(id: 0)),
-            parse_node_string(" (  0 (N)   \n             (A) \t )"));
+            node!(id: 0),
+            parse_node_string(" (  0 (N)   \n             (A) \t )").unwrap());
     }
 
     #[test]
-    fn test_parse_branches_recursively() {
+    fn parse_branches_recursively() {
         assert_eq!(
-            Ok(node! {
+            node! {
                 id: 0,
                 low: node!(Always),
                 high: node!(id: 1)
-            }),
-            parse_node_string("(0 (A)(1 (N)(A)))"));
+            },
+            parse_node_string("(0 (A)(1 (N)(A)))").unwrap());
 
         assert_eq!(
-            Ok(node! {
+            node! {
                 id: 0,
                 low: node!(id: 1),
                 high: node!(Always)
-            }),
-            parse_node_string("(0 (1 (N) (A)) (A))"));
+            },
+            parse_node_string("(0 (1 (N) (A)) (A))").unwrap());
     }
 }

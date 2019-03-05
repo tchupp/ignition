@@ -8,6 +8,7 @@ mod arena;
 #[macro_use]
 mod macros;
 mod parser;
+mod serialize;
 
 mod intersect;
 mod union;
