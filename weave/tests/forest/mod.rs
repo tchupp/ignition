@@ -1,7 +1,9 @@
 pub mod intersect;
 pub mod product;
 pub mod subset;
+pub mod subset_not;
 pub mod subset_all;
+pub mod subset_none;
 pub mod union;
 
 macro_rules! intersect {
@@ -125,6 +127,21 @@ macro_rules! subset {
     };
 }
 
+macro_rules! subset_not {
+    ($forest:ty, $test_case:ident) => {
+
+        #[test]
+        fn $test_case() {
+            let (forest, element, expected) = $crate::forest::subset_not::$test_case::<$forest>();
+
+            assert_eq!(
+                expected,
+                <$forest>::subset_not(forest, element)
+            );
+        }
+    };
+}
+
 macro_rules! subset_all {
     ($forest:ty, $test_case:ident) => {
 
@@ -135,6 +152,21 @@ macro_rules! subset_all {
             assert_eq!(
                 expected,
                 <$forest>::subset_all(forest, &elements)
+            );
+        }
+    };
+}
+
+macro_rules! subset_none {
+    ($forest:ty, $test_case:ident) => {
+
+        #[test]
+        fn $test_case() {
+            let (forest, elements, expected) = $crate::forest::subset_none::$test_case::<$forest>();
+
+            assert_eq!(
+                expected,
+                <$forest>::subset_none(forest, &elements)
             );
         }
     };
@@ -156,7 +188,25 @@ macro_rules! subset_tests {
             subset!($forest, many_forest_with_matching_element_1);
 
             subset!($forest, many_forest_with_matching_element_2);
+        }
 
+        #[cfg(test)]
+        mod subset_not_tests {
+            subset_not!($forest, empty_forest);
+
+            subset_not!($forest, unit_forest_with_disjoint_element);
+
+            subset_not!($forest, many_forest_with_disjoint_element);
+
+            subset_not!($forest, unit_forest_with_matching_element);
+
+            subset_not!($forest, many_forest_with_matching_element_1);
+
+            subset_not!($forest, many_forest_with_matching_element_2);
+        }
+
+        #[cfg(test)]
+        mod subset_all_tests {
             subset_all!($forest, empty_forest_with_single_element);
 
             subset_all!($forest, unit_forest_with_empty_elements);
@@ -168,6 +218,21 @@ macro_rules! subset_tests {
             subset_all!($forest, many_forest_with_one_element);
 
             subset_all!($forest, many_forest_with_many_elements);
+        }
+
+        #[cfg(test)]
+        mod subset_none_tests {
+            subset_none!($forest, empty_forest_with_single_element);
+
+            subset_none!($forest, unit_forest_with_empty_elements);
+
+            subset_none!($forest, unit_forest_with_one_element);
+
+            subset_none!($forest, unit_forest_with_disjoint_elements);
+
+            subset_none!($forest, many_forest_with_one_element);
+
+            subset_none!($forest, many_forest_with_many_elements);
         }
     };
 }

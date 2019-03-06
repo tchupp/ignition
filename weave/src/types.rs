@@ -15,7 +15,9 @@ pub trait Forest<T: Clone> {
     fn product(self, other: Self) -> Self;
 
     fn subset(self, element: T) -> Self;
+    fn subset_not(self, element: T) -> Self;
     fn subset_all(self, elements: &[T]) -> Self;
+    fn subset_none(self, elements: &[T]) -> Self;
 }
 
 /// Tree is an immutable set of elements

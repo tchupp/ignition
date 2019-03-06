@@ -111,8 +111,16 @@ impl Node {
         subset::subset(self, element)
     }
 
+    pub fn subset_not(self, element: Priority) -> Self {
+        subset::subset_not(self, element)
+    }
+
     pub fn subset_all(self, elements: &[Priority]) -> Self {
         subset::subset_all(self, elements)
+    }
+
+    pub fn subset_none(self, elements: &[Priority]) -> Self {
+        subset::subset_none(self, elements)
     }
 }
 

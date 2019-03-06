@@ -17,6 +17,21 @@ pub fn subset<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, eleme
     }
 }
 
+pub fn subset_not<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, element: T) -> Forest<T> {
+    match &forest {
+        Forest::Unit(set) if !set.contains(&element) => forest.clone(),
+        Forest::Many(matrix) => {
+            let forest: Vec<Vec<T>> = matrix.into_iter()
+                .cloned()
+                .filter(|set| !set.contains(&element))
+                .collect();
+
+            Forest::many(&forest)
+        }
+        _ => Forest::empty(),
+    }
+}
+
 pub fn subset_all<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, elements: &[T]) -> Forest<T> {
     if elements.is_empty() {
         return forest;
@@ -33,6 +48,30 @@ pub fn subset_all<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, e
             let forest: Vec<Vec<T>> = matrix.into_iter()
                 .cloned()
                 .filter(|set| elements.iter().all(|e| set.contains(e)))
+                .collect();
+
+            Forest::many(&forest)
+        }
+        _ => Forest::empty()
+    }
+}
+
+pub fn subset_none<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, elements: &[T]) -> Forest<T> {
+    if elements.is_empty() {
+        return forest;
+    }
+
+    match &forest {
+        Forest::Unit(set) =>
+            if elements.iter().all(|e| !set.contains(e)) {
+                forest.clone()
+            } else {
+                Forest::empty()
+            },
+        Forest::Many(matrix) => {
+            let forest: Vec<Vec<T>> = matrix.into_iter()
+                .cloned()
+                .filter(|set| elements.iter().all(|e| !set.contains(e)))
                 .collect();
 
             Forest::many(&forest)

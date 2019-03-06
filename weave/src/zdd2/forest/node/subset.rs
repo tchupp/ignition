@@ -30,9 +30,30 @@ fn subset_inner(root: Node, element: Priority) -> Matching {
     }
 }
 
+pub fn subset_not(root: Node, element: Priority) -> Node {
+    match root {
+        Node::Branch(id, low, _high) if element == id => {
+            Node::from(low)
+        }
+        Node::Branch(id, low, high) => {
+            let low = subset_not(low.into(), element);
+            let high = subset_not(high.into(), element);
+
+            Node::branch(id, low, high)
+        }
+        _ => root,
+    }
+}
+
 pub fn subset_all(root: Node, elements: &[Priority]) -> Node {
     elements.iter()
         .map(|element| subset(root, element.to_owned()))
+        .fold(Node::Always, Node::intersect)
+}
+
+pub fn subset_none(root: Node, elements: &[Priority]) -> Node {
+    elements.iter()
+        .map(|element| subset_not(root, element.to_owned()))
         .fold(Node::Always, Node::intersect)
 }
 

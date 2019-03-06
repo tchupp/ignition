@@ -151,6 +151,16 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
         Self::canonical(root, self.universe)
     }
 
+    pub fn subset_not(self, element: T) -> Self {
+        let element = match self.universe.get_priority(&element) {
+            None => return self,
+            Some(element) => element,
+        };
+        let root = Node::subset_not(self.root.into(), element);
+
+        Self::canonical(root, self.universe)
+    }
+
     pub fn subset_all(self, elements: &[T]) -> Self {
         if elements.is_empty() {
             return self;
@@ -166,6 +176,25 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
         };
 
         let root = Node::subset_all(self.root.into(), &elements);
+
+        Self::canonical(root, self.universe)
+    }
+
+    pub fn subset_none(self, elements: &[T]) -> Self {
+        if elements.is_empty() {
+            return self;
+        }
+
+        let elements = {
+            let known_elements: Vec<_> = self.universe.get_priorities(elements);
+            if known_elements.len() != elements.len() {
+                return self;
+            }
+
+            known_elements
+        };
+
+        let root = Node::subset_none(self.root.into(), &elements);
 
         Self::canonical(root, self.universe)
     }

@@ -111,8 +111,16 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
         subset::subset(self, element)
     }
 
+    pub fn subset_not(self, element: T) -> Self {
+        subset::subset_not(self, element)
+    }
+
     pub fn subset_all(self, elements: &[T]) -> Self {
         subset::subset_all(self, elements)
+    }
+
+    pub fn subset_none(self, elements: &[T]) -> Self {
+        subset::subset_none(self, elements)
     }
 }
 

@@ -53,8 +53,16 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> types::Forest<T> for Forest<T> {
         Forest::subset(self, element)
     }
 
+    fn subset_not(self, element: T) -> Self {
+        Forest::subset_not(self, element)
+    }
+
     fn subset_all(self, elements: &[T]) -> Self {
         Forest::subset_all(self, elements)
+    }
+
+    fn subset_none(self, elements: &[T]) -> Self {
+        Forest::subset_none(self, elements)
     }
 }
 
