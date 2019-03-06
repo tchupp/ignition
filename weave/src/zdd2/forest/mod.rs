@@ -62,16 +62,16 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
 
     pub fn unit(items: &[T]) -> Self {
         let universe = Universe::from_items(items);
-        let root = items_as_node(&universe, items).into();
+        let root = universe.get_priorities::<Node>(items);
 
-        Forest { root, universe }
+        Forest { root: root.into(), universe }
     }
 
     pub fn many(matrix: &[Vec<T>]) -> Self {
         let universe = Universe::from_matrix(matrix);
 
         let root = matrix.iter()
-            .map(|items| items_as_node(&universe, items))
+            .map(|items| universe.get_priorities::<Node>(items))
             .fold(Node::Never, Node::union);
 
         Forest { root: root.into(), universe }
@@ -88,8 +88,10 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     }
 
     fn canonical(root: impl Into<NodeId>, universe: Universe<T>) -> Self {
-        let temp = Forest { root: root.into(), universe };
-        let trees = temp.trees();
+        let trees = trees::trees(root.into())
+            .into_iter()
+            .map(|set| universe.get_items::<Vec<_>>(&set))
+            .collect::<Vec<_>>();
 
         Self::many(&trees)
     }
@@ -169,12 +171,6 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     }
 }
 
-fn items_as_node<T: Hash + Eq + Clone + Ord>(universe: &Universe<T>, items: &[T]) -> Node {
-    universe.get_priorities::<Vec<_>>(items)
-        .into_iter()
-        .fold(Node::Always, |root, item| Node::branch(item, Node::Never, root))
-}
-
 fn translate_root<T: Hash + Eq + Clone + Ord>(old_universe: &Universe<T>, new_universe: &Universe<T>, node: Node) -> Node {
     match node {
         Node::Branch(id, low, high) => {
@@ -214,6 +210,14 @@ mod eq_forest_tests {
     fn many_forest() {
         let forest1: Forest<&str> = Forest::many(&[vec!["1", "2"]]);
         let forest2: Forest<&str> = Forest::many(&[vec!["2", "1"]]);
+
+        assert_eq!(forest1, forest2);
+    }
+
+    #[test]
+    fn unit_forest_with_none() {
+        let forest1 = Forest::<&str>::unit(&[]);
+        let forest2 = Forest::<&str>::empty();
 
         assert_eq!(forest1, forest2);
     }

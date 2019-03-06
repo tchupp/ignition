@@ -1,4 +1,5 @@
 use std::fmt;
+use std::iter::FromIterator;
 use std::sync::RwLock;
 
 use self::arena::*;
@@ -159,6 +160,18 @@ lazy_static! {
         let a = NodeArena::new();
         RwLock::new(a)
     };
+}
+
+impl FromIterator<Priority> for Node {
+    fn from_iter<T: IntoIterator<Item=Priority>>(iter: T) -> Self {
+        let iter = iter.into_iter();
+        let (_, upper_bound) = iter.size_hint();
+
+        match upper_bound {
+            Some(0) => Node::Never,
+            _ => iter.fold(Node::Always, |root, item| Node::branch(item, Node::Never, root))
+        }
+    }
 }
 
 #[cfg(test)]
