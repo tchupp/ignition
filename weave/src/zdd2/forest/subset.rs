@@ -1,3 +1,53 @@
+use std::hash::Hash;
+
+use super::Forest;
+use super::Node;
+use super::Priority;
+
+pub fn subset<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, element: T) -> Forest<T> {
+    let element = match forest.universe.get_priority(&element) {
+        None => return Forest::empty(),
+        Some(element) => element,
+    };
+
+    let root = Node::subset(forest.root.into(), element);
+
+    Forest::canonical(root, forest.universe)
+}
+
+pub fn subset_not<T: Hash + Eq + Clone + Ord + Sync + Send>(forest: Forest<T>, element: T) -> Forest<T> {
+    let element = match forest.universe.get_priority(&element) {
+        None => return forest,
+        Some(element) => element,
+    };
+
+    let root = Node::subset_not(forest.root.into(), element);
+
+    Forest::canonical(root, forest.universe)
+}
+
+pub fn subset_many<T: Hash + Eq + Clone + Ord + Sync + Send>(
+    forest: Forest<T>,
+    elements: &[T],
+    default: &Fn(Forest<T>) -> Forest<T>,
+    func: fn(Node, &[Priority]) -> Node,
+) -> Forest<T> {
+    if elements.is_empty() {
+        return forest;
+    }
+
+    let known_elements: Vec<_> = forest.universe.get_priorities(elements);
+
+    match (elements.len(), known_elements.len()) {
+        (l1, l2) if l1 != l2 => default(forest),
+        _ => {
+            let root = func(forest.root.into(), &known_elements);
+
+            Forest::canonical(root, forest.universe)
+        }
+    }
+}
+
 #[cfg(test)]
 mod subset_tests {
     use super::super::Forest;

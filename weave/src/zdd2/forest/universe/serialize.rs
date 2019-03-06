@@ -28,8 +28,7 @@ impl<'de, T> Visitor<'de> for UniverseVisitor<T> where T: Hash + Eq + Clone + Or
     }
 
     fn visit_newtype_struct<D: Deserializer<'de>>(self, deserializer: D) -> Result<Universe<T>, D::Error> {
-        HashMap::deserialize(deserializer)
-            .map(|occurrences| Universe::from_occurrences(occurrences))
+        HashMap::deserialize(deserializer).map(Universe::from_occurrences)
     }
 }
 

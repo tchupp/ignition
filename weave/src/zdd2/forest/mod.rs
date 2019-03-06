@@ -15,7 +15,6 @@ mod trees;
 mod union;
 #[cfg(test)]
 mod intersect;
-#[cfg(test)]
 mod subset;
 #[cfg(test)]
 mod product;
@@ -112,96 +111,73 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
     }
 
     pub fn intersect(self, other: Self) -> Self {
-        let universe = Universe::merge(&self.universe, &other.universe);
-
-        let self_root = translate_root(&self.universe, &universe, self.root.into());
-        let other_root = translate_root(&other.universe, &universe, other.root.into());
+        let (universe, self_root, other_root) = translate_roots(
+            (&self.universe, self.root.into()),
+            (&other.universe, other.root.into()),
+        );
         let root = Node::intersect(self_root, other_root);
 
         Self::canonical(root, universe)
     }
 
     pub fn union(self, other: Self) -> Self {
-        let universe = Universe::merge(&self.universe, &other.universe);
-
-        let self_root = translate_root(&self.universe, &universe, self.root.into());
-        let other_root = translate_root(&other.universe, &universe, other.root.into());
+        let (universe, self_root, other_root) = translate_roots(
+            (&self.universe, self.root.into()),
+            (&other.universe, other.root.into()),
+        );
         let root = Node::union(self_root, other_root);
 
         Self::canonical(root, universe)
     }
 
     pub fn product(self, other: Self) -> Self {
-        let universe = Universe::merge(&self.universe, &other.universe);
-
-        let self_root = translate_root(&self.universe, &universe, self.root.into());
-        let other_root = translate_root(&other.universe, &universe, other.root.into());
+        let (universe, self_root, other_root) = translate_roots(
+            (&self.universe, self.root.into()),
+            (&other.universe, other.root.into()),
+        );
         let root = Node::product(self_root, other_root);
 
         Self::canonical(root, universe)
     }
 
     pub fn subset(self, element: T) -> Self {
-        let element = match self.universe.get_priority(&element) {
-            None => return Self::empty(),
-            Some(element) => element,
-        };
-        let root = Node::subset(self.root.into(), element);
-
-        Self::canonical(root, self.universe)
+        subset::subset(self, element)
     }
 
     pub fn subset_not(self, element: T) -> Self {
-        let element = match self.universe.get_priority(&element) {
-            None => return self,
-            Some(element) => element,
-        };
-        let root = Node::subset_not(self.root.into(), element);
-
-        Self::canonical(root, self.universe)
+        subset::subset_not(self, element)
     }
 
     pub fn subset_all(self, elements: &[T]) -> Self {
-        if elements.is_empty() {
-            return self;
-        }
-
-        let elements = {
-            let known_elements: Vec<_> = self.universe.get_priorities(elements);
-            if known_elements.len() != elements.len() {
-                return Self::empty();
-            }
-
-            known_elements
-        };
-
-        let root = Node::subset_all(self.root.into(), &elements);
-
-        Self::canonical(root, self.universe)
+        subset::subset_many(
+            self,
+            elements,
+            &|_| Forest::empty(),
+            Node::subset_all,
+        )
     }
 
     pub fn subset_none(self, elements: &[T]) -> Self {
-        if elements.is_empty() {
-            return self;
-        }
-
-        let elements = {
-            let known_elements: Vec<_> = self.universe.get_priorities(elements);
-            if known_elements.len() != elements.len() {
-                return self;
-            }
-
-            known_elements
-        };
-
-        let root = Node::subset_none(self.root.into(), &elements);
-
-        Self::canonical(root, self.universe)
+        subset::subset_many(
+            self,
+            elements,
+            &|forest| forest,
+            Node::subset_none,
+        )
     }
 }
 
-fn translate_root<T: Hash + Eq + Clone + Ord>(old_universe: &Universe<T>, new_universe: &Universe<T>, node: Node) -> Node {
-    match node {
+fn translate_roots<T: Hash + Eq + Clone + Ord>((self_universe, self_root): (&Universe<T>, Node), (other_universe, other_root): (&Universe<T>, Node)) -> (Universe<T>, Node, Node) {
+    let universe = Universe::merge(self_universe, other_universe);
+
+    let self_root = translate_root(self_universe, &universe, self_root);
+    let other_root = translate_root(other_universe, &universe, other_root);
+
+    (universe, self_root, other_root)
+}
+
+fn translate_root<T: Hash + Eq + Clone + Ord>(old_universe: &Universe<T>, new_universe: &Universe<T>, root: Node) -> Node {
+    match root {
         Node::Branch(id, low, high) => {
             let low = translate_root(old_universe, new_universe, low.into());
             let high = translate_root(old_universe, new_universe, high.into());
@@ -211,7 +187,7 @@ fn translate_root<T: Hash + Eq + Clone + Ord>(old_universe: &Universe<T>, new_un
 
             Node::branch(id, low, high)
         }
-        _ => node
+        _ => root
     }
 }
 
