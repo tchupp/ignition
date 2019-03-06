@@ -60,6 +60,7 @@ impl Node {
 
 impl Node {
     pub const NEVER: NodeId = NodeId(0);
+    #[cfg(test)]
     pub const ALWAYS: NodeId = NodeId(1);
 
     pub fn branch<L, H>(id: Priority, low: L, high: H) -> Self where L: Into<NodeId>, H: Into<NodeId> {
