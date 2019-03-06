@@ -9,8 +9,6 @@ mod forest;
 mod tree;
 
 impl<T: Hash + Eq + Clone + Ord + Sync + Send> types::Forest<T> for Forest<T> {
-    type Tree = Tree<T>;
-
     fn empty() -> Self {
         Forest::empty()
     }
@@ -35,7 +33,7 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> types::Forest<T> for Forest<T> {
         Forest::is_empty(self)
     }
 
-    fn trees(&self) -> Vec<Tree<T>> {
+    fn trees(&self) -> Vec<Vec<T>> {
         Into::<Vec<_>>::into(self)
     }
 

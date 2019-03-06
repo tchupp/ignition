@@ -1,7 +1,5 @@
 /// Forest is an immutable set of sets
 pub trait Forest<T: Clone> {
-    type Tree: Tree<T>;
-
     fn empty() -> Self;
     fn unit(set: &[T]) -> Self;
     fn many(matrix: &[Vec<T>]) -> Self;
@@ -10,7 +8,7 @@ pub trait Forest<T: Clone> {
     fn len(&self) -> usize;
     fn is_empty(&self) -> bool;
 
-    fn trees(&self) -> Vec<Self::Tree>;
+    fn trees(&self) -> Vec<Vec<T>>;
 
     fn intersect(self, other: Self) -> Self;
     fn union(self, other: Self) -> Self;
@@ -22,7 +20,7 @@ pub trait Forest<T: Clone> {
 
 /// Tree is an immutable set of elements
 pub trait Tree<T: Clone>: Sized {
-    type Forest: Forest<T, Tree=Self>;
+    type Forest: Forest<T>;
 
     fn empty() -> Self;
     fn one(element: T) -> Self;

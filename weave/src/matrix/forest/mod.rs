@@ -4,8 +4,6 @@ use std::iter::FromIterator;
 use hashbrown::HashSet;
 use itertools::Itertools;
 
-use super::Tree;
-
 mod union;
 mod intersect;
 mod subset;
@@ -19,27 +17,26 @@ pub enum Forest<T: Hash + Eq> {
     Many(HashSet<Vec<T>>),
 }
 
-impl<T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for Forest<T> {
-    fn into(self) -> Vec<Tree<T>> {
+impl<T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Vec<T>>> for Forest<T> {
+    fn into(self) -> Vec<Vec<T>> {
         match self {
             Forest::Empty => Vec::new(),
-            Forest::Unit(set) => vec![Tree::many(&set)],
+            Forest::Unit(set) => vec![set],
             Forest::Many(matrix) => matrix
                 .into_iter()
-                .map(|s| Tree::many(&s))
                 .collect(),
         }
     }
 }
 
-impl<'a, T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Tree<T>>> for &'a Forest<T> {
-    fn into(self) -> Vec<Tree<T>> {
+impl<'a, T: Hash + Eq + Clone + Ord + Sync + Send> Into<Vec<Vec<T>>> for &'a Forest<T> {
+    fn into(self) -> Vec<Vec<T>> {
         match self {
             Forest::Empty => Vec::new(),
-            Forest::Unit(set) => vec![Tree::many(&set)],
+            Forest::Unit(set) => vec![set.to_vec()],
             Forest::Many(matrix) => matrix
                 .into_iter()
-                .map(|s| Tree::many(&s))
+                .cloned()
                 .collect(),
         }
     }
@@ -167,7 +164,6 @@ mod eq_forest_tests {
 #[cfg(test)]
 mod empty_forest_tests {
     use super::Forest;
-    use super::Tree;
 
     #[test]
     fn empty_forest_has_size_0() {
@@ -188,7 +184,7 @@ mod empty_forest_tests {
         let forest: Forest<&str> = Forest::empty();
 
         assert_eq!(
-            Vec::<Tree<&str>>::new(),
+            Vec::<Vec<&str>>::new(),
             Into::<Vec<_>>::into(forest.clone())
         );
     }
@@ -197,7 +193,6 @@ mod empty_forest_tests {
 #[cfg(test)]
 mod unit_forest_tests {
     use super::Forest;
-    use super::Tree;
 
     #[test]
     fn unit_forest_has_size_1() {
@@ -216,7 +211,7 @@ mod unit_forest_tests {
     #[test]
     fn unit_forest_into() {
         let forest: Forest<&str> = Forest::unit(&["1", "2"]);
-        let expected: Vec<Tree<&str>> = vec![Tree::many(&["1", "2"])];
+        let expected = vec![vec!["1", "2"]];
 
         assert_eq!(
             expected,
@@ -228,7 +223,6 @@ mod unit_forest_tests {
 #[cfg(test)]
 mod many_forest_tests {
     use super::Forest;
-    use super::Tree;
 
     #[test]
     fn many_forest_has_size_2() {
@@ -256,9 +250,9 @@ mod many_forest_tests {
             vec!["1", "2"],
             vec!["2", "3"]
         ]);
-        let expected: Vec<Tree<&str>> = vec![
-            Tree::many(&["1", "2"]),
-            Tree::many(&["2", "3"]),
+        let expected = vec![
+            vec!["1", "2"],
+            vec!["2", "3"],
         ];
 
         assert_eq!(
@@ -270,9 +264,9 @@ mod many_forest_tests {
     #[test]
     fn unique_forest_into() {
         let forest: Forest<&str> = Forest::unique(&["1", "2"]);
-        let expected: Vec<Tree<&str>> = vec![
-            Tree::many(&["2"]),
-            Tree::many(&["1"]),
+        let expected = vec![
+            vec!["2"],
+            vec!["1"],
         ];
 
         assert_eq!(
