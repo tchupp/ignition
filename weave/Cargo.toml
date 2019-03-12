@@ -2,7 +2,7 @@
 name = "weave"
 description = "Multi-purpose decision diagrams"
 version = "0.1.0"
-authors = ["theochupp <tclchiam@gmail.com>"]
+authors = ["Theo Chupp"]
 
 [dependencies]
 itertools = "0.8"
