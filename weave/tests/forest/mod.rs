@@ -1,5 +1,6 @@
 pub mod intersect;
 pub mod product;
+pub mod occurrences;
 pub mod subset;
 pub mod subset_not;
 pub mod subset_all;
@@ -253,6 +254,39 @@ macro_rules! spec {
                 expected,
                 <$forest>::$module(forest2.clone(), forest1.clone())
             );
+        }
+    };
+}
+
+macro_rules! occurrences {
+    ($forest:ty, $test_case:ident) => {
+
+        #[test]
+        fn $test_case() {
+            let (forest, expected) = $crate::forest::occurrences::$test_case::<$forest>();
+
+            assert_eq!(
+                expected,
+                <$forest>::occurrences(&forest)
+            );
+        }
+    };
+}
+
+macro_rules! occurrences_tests {
+    ($forest:ty) => {
+
+        #[cfg(test)]
+        mod occurrences_tests {
+            occurrences!($forest, empty);
+
+            occurrences!($forest, unit_with_one);
+
+            occurrences!($forest, unit_with_two);
+
+            occurrences!($forest, overlapping_many);
+
+            occurrences!($forest, disjoint_many);
         }
     };
 }

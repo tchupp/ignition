@@ -89,6 +89,10 @@ impl<T: Hash + Eq + Clone + Ord> Universe<T> {
     pub fn get_item(&self, id: Priority) -> Option<&T> {
         self.index.get(id.0)
     }
+
+    pub fn occurrences(&self) -> &HashMap<T, usize> {
+        &self.occurrences
+    }
 }
 
 impl<T: Hash + Eq + Clone + Ord> Universe<T> {

@@ -13,6 +13,8 @@ mod zdd_tests {
     product_tests!(weave::zdd2::Forest<&str>);
 
     subset_tests!(weave::zdd2::Forest<&str>);
+
+    occurrences_tests!(weave::zdd2::Forest<&str>);
 }
 
 #[cfg(test)]

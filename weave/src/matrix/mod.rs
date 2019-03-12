@@ -37,6 +37,10 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> types::Forest<T> for Forest<T> {
         Into::<Vec<_>>::into(self)
     }
 
+    fn occurrences(&self) -> Vec<(T, usize)> {
+        Forest::occurrences(self)
+    }
+
     fn intersect(self, other: Self) -> Self {
         Forest::intersect(self, other)
     }

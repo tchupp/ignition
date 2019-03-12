@@ -12,4 +12,6 @@ mod matrix_tests {
     product_tests!(weave::matrix::Forest<&str>);
 
     subset_tests!(weave::matrix::Forest<&str>);
+
+    occurrences_tests!(weave::matrix::Forest<&str>);
 }

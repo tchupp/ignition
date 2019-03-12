@@ -1,6 +1,8 @@
 use std::fmt;
 use std::hash::Hash;
 
+use itertools::Itertools;
+
 use self::node::Node;
 use self::node::NodeId;
 use self::node::Priority;
@@ -107,6 +109,14 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
         trees::trees(self.root)
             .into_iter()
             .map(|set| self.universe.get_items::<Vec<_>>(&set))
+            .collect()
+    }
+
+    pub fn occurrences(&self) -> Vec<(T, usize)> {
+        self.universe.occurrences()
+            .clone()
+            .into_iter()
+            .sorted_by(|(item1, _), (item2, _)| Ord::cmp(item1, item2))
             .collect()
     }
 

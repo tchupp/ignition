@@ -1,7 +1,7 @@
 use std::hash::Hash;
 use std::iter::FromIterator;
 
-use hashbrown::HashSet;
+use hashbrown::{HashMap, HashSet};
 use itertools::Itertools;
 
 mod union;
@@ -92,6 +92,26 @@ impl<T: Hash + Eq + Clone + Ord + Sync + Send> Forest<T> {
         match self {
             Forest::Empty => true,
             _ => false
+        }
+    }
+
+    pub fn occurrences(&self) -> Vec<(T, usize)> {
+        match self {
+            Forest::Empty => vec![],
+            Forest::Unit(set) => set.iter()
+                .map(|item| (item.clone(), 1))
+                .collect(),
+            Forest::Many(matrix) => {
+                matrix.iter()
+                    .flatten()
+                    .fold(HashMap::new(), |mut occurrences, item| {
+                        *occurrences.entry(item.clone()).or_insert(0usize) += 1;
+                        occurrences
+                    })
+                    .into_iter()
+                    .sorted_by(|(item1, _), (item2, _)| Ord::cmp(item1, item2))
+                    .collect()
+            }
         }
     }
 

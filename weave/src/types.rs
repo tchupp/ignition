@@ -10,6 +10,8 @@ pub trait Forest<T: Clone> {
 
     fn trees(&self) -> Vec<Vec<T>>;
 
+    fn occurrences(&self) -> Vec<(T, usize)>;
+
     fn intersect(self, other: Self) -> Self;
     fn union(self, other: Self) -> Self;
     fn product(self, other: Self) -> Self;
