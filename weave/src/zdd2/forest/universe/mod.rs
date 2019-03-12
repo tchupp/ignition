@@ -29,9 +29,8 @@ impl<T: Hash + Eq + Clone + Ord> Default for Universe<T> {
 impl<T: Hash + Eq + Clone + Ord> Universe<T> {
     pub fn from_items(items: &[T]) -> Self {
         let occurrences: HashMap<T, usize> = items.iter()
-            .unique()
             .fold(HashMap::new(), |mut occurrences, item| {
-                *occurrences.entry(item.clone()).or_insert(0usize) += 1;
+                occurrences.insert(item.clone(), 1usize);
                 occurrences
             });
 

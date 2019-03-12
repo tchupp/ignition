@@ -50,7 +50,7 @@ impl Closet {
 
         let summary = self.tree.summarize(&selections[..], exclusions)
             .into_iter()
-            .map(|status| (self.item_index.get(status.item()).unwrap(), status))
+            .map(|status| (&self.item_index[status.item()], status))
             .fold(BTreeMap::new(), |mut duplicates: BTreeMap<Family, Vec<ItemStatus<Item>>>, (family, status): (&Family, ItemStatus<Item>)| {
                 duplicates.entry(family.clone()).or_insert_with(|| vec![]).push(status);
                 duplicates
