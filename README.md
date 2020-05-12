@@ -1,9 +1,44 @@
-# Bowtie
-[![Build Status](https://travis-ci.org/tchupp/bowtie.svg?branch=master)](https://travis-ci.org/tchupp/bowtie)
+# Ignition
+[![Build Status](https://travis-ci.org/tchupp/ignition.svg?branch=master)](https://travis-ci.org/tchupp/ignition)
 
-Bowtie is a library that helps us model Sparse Sets of Subsets Completions  
+Ignition is a tool for building custom rules engines, tailored towards SAT solvers  
 
-## Implementation
+## Getting Started
+
+A `rule engine` is built two parts, items and rules
+
+### Items
+
+#### Id
+
+#### Attributes/Tags/Labels
+
+```yaml
+id: <unique_id>
+attributes:
+  - key: key_1      # attribute 1
+    value: <value>
+  - key: key_2      # attribute 2
+    value: <value>
+  - key: key_3      # attribute 3
+    value: <value>
+  - key: key_1      # overrides attribute 1
+    value: <value>
+```
+
+### Rules
+
+#### Id
+
+#### Condition
+
+```
+
+```
+
+### Example
+
+#### Closet
 
 For these examples, we will imagine the problem of choosing an outfit from a closet
 
@@ -17,7 +52,22 @@ Rules may be defined that exclude or include certain items, given a specific sel
 If we represent the selection of an item as a boolean (T for selected, F for not selected), each rule in the system can be defined by a logical binary operation  
 The output of the binary operation is a boolean, telling us whether the combination is valid.
 
-## Sibling relationship
+##### Items
+
+An `item` is a single piece of clothing. The attributes are `color` and `family`.
+
+```yaml
+id: blue_shirt
+attributes:
+  - key: color      # attribute 1
+    value: blue
+  - key: family     # attribute 2
+    value: shirt
+```
+
+##### Rules
+
+###### Sibling relationship
 A and B are items in the same family  
 A and B may not be selected at the same time, but one of them **must** be selected
 
@@ -53,7 +103,7 @@ Truth table:
 
 The relationship holds true for three items, and the equation will scale quadratically for each item added
 
-## Exclusion
+###### Exclusion
 A and B are items in different families  
 Selection of A excludes the selection of B  
 Selection of B excludes the selection of A  
@@ -70,7 +120,7 @@ Truth table:
 | 1 | 0 | 1 |
 | 1 | 1 | 0 |
 
-## Inclusion
+###### Inclusion
 A and B are items in different families  
 Selection of A requires that B is also selected
 Selection of B does not **require** that A is also selected
