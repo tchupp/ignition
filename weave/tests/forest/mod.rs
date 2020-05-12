@@ -30,6 +30,10 @@ macro_rules! intersect_tests {
 
             intersect!($forest, forests_are_disjoint_units);
 
+            intersect!($forest, left_is_unit_that_is_subset_of_right_and_right_is_unit);
+
+            intersect!($forest, left_is_unit_that_is_subset_of_some_right_and_right_is_many);
+
             intersect!($forest, left_is_unit_right_is_many);
 
             intersect!($forest, forests_are_equal_many);

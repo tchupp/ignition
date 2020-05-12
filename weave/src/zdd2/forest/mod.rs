@@ -39,7 +39,8 @@ impl<T: Hash + Eq + Clone + Ord + fmt::Debug> Forest<T> {
         match root {
             Node::Branch(id, low, high) =>
                 format!(
-                    "{:?}: {:?}\n{}{}\n{}{}",
+                    "{} - {:?}: {:?}\n{}{}\n{}{}",
+                    NodeId::from(root),
                     id,
                     self.universe.get_item(id).unwrap(),
                     "| ".repeat(indent),

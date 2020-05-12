@@ -50,6 +50,33 @@ pub fn forests_are_equal_unit<'a, F: Forest<&'a str> + Debug + Eq + Clone>() -> 
     (forest1, forest2, expected)
 }
 
+pub fn left_is_unit_that_is_subset_of_right_and_right_is_unit<'a, F: Forest<&'a str> + Debug + Eq + Clone>() -> (F, F, F) {
+    let forest1 = F::unit(&["1"]);
+    let forest2 = F::unit(&["1", "2"]);
+
+//    let expected = F::unit(&["1", "2"]);
+    let expected = F::empty();
+
+    (forest1, forest2, expected)
+}
+
+pub fn left_is_unit_that_is_subset_of_some_right_and_right_is_many<'a, F: Forest<&'a str> + Debug + Eq + Clone>() -> (F, F, F) {
+    let forest1 = F::unit(&["2"]);
+    let forest2 = F::many(&[
+        vec!["1", "2"],
+        vec!["2", "3"],
+        vec!["1", "3"],
+    ]);
+
+//    let expected = F::many(&[
+//        vec!["1", "2"],
+//        vec!["2", "3"]
+//    ]);
+    let expected = F::empty();
+
+    (forest1, forest2, expected)
+}
+
 pub fn forests_are_disjoint_units<'a, F: Forest<&'a str> + Debug + Eq + Clone>() -> (F, F, F) {
     let forest1 = F::unit(&["1", "2"]);
     let forest2 = F::unit(&["2", "3"]);

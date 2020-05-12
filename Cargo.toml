@@ -2,3 +2,7 @@
 members = [
     "weave",
 ]
+
+[profile.release]
+debug = true
+lto = false

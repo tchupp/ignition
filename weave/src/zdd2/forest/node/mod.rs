@@ -28,6 +28,12 @@ impl fmt::Debug for NodeId {
     }
 }
 
+impl fmt::Display for NodeId {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self.0)
+    }
+}
+
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub enum Node {
     Branch(Priority, NodeId, NodeId),
@@ -46,7 +52,8 @@ impl Node {
         match self {
             Node::Branch(id, low, high) =>
                 format!(
-                    "{:?}:\n{}{}\n{}{}",
+                    "{} - {:?}:\n{}{}\n{}{}",
+                    NodeId::from(self),
                     id,
                     "| ".repeat(indent),
                     Node::from(low).fmt_inner(indent + 1),
