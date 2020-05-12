@@ -1,0 +1,20 @@
+[package]
+name = "ignition-rules"
+description = "Composable rules to create custom rule sets for sets of items"
+version = "0.1.0"
+authors = ["Theo Chupp"]
+
+[dependencies]
+itertools = "0.8"
+
+serde = "1.0"
+serde_derive = "1.0"
+
+weave = { path = "../weave" }
+
+[dependencies.hashbrown]
+version = "0.1"
+features = ["serde", "rayon"]
+
+[dev-dependencies]
+maplit = "1.0"
